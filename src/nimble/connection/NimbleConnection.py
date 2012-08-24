@@ -1,18 +1,19 @@
-# CanalConnection.py
-# (C)2012 http://www.threeaddone.com
+# NimbleConnection.py
+# (C)2012 http://www.ThreeAddOne.com
 # Scott Ernst
 
 import socket
 
-from canal.CanalEnvironment import CanalEnvironment
-from canal.connection.support.MayaCommandLink import MayaCommandLink
-from canal.data.CanalData import CanalData
-from canal.data.enum.DataKindEnum import DataKindEnum
-from canal.error.MayaCommandException import MayaCommandException
+from nimble.NimbleEnvironment import NimbleEnvironment
+from nimble.connection.support.MayaCommandLink import MayaCommandLink
+from nimble.connection.support.ImportedCommand import ImportedCommand
+from nimble.data.NimbleData import NimbleData
+from nimble.data.enum.DataKindEnum import DataKindEnum
+from nimble.error.MayaCommandException import MayaCommandException
 
-#___________________________________________________________________________________________________ CanalConnection
-class CanalConnection(object):
-    """Establishes a socket connection with a CanalServer instance for communication."""
+#___________________________________________________________________________________________________ NimbleConnection
+class NimbleConnection(object):
+    """Establishes a socket connection with a NimbleServer instance for communication."""
 
 #===================================================================================================
 #                                                                                       C L A S S
@@ -21,9 +22,9 @@ class CanalConnection(object):
 
 #___________________________________________________________________________________________________ __init__
     def __init__(self, **kwargs):
-        """ Creates a new instance of CanalConnection and opens the communication socket to the
-            corresponding CanalServer instance. CanalEnvironment is used to determine whether the
-            connection should be to a Maya or external application CanalServer instance.
+        """ Creates a new instance of NimbleConnection and opens the communication socket to the
+            corresponding NimbleServer instance. NimbleEnvironment is used to determine whether the
+            connection should be to a Maya or external application NimbleServer instance.
         """
 
         self._active = False
@@ -38,8 +39,8 @@ class CanalConnection(object):
 #___________________________________________________________________________________________________ GS: active
     @property
     def active(self):
-        """ Specifies whether or not the CanalConnection instance is active. When active the
-            instance can communicate with its remote CanalServer counterpart. CanalConnection
+        """ Specifies whether or not the NimbleConnection instance is active. When active the
+            instance can communicate with its remote NimbleServer counterpart. NimbleConnection
             instances are active by default and only become inactive if they are closed after
             which point they will have to be reopened in order to allow further communication.
         """
@@ -61,11 +62,11 @@ class CanalConnection(object):
 #___________________________________________________________________________________________________ ping
     def ping(self, message =None):
         """Doc..."""
-        return self._send(CanalData(kind=DataKindEnum.PING, payload={'msg':message}))
+        return self._send(NimbleData(kind=DataKindEnum.PING, payload={'msg':message}))
 
 #___________________________________________________________________________________________________ maya
     def maya(self, command, *args, **kwargs):
-        result = self.sendMayaCommand(command, *args, **kwargs)
+        result = self.runMayaCommand(command, *args, **kwargs)
         if not result or not result.success:
             raise MayaCommandException(
                 'Failed execution of Maya command: ' + str(command),
@@ -73,12 +74,33 @@ class CanalConnection(object):
             )
         return result.payload['result']
 
-#___________________________________________________________________________________________________ sendMayaCommand
-    def sendMayaCommand(self, command, *args, **kwargs):
-        return self._send(CanalData(
+#___________________________________________________________________________________________________ runMayaCommand
+    def runMayaCommand(self, command, *args, **kwargs):
+        return self._send(NimbleData(
             kind=DataKindEnum.MAYA_COMMAND,
             payload={
                 'command':str(command),
+                'kwargs':kwargs,
+                'args':args
+            }
+        ))
+
+#___________________________________________________________________________________________________ command
+    def command(self, command, *args, **kwargs):
+        result = self.runCommand(command, *args, **kwargs)
+        if not result or not result.success:
+            raise MayaCommandException(
+                'Failed execution of command: ' + str(command),
+                response=result
+            )
+        return result.payload['result']
+
+#___________________________________________________________________________________________________ runCommand
+    def runCommand(self, command, *args, **kwargs):
+        return self._send(NimbleData(
+            kind=DataKindEnum.COMMAND,
+            payload={
+                'command':command.toDict() if isinstance(command, ImportedCommand) else str(command),
                 'kwargs':kwargs,
                 'args':args
             }
@@ -92,8 +114,8 @@ class CanalConnection(object):
         self._active = False
         self._socket.close()
 
-        if self in CanalConnection._CONNECTION_POOL:
-            CanalConnection._CONNECTION_POOL.remove(self)
+        if self in NimbleConnection._CONNECTION_POOL:
+            NimbleConnection._CONNECTION_POOL.remove(self)
 
         return True
 
@@ -103,16 +125,16 @@ class CanalConnection(object):
             return False
 
         try:
-            target = ('localhost', CanalEnvironment.getConnectionPort())
+            target = ('localhost', NimbleEnvironment.getConnectionPort())
             self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self._socket.connect(target)
         except Exception, err:
-            print 'Failed to open Canal connection.'
+            print 'Failed to open Nimble connection.'
             print err
             return False
 
-        if self not in CanalConnection._CONNECTION_POOL:
-            CanalConnection._CONNECTION_POOL.append(self)
+        if self not in NimbleConnection._CONNECTION_POOL:
+            NimbleConnection._CONNECTION_POOL.append(self)
 
         self._active = True
         return True
@@ -120,35 +142,35 @@ class CanalConnection(object):
 #___________________________________________________________________________________________________ getConnection
     @classmethod
     def getConnection(cls, forceCreate =False, **kwargs):
-        if forceCreate or not CanalConnection._CONNECTION_POOL:
-            return CanalConnection(**kwargs)
+        if forceCreate or not NimbleConnection._CONNECTION_POOL:
+            return NimbleConnection(**kwargs)
 
-        return CanalConnection._CONNECTION_POOL[-1]
+        return NimbleConnection._CONNECTION_POOL[-1]
 
 #___________________________________________________________________________________________________ closeConnectionPool
     @classmethod
     def closeConnectionPool(cls):
-        while CanalConnection._CONNECTION_POOL:
-            CanalConnection._CONNECTION_POOL.pop().close()
+        while NimbleConnection._CONNECTION_POOL:
+            NimbleConnection._CONNECTION_POOL.pop().close()
 
 #===================================================================================================
 #                                                                               P R O T E C T E D
 
 #___________________________________________________________________________________________________ _send
-    def _send(self, canalData):
+    def _send(self, nimbleData):
         """Doc..."""
         try:
-            self._socket.sendall(canalData.serialize())
+            self._socket.sendall(nimbleData.serialize())
             message = self._socket.recv(4096)
         except Exception, err:
-            print 'Canal communication failure.'
+            print 'Nimble communication failure.'
             print err
             return None
 
         try:
-            return CanalData.fromMessage(message)
+            return NimbleData.fromMessage(message)
         except Exception, err:
-            print 'Canal communication data failure.'
+            print 'Nimble communication data failure.'
             print err
             return None
 

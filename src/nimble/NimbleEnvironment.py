@@ -1,9 +1,9 @@
-# CanalEnvironment.py
-# (C)2012 http://www.threeaddone.com
+# NimbleEnvironment.py
+# (C)2012 http://www.ThreeAddOne.com
 # Scott Ernst
 
-#___________________________________________________________________________________________________ CanalEnvironment
-class CanalEnvironment(object):
+#___________________________________________________________________________________________________ NimbleEnvironment
+class NimbleEnvironment(object):
     """A class for..."""
 
 #===================================================================================================

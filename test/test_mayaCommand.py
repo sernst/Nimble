@@ -1,16 +1,16 @@
 # test_echoCommunication.py
-# (C)2012 http://www.threeaddone.com
+# (C)2012 t
 # Scott Ernst
 
-import canal
-from canal import cmds
+import nimble
+from nimble import cmds
 
 result = cmds.polyCube(height=10, depth=25)
 print 'polyCube result:',result
 cmds.select(result[0])
 cmds.move(10, 10, 5, result[0])
 
-conn = canal.getConnection()
+conn = nimble.getConnection()
 print conn.ping().echo(True, True)
 
 print 'X:',conn.maya('getAttr', result[0] + '.translateX')

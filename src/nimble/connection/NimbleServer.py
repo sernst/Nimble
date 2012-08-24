@@ -1,16 +1,16 @@
-# CanalServer.py
-# (C)2012 http://www.threeaddone.com
+# NimbleServer.py
+# (C)2012 http://www.ThreeAddOne.com
 # Scott Ernst
 
 import asyncore
 import socket
 
-from canal.CanalEnvironment import CanalEnvironment
-from canal.connection.router.CanalRouter import CanalRouter
-#AS NEEDED: from canal.connection.router.MayaRouter import MayaRouter
+from nimble.NimbleEnvironment import NimbleEnvironment
+from nimble.connection.router.NimbleRouter import NimbleRouter
+#AS NEEDED: from nimble.connection.router.MayaRouter import MayaRouter
 
-#___________________________________________________________________________________________________ CanalServer
-class CanalServer(asyncore.dispatcher):
+#___________________________________________________________________________________________________ NimbleServer
+class NimbleServer(asyncore.dispatcher):
     """A class for..."""
 
 #===================================================================================================
@@ -22,15 +22,15 @@ class CanalServer(asyncore.dispatcher):
 
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         self.set_reuse_addr()
-        self.bind(('localhost', CanalEnvironment.getServerPort()))
+        self.bind(('localhost', NimbleEnvironment.getServerPort()))
         self.listen(5)
 
         if router is None:
-            if CanalEnvironment.inMaya():
-                from canal.connection.router.MayaRouter import MayaRouter
+            if NimbleEnvironment.inMaya():
+                from nimble.connection.router.MayaRouter import MayaRouter
                 self._router = MayaRouter
             else:
-                self._router = CanalRouter
+                self._router = NimbleRouter
         else:
             self._router = router
 

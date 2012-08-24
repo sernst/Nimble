@@ -1,15 +1,15 @@
-# CanalData.py
-# (C)2012 http://www.threeaddone.com
+# NimbleData.py
+# (C)2012 http://www.ThreeAddOne.com
 # Scott Ernst
 
 import json
 
-from canal.CanalEnvironment import CanalEnvironment
-from canal.data.enum.DataKindEnum import DataKindEnum
-from canal.utils.DictUtils import DictUtils
+from nimble.NimbleEnvironment import NimbleEnvironment
+from nimble.data.enum.DataKindEnum import DataKindEnum
+from nimble.utils.DictUtils import DictUtils
 
-#___________________________________________________________________________________________________ CanalData
-class CanalData(object):
+#___________________________________________________________________________________________________ NimbleData
+class NimbleData(object):
     """A class for..."""
 
 #===================================================================================================
@@ -19,7 +19,7 @@ class CanalData(object):
 
 #___________________________________________________________________________________________________ __init__
     def __init__(self, kind =None, payload =None, **kwargs):
-        """Creates a new instance of CanalData."""
+        """Creates a new instance of NimbleData."""
         self._kind      = kind if kind else DataKindEnum.GENERAL
         self._payload   = payload if payload else dict()
 
@@ -51,25 +51,25 @@ class CanalData(object):
                 s = '\n' + 100*'-' + '\n' + header + ':\n' + (len(header) + 1)*'-' + '\n'
                 for n,v in msg.iteritems():
                     s += '   ' + str(n).upper() + ': ' + str(v) + '\n'
-                CanalEnvironment.log(s)
+                NimbleEnvironment.log(s)
             else:
-                CanalEnvironment.log(header + ': ' + str(msg))
+                NimbleEnvironment.log(header + ': ' + str(msg))
         else:
-            CanalEnvironment.log('<CANAL %s | %s>' % (header, self.kind))
+            NimbleEnvironment.log('<NIMBLE %s | %s>' % (header, self.kind))
 
 #___________________________________________________________________________________________________ serialize
     def serialize(self):
         """Doc..."""
         return json.dumps(self._createMessage()) \
-            .replace('\r','').replace('\n', CanalData._NEWLINE_ESCAPE).strip()
+            .replace('\r','').replace('\n', NimbleData._NEWLINE_ESCAPE).strip()
 
 #___________________________________________________________________________________________________ fromMessage
     @classmethod
     def fromMessage(cls, message):
         try:
-            data   = json.loads(message.replace(CanalData._NEWLINE_ESCAPE, '\n').strip())
+            data   = json.loads(message.replace(NimbleData._NEWLINE_ESCAPE, '\n').strip())
         except Exception, err:
-            print 'Invalid Canal Data:'
+            print 'Invalid Nimble Data:'
             print str(message)
             print err
             return None
@@ -77,7 +77,7 @@ class CanalData(object):
         data      = DictUtils.cleanDictKeys(data)
         className = data['class']
         if className == cls.__name__:
-            return CanalData(**data)
+            return NimbleData(**data)
 
         module = ''
         try:
@@ -86,7 +86,7 @@ class CanalData(object):
             Source  = getattr(res, className)
             return Source(**data)
         except Exception, err:
-            print 'Invalid Canal data:'
+            print 'Invalid Nimble data:'
             print 'ERROR: ', err
             print 'MESSAGE:', message
             print 'DATA:', data

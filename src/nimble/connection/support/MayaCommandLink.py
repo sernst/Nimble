@@ -1,10 +1,10 @@
 # MayaCommandLink.py
-# (C)2012 http://www.threeaddone.com
+# (C)2012 http://www.ThreeAddOne.com
 # Scott Ernst
 
 import functools
 
-from canal.CanalEnvironment import CanalEnvironment
+from nimble.NimbleEnvironment import NimbleEnvironment
 
 #___________________________________________________________________________________________________ MayaCommandLink
 class MayaCommandLink(object):
@@ -18,7 +18,7 @@ class MayaCommandLink(object):
         self._connection = connection
         self._commands   = None
 
-        if CanalEnvironment.inMaya():
+        if NimbleEnvironment.inMaya():
             import maya.cmds as mc
             self._commands = mc
 

@@ -1,11 +1,11 @@
-# CanalThread.py
-# (C)2012 http://www.threeAddOne.com
+# NimbleThread.py
+# (C)2012 http://www.ThreeAddOne.com
 # Scott Ernst
 
 import threading
 
-#___________________________________________________________________________________________________ CanalThread
-class CanalThread(threading.Thread):
+#___________________________________________________________________________________________________ NimbleThread
+class NimbleThread(threading.Thread):
     """A class for..."""
 
 #===================================================================================================

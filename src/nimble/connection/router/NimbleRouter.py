@@ -1,17 +1,17 @@
-# CanalHandler.py
-# (C)2012 http://www.threeaddone.com
+# NimbleRouter.py
+# (C)2012 http://www.ThreeAddOne.com
 # Scott Ernst
 
 import asyncore
 
-from canal.CanalEnvironment import CanalEnvironment
-from canal.data.CanalData import CanalData
-from canal.data.CanalResponseData import CanalResponseData
-from canal.data.enum.DataErrorEnum import DataErrorEnum
-from canal.data.enum.DataKindEnum import DataKindEnum
+from nimble.NimbleEnvironment import NimbleEnvironment
+from nimble.data.NimbleData import NimbleData
+from nimble.data.NimbleResponseData import NimbleResponseData
+from nimble.data.enum.DataErrorEnum import DataErrorEnum
+from nimble.data.enum.DataKindEnum import DataKindEnum
 
-#___________________________________________________________________________________________________ CanalRouter
-class CanalRouter(asyncore.dispatcher_with_send):
+#___________________________________________________________________________________________________ NimbleRouter
+class NimbleRouter(asyncore.dispatcher_with_send):
 
 #===================================================================================================
 #                                                                                     P U B L I C
@@ -26,16 +26,16 @@ class CanalRouter(asyncore.dispatcher_with_send):
         if not message:
             return
 
-        logLevel = CanalEnvironment.getServerLogLevel()
+        logLevel = NimbleEnvironment.getServerLogLevel()
 
         try:
             data = self._parseData(message, logLevel)
         except Exception, err:
             self._sendResponse(
-                CanalResponseData(
+                NimbleResponseData(
                     kind=DataKindEnum.GENERAL,
                     error=DataErrorEnum.PARSE_FAILURE,
-                    response=CanalResponseData.FAILED_RESPONSE,
+                    response=NimbleResponseData.FAILED_RESPONSE,
                     payload={'error':str(err)}
                 ),
                 logLevel
@@ -43,18 +43,18 @@ class CanalRouter(asyncore.dispatcher_with_send):
             return
 
         if data.kind == DataKindEnum.PING:
-            reply = CanalResponseData(
+            reply = NimbleResponseData(
                 kind=DataKindEnum.PING,
-                response=CanalResponseData.SUCCESS_RESPONSE
+                response=NimbleResponseData.SUCCESS_RESPONSE
             )
         else:
             reply = self._routeMessage(data)
 
         if not reply:
-            reply = CanalResponseData(
+            reply = NimbleResponseData(
                 kind=DataKindEnum.GENERAL,
                 error=DataErrorEnum.UNRECOGNIZED_REQUEST,
-                response=CanalResponseData.FAILED_RESPONSE
+                response=NimbleResponseData.FAILED_RESPONSE
             )
 
         self._sendResponse(reply, logLevel)
@@ -80,7 +80,7 @@ class CanalRouter(asyncore.dispatcher_with_send):
 
 #___________________________________________________________________________________________________ _parseData
     def _parseData(self, message, logLevel):
-        cd = CanalData.fromMessage(message)
+        cd = NimbleData.fromMessage(message)
         self._logData(cd, logLevel)
         return cd
 

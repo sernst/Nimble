@@ -1,19 +1,19 @@
 # test_externalServer.py
-# (C)2012 http://www.threeaddone.com
+# (C)2012 http://www.ThreeAddOne.com
 # Scott Ernst
 
 import time
-import canal
+import nimble
 
-canal.startCanal()
-canal.echoServerStatus()
+nimble.startServer()
+nimble.echoServerStatus()
 
-from canal.CanalEnvironment import CanalEnvironment
-print 'IN MAYA:', CanalEnvironment.inMaya()
+from nimble.NimbleEnvironment import NimbleEnvironment
+print 'IN MAYA:', NimbleEnvironment.inMaya()
 
 time.sleep(5)
 
-canal.stopCanal()
+nimble.stopServer()
 
 print 'Test complete'
 

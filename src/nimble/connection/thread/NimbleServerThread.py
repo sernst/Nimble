@@ -1,15 +1,15 @@
-# CanalServerThread.py
-# (C)2012 http://www.threeAddOne.com
+# NimbleServerThread.py
+# (C)2012 http://www.ThreeAddOne.com
 # Scott Ernst
 
 import asyncore
 
-from canal.CanalEnvironment import CanalEnvironment
-from canal.connection.CanalServer import CanalServer
-from canal.connection.thread.CanalThread import CanalThread
+from nimble.NimbleEnvironment import NimbleEnvironment
+from nimble.connection.NimbleServer import NimbleServer
+from nimble.connection.thread.NimbleThread import NimbleThread
 
-#___________________________________________________________________________________________________ CanalServerThread
-class CanalServerThread(CanalThread):
+#___________________________________________________________________________________________________ NimbleServerThread
+class NimbleServerThread(NimbleThread):
     """A class for..."""
 
 #===================================================================================================
@@ -18,12 +18,12 @@ class CanalServerThread(CanalThread):
     _ACTIVATING    = False
     _SERVER_THREAD = None
 
-    _ACTIVE_MESSAGE = 'CANAL Server is now active'
+    _ACTIVE_MESSAGE = 'Nimble server is now active'
 
 #___________________________________________________________________________________________________ __init__
     def __init__(self, router =None, **kwargs):
         self.__class__._ACTIVATING = True
-        CanalThread.__init__(self, **kwargs)
+        NimbleThread.__init__(self, **kwargs)
         self._server = None
         self._router = router
 
@@ -58,9 +58,9 @@ class CanalServerThread(CanalThread):
 
 #___________________________________________________________________________________________________ _runImpl
     def _runImpl(self):
-        self._server = CanalServer(router=self._router)
+        self._server = NimbleServer(router=self._router)
         self.__class__._SERVER_THREAD = self
         self.__class__._ACTIVATING    = False
 
-        CanalEnvironment.log(CanalServerThread._ACTIVE_MESSAGE)
+        NimbleEnvironment.log(NimbleServerThread._ACTIVE_MESSAGE)
         asyncore.loop()

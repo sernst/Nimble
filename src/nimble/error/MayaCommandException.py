@@ -1,5 +1,5 @@
 # MayaCommandException.py
-# Vizme, Inc. (C)2012
+# (C)2012 http://www.ThreeAddOne.com
 # Scott Ernst
 
 #___________________________________________________________________________________________________ MayaCommandException

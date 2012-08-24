@@ -1,4 +1,4 @@
-Canal
-=====
+Nimble
+======
 
-Communication bridge for remote Python in Maya
+A remote communication bridge between independent Python interpreters and Maya.

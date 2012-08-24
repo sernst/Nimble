@@ -1,11 +1,11 @@
-# CanalResponseData.py
-# (C)2012 http://www.threeaddone.com
+# NimbleResponseData.py
+# (C)2012 http://www.ThreeAddOne.com
 # Scott Ernst
 
-from canal.data.CanalData import CanalData
+from nimble.data.NimbleData import NimbleData
 
-#___________________________________________________________________________________________________ CanalResponseData
-class CanalResponseData(CanalData):
+#___________________________________________________________________________________________________ NimbleResponseData
+class NimbleResponseData(NimbleData):
     """A class for..."""
 
 #===================================================================================================
@@ -16,12 +16,12 @@ class CanalResponseData(CanalData):
 
 #___________________________________________________________________________________________________ __init__
     def __init__(self, **kwargs):
-        """Creates a new instance of CanalResponseData."""
-        CanalData.__init__(self, **kwargs)
+        """Creates a new instance of NimbleResponseData."""
+        NimbleData.__init__(self, **kwargs)
         if 'response' in kwargs:
             self._response = kwargs['response']
         else:
-            self._response = CanalResponseData.SUCCESS_RESPONSE
+            self._response = NimbleResponseData.SUCCESS_RESPONSE
 
         if 'error' in kwargs:
             self._error = kwargs['error']
@@ -34,7 +34,7 @@ class CanalResponseData(CanalData):
 #___________________________________________________________________________________________________ GS: success
     @property
     def success(self):
-        return self._response == CanalResponseData.SUCCESS_RESPONSE
+        return self._response == NimbleResponseData.SUCCESS_RESPONSE
 
 #___________________________________________________________________________________________________ GS: response
     @property
@@ -58,7 +58,7 @@ class CanalResponseData(CanalData):
 #___________________________________________________________________________________________________ _createMessage
     def _createMessage(self):
         """Doc..."""
-        d = CanalData._createMessage(self)
+        d = NimbleData._createMessage(self)
         d['response'] = self.response
 
         if self.error:
