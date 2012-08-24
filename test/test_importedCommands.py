@@ -10,11 +10,11 @@ from nimble.mayan.commands.commandTests import functionCube
 #---------------------------------------------------------------------------------------------------
 # Locally imported tests
 
-HelloCommandTest.staticCube(x=20, height=5)
-HelloCommandTest.classyCube(x=20, height=5)
-HelloCommandTest()(x=20, height=5)
-HelloCommandTest().instanceCube(x=20, height=5)
-functionCube(x=20, height=5)
+print 'Local static:', HelloCommandTest.staticCube(x=20, height=5)
+print 'Local class:', HelloCommandTest.classyCube(x=20, height=5)
+print 'Local called:', HelloCommandTest()(x=20, height=5)
+print 'Local instance:', HelloCommandTest().instanceCube(x=20, height=5)
+print 'Local function:', functionCube(x=20, height=5)
 
 #---------------------------------------------------------------------------------------------------
 # Remotely imported tests
