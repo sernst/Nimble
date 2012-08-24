@@ -9,7 +9,7 @@ from nimble.mayan.commands.commandTests import functionCube
 
 #---------------------------------------------------------------------------------------------------
 # Locally imported tests
-
+#-----------------------
 print 'Local static:', HelloCommandTest.staticCube(x=20, height=5)
 print 'Local class:', HelloCommandTest.classyCube(x=20, height=5)
 print 'Local called:', HelloCommandTest()(x=20, height=5)
@@ -18,6 +18,7 @@ print 'Local function:', functionCube(x=20, height=5)
 
 #---------------------------------------------------------------------------------------------------
 # Remotely imported tests
+#------------------------
 conn = nimble.getConnection()
 
 print 'Static result: ', conn.command(
