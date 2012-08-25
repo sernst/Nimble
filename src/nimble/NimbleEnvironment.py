@@ -2,6 +2,8 @@
 # (C)2012 http://www.ThreeAddOne.com
 # Scott Ernst
 
+import threading
+
 #___________________________________________________________________________________________________ NimbleEnvironment
 class NimbleEnvironment(object):
     """A class for..."""
@@ -36,7 +38,7 @@ class NimbleEnvironment(object):
 #___________________________________________________________________________________________________ log
     @classmethod
     def log(cls, message):
-        if cls.inMaya():
+        if cls.inMaya() and not threading.currentThread().name.lower() == 'mainthread':
             cls._mayaUtils.executeInMainThreadWithResult(cls._logMessage, message)
         else:
             cls._logMessage(message)

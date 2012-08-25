@@ -13,7 +13,9 @@ from nimble.mayan.commands.commandTests import functionCube
 print 'Local static:', HelloCommandTest.staticCube(x=20, height=5)
 print 'Local class:', HelloCommandTest.classyCube(x=20, height=5)
 print 'Local called:', HelloCommandTest()(x=20, height=5)
+print 'Local called:', HelloCommandTest(width=2, name='constructorCalledCube')(x=25, height=5)
 print 'Local instance:', HelloCommandTest().instanceCube(x=20, height=5)
+print 'Local instance:', HelloCommandTest(width=2, name='constructorInstanceCube').instanceCube(x=25, height=5)
 print 'Local function:', functionCube(x=20, height=5)
 
 #---------------------------------------------------------------------------------------------------
@@ -39,9 +41,30 @@ print 'Called result: ', conn.command(
     height=5
 )
 
+print 'Constructor Called result: ', conn.command(
+    CommandImport(
+        'HelloCommandTest',
+        'nimble.mayan.commands.commandTests',
+        constructorKwargs={'width':2, 'name':'constructorCalledCube'}
+    ),
+    x=-25,
+    height=5
+)
+
 print 'Instance result: ', conn.command(
     CommandImport('HelloCommandTest', 'nimble.mayan.commands.commandTests', 'instanceCube'),
     x=-20,
+    height=5
+)
+
+print 'Instance result: ', conn.command(
+    CommandImport(
+        'HelloCommandTest',
+        'nimble.mayan.commands.commandTests',
+        'instanceCube',
+        constructorKwargs={'width':2, 'name':'constructorInstanceCube'}
+    ),
+    x=-25,
     height=5
 )
 

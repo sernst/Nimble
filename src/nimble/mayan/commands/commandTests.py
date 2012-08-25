@@ -2,11 +2,18 @@
 # (C)2012 http://www.ThreeAddOne.com
 # Scott Ernst
 
+import nimble
 from nimble import cmds
 
 #___________________________________________________________________________________________________ HelloCommandTest
 class HelloCommandTest(object):
     """A class for..."""
+
+#___________________________________________________________________________________________________ __init__
+    def __init__(self, width =1, name =None):
+        print 'CONSTRUCTED: [width: %s], [name: %s]' % (str(width), str(name))
+        self._width = width
+        self._name  = name
 
 #===================================================================================================
 #                                                                                     P U B L I C
@@ -14,9 +21,10 @@ class HelloCommandTest(object):
 #___________________________________________________________________________________________________ instanceCube
     def instanceCube(self, *args, **kwargs):
         """Doc..."""
+        name   = self._name if self._name else 'instanceCube'
         height = kwargs['height'] if 'height' in kwargs else 2
         x      = kwargs['x'] if 'x' in kwargs else 0
-        res    = cmds.polyCube(name='instanceCube', height=height)
+        res    = cmds.polyCube(name=name, height=height, width=self._width)
         cmds.move(x, 10, 0, res[0])
         return res
 
@@ -45,9 +53,10 @@ class HelloCommandTest(object):
 
 #___________________________________________________________________________________________________ __call__
     def __call__(self, *args, **kwargs):
+        name   = self._name if self._name else 'calledCube'
         height = kwargs['height'] if 'height' in kwargs else 2
         x      = kwargs['x'] if 'x' in kwargs else 0
-        res    = cmds.polyCube(name='calledCube', height=height)
+        res    = cmds.polyCube(name=name, height=height, width=self._width)
         cmds.move(x, 40, 0, res[0])
         return res
 

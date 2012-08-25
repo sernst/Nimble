@@ -7,6 +7,7 @@ import inspect
 import maya.cmds as mc
 import maya.utils as mu
 
+import nimble
 from nimble.connection.router.NimbleRouter import NimbleRouter
 from nimble.data.NimbleResponseData import NimbleResponseData
 from nimble.data.enum.DataErrorEnum import DataErrorEnum
@@ -84,9 +85,9 @@ class MayaRouter(NimbleRouter):
             if method:
                 targetObject = getattr(Target, method)
                 if inspect.ismethod(targetObject) and targetObject.__self__ is None:
-                    targetObject = getattr(Target(), method)
+                    targetObject = getattr(self._instantiateClass(Target, cmd), method)
             elif inspect.isclass(Target):
-                targetObject = Target()
+                targetObject = self._instantiateClass(Target, cmd)
             else:
                 targetObject = Target
 
@@ -102,6 +103,25 @@ class MayaRouter(NimbleRouter):
                 response=NimbleResponseData.FAILED_RESPONSE,
                 error=str(err)
             )
+
+#___________________________________________________________________________________________________ _instantiateClass
+    def _instantiateClass(self, Target, command):
+        k       = 'constructorArgs'
+        conArgs = command[k] if k in command else None
+
+        k         = 'constructorKwargs'
+        conKwargs = command[k] if k in command else None
+
+        if conArgs and conKwargs:
+            targetObject = Target(*conArgs, **DictUtils.cleanDictKeys(conKwargs))
+        elif conArgs:
+            targetObject = Target(*conArgs)
+        elif conKwargs:
+            targetObject = Target(**DictUtils.cleanDictKeys(conKwargs))
+        else:
+            targetObject = Target()
+
+        return targetObject
 
 #___________________________________________________________________________________________________ _executeMayaCommand
     def _executeMayaCommand(self, payload):

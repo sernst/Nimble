@@ -126,6 +126,10 @@ def getConnection(inMaya =None, forceCreate =False):
 # Convenience access to the ImportedCommand class.
 CommandImport = ImportedCommand
 
+#___________________________________________________________________________________________________ log
+# Convenience access to the nimble environment logger.
+log = NimbleEnvironment.log
+
 #___________________________________________________________________________________________________ cmds
 # Convenience access of the environmental Maya commands
 cmds = None

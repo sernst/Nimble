@@ -10,11 +10,21 @@ class ImportedCommand(object):
 #                                                                                       C L A S S
 
 #___________________________________________________________________________________________________ __init__
-    def __init__(self, target, module =None, method =None):
+    def __init__(self, target, module =None, method =None, **kwargs):
         """Creates a new instance of ImportedCommand."""
         self._target = target
         self._module = module
         self._method = method
+
+        if 'constructorArgs' in kwargs:
+            self._constructorArgs = kwargs['constructorArgs']
+        else:
+            self._constructorArgs = None
+
+        if 'constructorKwargs' in kwargs:
+            self._constructorKwargs = kwargs['constructorKwargs']
+        else:
+            self._constructorKwargs = None
 
 #===================================================================================================
 #                                                                                   G E T / S E T
@@ -43,6 +53,22 @@ class ImportedCommand(object):
     def method(self, value):
         self._method = value
 
+#___________________________________________________________________________________________________ GS: constructorArgs
+    @property
+    def constructorArgs(self):
+        return self._constructorArgs
+    @constructorArgs.setter
+    def constructorArgs(self, value):
+        self._constructorArgs = value
+
+#___________________________________________________________________________________________________ GS: constructorKwargs
+    @property
+    def constructorKwargs(self):
+        return self._constructorKwargs
+    @constructorKwargs.setter
+    def constructorKwargs(self, value):
+        self._constructorKwargs = value
+
 #===================================================================================================
 #                                                                                     P U B L I C
 
@@ -55,6 +81,10 @@ class ImportedCommand(object):
             d['module'] = self._module
         if self._method:
             d['method'] = self._method
+        if self._constructorArgs:
+            d['constructorArgs'] = self._constructorArgs
+        if self._constructorKwargs:
+            d['constructorKwargs'] = self._constructorKwargs
 
         return d
 
