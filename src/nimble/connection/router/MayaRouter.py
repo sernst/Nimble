@@ -7,7 +7,6 @@ import inspect
 import maya.cmds as mc
 import maya.utils as mu
 
-import nimble
 from nimble.connection.router.NimbleRouter import NimbleRouter
 from nimble.data.NimbleResponseData import NimbleResponseData
 from nimble.data.enum.DataErrorEnum import DataErrorEnum
