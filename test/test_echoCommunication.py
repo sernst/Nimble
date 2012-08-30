@@ -4,8 +4,15 @@
 
 import nimble
 
+print 100*'-' + '\n', 'TESTING CONNECTION [PING]:'
 conn = nimble.getConnection()
-res  = conn.ping('This is a test.')
+print conn.ping('This is a test.')
 
-print 'Connection complete.'
-print 'Result:', res
+print 100*'-' + '\n', 'TESTING LONG REQUEST:'
+conn = nimble.getConnection()
+message = 100*'a' + '\n'
+print conn.ping(10*message)
+
+print 100*'-' + '\n', 'TESTING LONG RESPONSE:'
+print nimble.cmds.ls()
+

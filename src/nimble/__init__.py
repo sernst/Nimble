@@ -142,6 +142,8 @@ else:
 #___________________________________________________________________________________________________ EVENT HANDLER: closeConnectionPool
 # Cleans up the active socket connection pool on close to prevent communication errors in the
 # NimbleServer routers.
-atexit.register(
-    NimbleConnection.closeConnectionPool
-)
+def _handleExit():
+    NimbleConnection.closeConnectionPool()
+    stopServer()
+
+atexit.register(_handleExit)

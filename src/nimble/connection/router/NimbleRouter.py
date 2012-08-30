@@ -18,9 +18,14 @@ class NimbleRouter(asyncore.dispatcher_with_send):
 
 #___________________________________________________________________________________________________ handle_read
     def handle_read(self):
-        try:
-            message  = self.recv(8192)
-        except Exception, err:
+        message = u''
+        while True:
+            try:
+                message += self.recv(8192)
+            except Exception, err:
+                break
+
+        if not message:
             return
 
         if not message:
@@ -72,7 +77,12 @@ class NimbleRouter(asyncore.dispatcher_with_send):
 #___________________________________________________________________________________________________ _sendResponse
     def _sendResponse(self, response, logLevel):
         self._logData(response, logLevel)
-        self.send(response.serialize() + '\n')
+        r = response.serialize() + '\n'
+        index = 0
+        while index < len(r):
+            self.send(r[index:index+200])
+            index += 200
+        self.close()
 
 #___________________________________________________________________________________________________ _routeMessage
     def _routeMessage(self, data):

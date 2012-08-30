@@ -160,11 +160,22 @@ class NimbleConnection(object):
     def _send(self, nimbleData):
         """Doc..."""
         try:
+            self.open()
             self._socket.sendall(nimbleData.serialize())
-            message = self._socket.recv(4096)
+            message = u''
+            while True:
+                try:
+                    chunk = self._socket.recv(8192)
+                    if not chunk:
+                        break
+                    message += chunk
+                except Exception, err:
+                    break
+            self.close()
         except Exception, err:
             print 'Nimble communication failure.'
             print err
+            self.close()
             return None
 
         try:

@@ -66,6 +66,9 @@ class NimbleData(object):
 #___________________________________________________________________________________________________ fromMessage
     @classmethod
     def fromMessage(cls, message):
+        if not message:
+            return None
+
         try:
             data   = json.loads(message.replace(NimbleData._NEWLINE_ESCAPE, '\n').strip())
         except Exception, err:
