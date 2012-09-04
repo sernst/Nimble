@@ -8,6 +8,8 @@ import maya.cmds as mc
 import maya.utils as mu
 
 from nimble.connection.router.NimbleRouter import NimbleRouter
+from nimble.connection.router.runExec import runMelExec
+from nimble.connection.router.runExec import runPythonExec
 from nimble.data.NimbleResponseData import NimbleResponseData
 from nimble.data.enum.DataErrorEnum import DataErrorEnum
 from nimble.data.enum.DataKindEnum import DataKindEnum
@@ -24,6 +26,10 @@ class MayaRouter(NimbleRouter):
     def _routeMessage(self, data):
 
         result = None
+        if data.kind == DataKindEnum.MEL_SCRIPT:
+            result = mu.executeInMainThreadWithResult(runMelExec, data.payload['script'])
+        elif data.kind == DataKindEnum.PYTHON_SCRIPT:
+            result = mu.executeInMainThreadWithResult(runPythonExec, data.payload['script'])
         if data.kind == DataKindEnum.MAYA_COMMAND:
             result = mu.executeInMainThreadWithResult(self._executeMayaCommand, data.payload)
         elif data.kind == DataKindEnum.COMMAND:

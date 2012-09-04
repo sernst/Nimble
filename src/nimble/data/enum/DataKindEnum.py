@@ -12,6 +12,12 @@ class DataKindEnum(object):
 
     GENERAL         = 'general'
 
+    MAYA_COMMAND    = 'maya_command'
+
+    MEL_SCRIPT      = 'mel_script'
+
     PING            = 'ping'
 
-    MAYA_COMMAND    = 'maya_command'
+    PYTHON_SCRIPT   = 'python_script'
+
+

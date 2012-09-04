@@ -64,6 +64,20 @@ class NimbleConnection(object):
         """Doc..."""
         return self._send(NimbleData(kind=DataKindEnum.PING, payload={'msg':message}))
 
+#___________________________________________________________________________________________________ runMelScript
+    def runMelScript(self, script):
+        return self._send(NimbleData(
+            kind=DataKindEnum.MEL_SCRIPT,
+            payload={'script':script}
+        ))
+
+#___________________________________________________________________________________________________ runPythonScript
+    def runPythonScript(self, script):
+        return self._send(NimbleData(
+            kind=DataKindEnum.PYTHON_SCRIPT,
+            payload={'script':script}
+        ))
+
 #___________________________________________________________________________________________________ maya
     def maya(self, command, *args, **kwargs):
         result = self.runMayaCommand(command, *args, **kwargs)
