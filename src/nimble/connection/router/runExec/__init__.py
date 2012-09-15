@@ -16,11 +16,11 @@ def runMelExec(script):
 
     try:
         import maya.mel as mm
-        mm.eval(script)
+        result = mm.eval(script)
     except Exception, err:
         from nimble.data.NimbleResponseData import NimbleResponseData
         from nimble.data.enum.DataKindEnum import DataKindEnum
-        success = NimbleResponseData(
+        result = NimbleResponseData(
             kind=DataKindEnum.MEL_SCRIPT,
             response=NimbleResponseData.FAILED_RESPONSE,
             error=str(err)
@@ -31,7 +31,7 @@ def runMelExec(script):
     except Exception, err:
         return False
 
-    return success
+    return result
 
 #___________________________________________________________________________________________________ runPythonExec
 def runPythonExec(script):
