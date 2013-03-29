@@ -1,5 +1,5 @@
 # DictUtils.py
-# (C)2012 http://www.ThreeAddOne.com
+# Vizme, Inc. (C)2012
 # Scott Ernst
 
 import sys
@@ -28,4 +28,32 @@ class DictUtils(object):
 
         return out
 
+#___________________________________________________________________________________________________ compare
+    @classmethod
+    def compare(cls, a, b):
+        if a is None or b is None:
+            return False
 
+        if len(a.keys()) != len(b.keys()):
+            return False
+
+        for name, values in a.iteritems():
+            if name not in b:
+                return False
+
+            # Compare dict values
+            if isinstance(value, dict):
+                if isinstance(b[name], dict):
+                    if not cls.compare(value, b[name]):
+                        return False
+
+            # Compare list and tuples
+            if isinstance(value, list) or isinstance(value, tuple):
+                from vmi.util.list.ListUtils import ListUtils
+                if not ListUtils.compare(value, b[name]):
+                    return False
+
+            if value != b[name]:
+                return False
+
+        return True
