@@ -1,7 +1,9 @@
 # NimbleEnvironment.py
-# (C)2012 http://www.ThreeAddOne.com
+# (C)2012-2013 http://www.ThreeAddOne.com
 # Scott Ernst
 
+import sys
+import re
 import threading
 
 #___________________________________________________________________________________________________ NimbleEnvironment
@@ -26,13 +28,17 @@ class NimbleEnvironment(object):
         if cls._inMaya is not None:
             return cls._inMaya
 
-        try:
-            import maya.utils as mu
-            cls._mayaUtils = mu
-            cls._inMaya    = True
-        except Exception, err:
-            cls._inMaya = False
+        pattern = re.compile('[\\/]+Maya20[0-9]*[\\/]+Python')
+        if pattern.search(sys.prefix):
+            try:
+                from maya import utils as mu
+                cls._mayaUtils = mu
+                cls._inMaya = True
+            except Exception, err:
+                cls._inMaya = False
+            return cls._inMaya
 
+        cls._inMaya = False
         return cls._inMaya
 
 #___________________________________________________________________________________________________ log
