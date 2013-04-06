@@ -6,6 +6,7 @@ import atexit
 
 from nimble.NimbleEnvironment import NimbleEnvironment
 from nimble.connection.NimbleConnection import NimbleConnection
+from nimble.connection.NimbleConnectionWrapper import NimbleConnectionWrapper
 from nimble.connection.support.ImportedCommand import ImportedCommand
 from nimble.connection.thread.NimbleServerThread import NimbleServerThread
 
@@ -132,12 +133,7 @@ log = NimbleEnvironment.log
 
 #___________________________________________________________________________________________________ cmds
 # Convenience access of the environmental Maya commands
-cmds = None
-if NimbleEnvironment.inMaya():
-    import maya.cmds as mc
-    cmds = mc
-else:
-    cmds = getConnection().mayaCommands
+cmds = NimbleConnectionWrapper()
 
 #___________________________________________________________________________________________________ EVENT HANDLER: closeConnectionPool
 # Cleans up the active socket connection pool on close to prevent communication errors in the
