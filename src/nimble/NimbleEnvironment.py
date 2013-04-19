@@ -3,6 +3,7 @@
 # Scott Ernst
 
 import sys
+import os
 import re
 import threading
 
@@ -14,8 +15,11 @@ class NimbleEnvironment(object):
 #                                                                                       C L A S S
 
     _inMaya       = None
-    _mayaPort     = 8120
-    _externalPort = 8121
+    # _mayaPort     = 8120
+    # _externalPort = 8121
+    _mayaPort     = 7800
+    _externalPort = 7801
+
     _logLevel     = 0
     _mayaUtils    = None
 
@@ -28,7 +32,10 @@ class NimbleEnvironment(object):
         if cls._inMaya is not None:
             return cls._inMaya
 
-        pattern = re.compile('[\\/]+Maya20[0-9]*[\\/]+Python')
+        if os.name == 'posix':
+            pattern = re.compile('/(M|m)aya20[0-9]*/Maya.app')
+        else:
+            pattern = re.compile('[\\/]+(M|m)aya20[0-9]*[\\/]+Python')
         if pattern.search(sys.prefix):
             try:
                 from maya import utils as mu

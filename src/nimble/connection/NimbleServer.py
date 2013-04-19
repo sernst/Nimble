@@ -20,10 +20,15 @@ class NimbleServer(asyncore.dispatcher):
     def __init__(self, router =None):
         asyncore.dispatcher.__init__(self)
 
-        self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.set_reuse_addr()
-        self.bind(('localhost', NimbleEnvironment.getServerPort()))
-        self.listen(5)
+        try:
+            self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.set_reuse_addr()
+            self.bind(('localhost', NimbleEnvironment.getServerPort()))
+            self.listen(5)
+        except Exception, err:
+            print 'FAILED: Nimble server connection'
+            print err
+            raise
 
         if router is None:
             if NimbleEnvironment.inMaya():

@@ -139,6 +139,7 @@ class NimbleConnection(object):
             return False
 
         try:
+            print 'PORT:', NimbleEnvironment.getConnectionPort()
             target = ('localhost', NimbleEnvironment.getConnectionPort())
             self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self._socket.connect(target)
