@@ -1,5 +1,5 @@
 # MayaCommandException.py
-# (C)2012 http://www.ThreeAddOne.com
+# (C)2012-2013 http://www.ThreeAddOne.com
 # Scott Ernst
 
 #___________________________________________________________________________________________________ MayaCommandException
@@ -21,7 +21,7 @@ class MayaCommandException(Exception):
 #___________________________________________________________________________________________________ GS: response
     @property
     def response(self):
-        return None
+        return self._responseData
     @response.setter
     def response(self, value):
-        pass
+        self._responseData = value
