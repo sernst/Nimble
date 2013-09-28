@@ -1,5 +1,5 @@
 # NimbleConnection.py
-# (C)2012 http://www.ThreeAddOne.com
+# (C)2012-2013 http://www.ThreeAddOne.com
 # Scott Ernst
 
 import socket
@@ -24,8 +24,7 @@ class NimbleConnection(object):
     def __init__(self, **kwargs):
         """ Creates a new instance of NimbleConnection and opens the communication socket to the
             corresponding NimbleServer instance. NimbleEnvironment is used to determine whether the
-            connection should be to a Maya or external application NimbleServer instance.
-        """
+            connection should be to a Maya or external application NimbleServer instance. """
 
         self._active = False
         self._socket = None
@@ -42,16 +41,14 @@ class NimbleConnection(object):
         """ Specifies whether or not the NimbleConnection instance is active. When active the
             instance can communicate with its remote NimbleServer counterpart. NimbleConnection
             instances are active by default and only become inactive if they are closed after
-            which point they will have to be reopened in order to allow further communication.
-        """
+            which point they will have to be reopened in order to allow further communication. """
 
         return self._active
 
 #___________________________________________________________________________________________________ GS: mayaCommands
     @property
     def mayaCommands(self):
-        """ Access to the local or remove maya command
-        """
+        """ Access to the local or remove maya command """
         if not self._mayaCommandLink:
             self._mayaCommandLink = MayaCommandLink(connection=self)
         return self._mayaCommandLink
@@ -173,24 +170,56 @@ class NimbleConnection(object):
 #___________________________________________________________________________________________________ _send
     def _send(self, nimbleData):
         """Doc..."""
-        try:
-            self.open()
-            self._socket.sendall(nimbleData.serialize())
-            message = u''
-            while True:
-                try:
-                    chunk = self._socket.recv(8192)
-                    if not chunk:
+        message = u''
+        retry   = 3
+
+        while retry > 0:
+            try:
+                self.open()
+            except Exception, err:
+                print '[ERROR] Nimble communication failure: Unable to open connection'
+                print err
+                retry -= 1
+                if retry == 0:
+                    return None
+                continue
+
+            try:
+                self._socket.sendall(nimbleData.serialize())
+            except Exception, err:
+                print '[ERROR] Nimble communication failure: Unable to send data'
+                print err
+                self.close()
+                retry -= 1
+                if retry == 0:
+                    return None
+                continue
+
+            try:
+                message = u''
+                while True:
+                    try:
+                        chunk = self._socket.recv(8192)
+                        if not chunk:
+                            break
+                        message += chunk
+                    except Exception, err:
                         break
-                    message += chunk
-                except Exception, err:
-                    break
+
+                # Break while loop on successful reading of the result
+                break
+
+            except Exception, err:
+                print '[ERROR] Nimble communication failure: Unable to read response'
+                print err
+                self.close()
+                return None
+
+        try:
             self.close()
         except Exception, err:
-            print 'Nimble communication failure.'
+            print '[ERROR] Nimble communication failure: Unable to close connection'
             print err
-            self.close()
-            return None
 
         try:
             return NimbleData.fromMessage(message)
