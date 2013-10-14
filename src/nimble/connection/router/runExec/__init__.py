@@ -1,9 +1,10 @@
 # __init__.py
-# (C)2012 http://www.ThreeAddOne.com
+# (C)2012-2013 http://www.ThreeAddOne.com
 # Scott Ernst
 
-import nimble
 import imp
+
+import nimble
 
 #___________________________________________________________________________________________________ runMelExec
 def runMelExec(script):
@@ -11,8 +12,6 @@ def runMelExec(script):
         nimble.cmds.undoInfo(openChunk=True)
     except Exception, err:
         return False
-
-    success = True
 
     try:
         import maya.mel as mm
@@ -23,8 +22,7 @@ def runMelExec(script):
         result = NimbleResponseData(
             kind=DataKindEnum.MEL_SCRIPT,
             response=NimbleResponseData.FAILED_RESPONSE,
-            error=str(err)
-        )
+            error=str(err) )
 
     try:
         nimble.cmds.undoInfo(closeChunk=True)
@@ -40,22 +38,25 @@ def runPythonExec(script):
     except Exception, err:
         return False
 
-    success = True
     try:
         module = imp.new_module('runExecTempModule')
+
+        from nimble.NimbleEnvironment import NimbleEnvironment
+        setattr(module, NimbleEnvironment.REMOTE_RESULT_KEY, dict())
+
         exec script in module.__dict__
+        result = getattr(module, NimbleEnvironment.REMOTE_RESULT_KEY)
     except Exception, err:
         from nimble.data.NimbleResponseData import NimbleResponseData
         from nimble.data.enum.DataKindEnum import DataKindEnum
-        success = NimbleResponseData(
+        result = NimbleResponseData(
             kind=DataKindEnum.PYTHON_SCRIPT,
             response=NimbleResponseData.FAILED_RESPONSE,
-            error=str(err)
-        )
+            error=str(err) )
 
     try:
         nimble.cmds.undoInfo(closeChunk=True)
     except Exception, err:
         return False
 
-    return success
+    return result

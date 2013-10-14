@@ -10,6 +10,7 @@ from nimble.connection.support.ImportedCommand import ImportedCommand
 from nimble.data.NimbleData import NimbleData
 from nimble.data.enum.DataKindEnum import DataKindEnum
 from nimble.error.MayaCommandException import MayaCommandException
+from nimble.utils.SocketUtils import SocketUtils
 
 #___________________________________________________________________________________________________ NimbleConnection
 class NimbleConnection(object):
@@ -28,7 +29,9 @@ class NimbleConnection(object):
 
         self._active = False
         self._socket = None
-        self.open()
+
+        if not NimbleEnvironment.inMaya():
+            self.open()
 
         self._mayaCommandLink = None
 
@@ -65,15 +68,19 @@ class NimbleConnection(object):
     def runMelScript(self, script):
         return self._send(NimbleData(
             kind=DataKindEnum.MEL_SCRIPT,
-            payload={'script':script}
-        ))
+            payload={'script':script} ))
 
 #___________________________________________________________________________________________________ runPythonScript
     def runPythonScript(self, script):
         return self._send(NimbleData(
             kind=DataKindEnum.PYTHON_SCRIPT,
-            payload={'script':script}
-        ))
+            payload={'script':script} ))
+
+#___________________________________________________________________________________________________ runPythonScriptFile
+    def runPythonScriptFile(self, path):
+        return self._send(NimbleData(
+            kind=DataKindEnum.PYTHON_SCRIPT_FILE,
+            payload={'path':path} ))
 
 #___________________________________________________________________________________________________ maya
     def maya(self, command, *args, **kwargs):
@@ -81,8 +88,7 @@ class NimbleConnection(object):
         if not result or not result.success:
             raise MayaCommandException(
                 'Failed execution of Maya command: ' + str(command),
-                response=result
-            )
+                response=result)
         return result.payload['result']
 
 #___________________________________________________________________________________________________ runMayaCommand
@@ -92,9 +98,22 @@ class NimbleConnection(object):
             payload={
                 'command':str(command),
                 'kwargs':kwargs,
-                'args':args
-            }
-        ))
+                'args':args} ))
+
+#___________________________________________________________________________________________________ runMayaCommandBatch
+    def runMayaCommandBatch(self, commandList):
+        return self._send(NimbleData(
+            kind=DataKindEnum.MAYA_COMMAND_BATCH,
+            payload={'commands':commandList} ))
+
+#___________________________________________________________________________________________________ mayaBatch
+    def mayaBatch(self, commandList):
+        result = self.runMayaCommandBatch(commandList)
+        if not result or not result.success:
+            raise MayaCommandException(
+                'Failed execution during Maya command batch execution',
+                response=result)
+        return result.payload['result']
 
 #___________________________________________________________________________________________________ command
     def command(self, command, *args, **kwargs):
@@ -113,9 +132,7 @@ class NimbleConnection(object):
             payload={
                 'command':command.toDict() if isinstance(command, ImportedCommand) else str(command),
                 'kwargs':kwargs,
-                'args':args
-            }
-        ))
+                'args':args } ))
 
 #___________________________________________________________________________________________________ close
     def close(self):
@@ -185,7 +202,14 @@ class NimbleConnection(object):
                 continue
 
             try:
-                self._socket.sendall(nimbleData.serialize())
+                serialData = nimbleData.serialize()
+            except Exception, err:
+                print '[ERROR] Nimble communication failure: Unable to serialize data for transmission'
+                print err
+                return None
+
+            try:
+                SocketUtils.sendInChunks(self._socket, serialData)
             except Exception, err:
                 print '[ERROR] Nimble communication failure: Unable to send data'
                 print err
@@ -196,18 +220,11 @@ class NimbleConnection(object):
                 continue
 
             try:
-                message = u''
-                while True:
-                    try:
-                        chunk = self._socket.recv(8192)
-                        if not chunk:
-                            break
-                        message += chunk
-                    except Exception, err:
-                        break
+                message = SocketUtils.receiveInChunks(self._socket, chunkSize=200)
 
                 # Break while loop on successful reading of the result
-                break
+                if message is not None:
+                    break
 
             except Exception, err:
                 print '[ERROR] Nimble communication failure: Unable to read response'

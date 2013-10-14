@@ -14,9 +14,11 @@ class NimbleEnvironment(object):
 #===================================================================================================
 #                                                                                       C L A S S
 
+    SOCKET_CHUNK_SIZE      = 8192
+    TERMINATION_IDENTIFIER = '#@!NIMBLE_MSG_ENDS!@#'
+    REMOTE_RESULT_KEY      = '__nimbleResponse__'
+
     _inMaya       = None
-    # _mayaPort     = 8120
-    # _externalPort = 8121
     _mayaPort     = 7800
     _externalPort = 7801
 
@@ -45,7 +47,6 @@ class NimbleEnvironment(object):
                 cls._inMaya = False
             return cls._inMaya
 
-        cls._inMaya = False
         return cls._inMaya
 
 #___________________________________________________________________________________________________ log

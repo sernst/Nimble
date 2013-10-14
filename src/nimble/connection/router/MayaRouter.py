@@ -1,5 +1,5 @@
 # MayaRouter.py
-# (C)2012 http://www.ThreeAddOne.com
+# (C)2012-2013 http://www.ThreeAddOne.com
 # Scott Ernst
 
 import inspect
@@ -30,10 +30,14 @@ class MayaRouter(NimbleRouter):
             result = mu.executeInMainThreadWithResult(runMelExec, data.payload['script'])
         elif data.kind == DataKindEnum.PYTHON_SCRIPT:
             result = mu.executeInMainThreadWithResult(runPythonExec, data.payload['script'])
-        if data.kind == DataKindEnum.MAYA_COMMAND:
+        elif data.kind == DataKindEnum.MAYA_COMMAND:
             result = mu.executeInMainThreadWithResult(self._executeMayaCommand, data.payload)
+        elif data.kind == DataKindEnum.MAYA_COMMAND_BATCH:
+            result = mu.executeInMainThreadWithResult(self._executeMayaCommandBatch, data.payload)
         elif data.kind == DataKindEnum.COMMAND:
             result = mu.executeInMainThreadWithResult(self._executeCommand, data.payload)
+        elif data.kind == DataKindEnum.PYTHON_SCRIPT_FILE:
+            result = mu.executeInMainThreadWithResult(self._runPythonFile, data.payload)
 
         if result:
             if isinstance(result, NimbleResponseData):
@@ -47,8 +51,7 @@ class MayaRouter(NimbleRouter):
         return NimbleResponseData(
             kind=kind,
             response=NimbleResponseData.SUCCESS_RESPONSE,
-            payload={'result':result}
-        )
+            payload={'result':result} )
 
 #___________________________________________________________________________________________________ _executeCommand
     def _executeCommand(self, payload):
@@ -57,8 +60,7 @@ class MayaRouter(NimbleRouter):
             return NimbleResponseData(
                     kind=DataKindEnum.COMMAND,
                     response=NimbleResponseData.FAILED_RESPONSE,
-                    error=DataErrorEnum.INVALID_COMMAND
-            )
+                    error=DataErrorEnum.INVALID_COMMAND )
 
         if isinstance(cmd, basestring):
             targetObject = globals().get(cmd)
@@ -84,8 +86,7 @@ class MayaRouter(NimbleRouter):
                 return NimbleResponseData(
                     kind=DataKindEnum.COMMAND,
                     response=NimbleResponseData.FAILED_RESPONSE,
-                    error=str(err)
-                )
+                    error=str(err) )
 
             if method:
                 targetObject = getattr(Target, method)
@@ -99,15 +100,13 @@ class MayaRouter(NimbleRouter):
         try:
             result = targetObject(
                 *payload['args'],
-                **DictUtils.cleanDictKeys(payload['kwargs'])
-            )
+                **DictUtils.cleanDictKeys(payload['kwargs']) )
             return self._createReply(DataKindEnum.COMMAND, result)
         except Exception, err:
             return NimbleResponseData(
                 kind=DataKindEnum.COMMAND,
                 response=NimbleResponseData.FAILED_RESPONSE,
-                error=str(err)
-            )
+                error=str(err) )
 
 #___________________________________________________________________________________________________ _instantiateClass
     def _instantiateClass(self, Target, command):
@@ -129,25 +128,52 @@ class MayaRouter(NimbleRouter):
         return targetObject
 
 #___________________________________________________________________________________________________ _executeMayaCommand
-    def _executeMayaCommand(self, payload):
+    def _executeMayaCommand(self, payload, createReply =True):
         cmd = getattr(mc, str(payload['command']), None)
         if cmd is None:
             return NimbleResponseData(
                 kind=DataKindEnum.MAYA_COMMAND,
                 error=DataErrorEnum.UNRECOGNIZED_MAYA_COMMAND,
-                response=NimbleResponseData.FAILED_RESPONSE
-            )
+                response=NimbleResponseData.FAILED_RESPONSE )
 
         try:
             result = cmd(
                 *payload['args'],
-                **DictUtils.cleanDictKeys(payload['kwargs'])
-            )
-            return self._createReply(DataKindEnum.MAYA_COMMAND, result)
+                **DictUtils.cleanDictKeys(payload['kwargs']) )
+            if createReply:
+                return self._createReply(DataKindEnum.MAYA_COMMAND, result)
+            else:
+                return result
         except Exception, err:
             return NimbleResponseData(
                 kind=DataKindEnum.MAYA_COMMAND,
                 error=str(err),
-                response=NimbleResponseData.FAILED_RESPONSE
-            )
+                response=NimbleResponseData.FAILED_RESPONSE )
 
+#___________________________________________________________________________________________________ _executeMayaCommandBatch
+    def _executeMayaCommandBatch(self, payload):
+        out = []
+        for item in payload['commands']:
+            result = self._executeMayaCommand(item, createReply=False)
+            if not isinstance(result, NimbleResponseData):
+                out.append(result)
+            elif not result.success:
+                return result
+            else:
+                out.append(result.payload['result'])
+
+        return out
+
+#___________________________________________________________________________________________________ _runPythonFile
+    def _runPythonFile(self, payload):
+        try:
+            f      = open(payload['path'], 'r')
+            script = f.read()
+            f.close()
+        except Exception, err:
+            return NimbleResponseData(
+                kind=DataKindEnum.PYTHON_SCRIPT_FILE,
+                error=str(err),
+                response=NimbleResponseData.FAILED_RESPONSE)
+
+        return runPythonExec(script)

@@ -1,5 +1,5 @@
 # __init__.py
-# (C)2012 http://www.ThreeAddOne.com
+# (C)2012-2013 http://www.ThreeAddOne.com
 # Scott Ernst
 
 import atexit
@@ -7,8 +7,11 @@ import atexit
 from nimble.NimbleEnvironment import NimbleEnvironment
 from nimble.connection.NimbleConnection import NimbleConnection
 from nimble.connection.NimbleConnectionWrapper import NimbleConnectionWrapper
+from nimble.connection.batch.NimbleBatchCommandConnection import NimbleBatchCommandConnection
+from nimble.connection.script.RemoteScriptResponse import RemoteScriptResponse
 from nimble.connection.support.ImportedCommand import ImportedCommand
 from nimble.connection.thread.NimbleServerThread import NimbleServerThread
+from nimble.error.MayaCommandException import MayaCommandException
 
 #===================================================================================================
 #                                                                               F U N C T I O N S
@@ -119,6 +122,18 @@ def getConnection(inMaya =None, forceCreate =False):
 
     NimbleEnvironment.inMaya(override=inMaya)
     return NimbleConnection.getConnection(forceCreate=forceCreate)
+
+#___________________________________________________________________________________________________ createBatch
+def createCommandsBatch():
+    return NimbleBatchCommandConnection()
+
+#___________________________________________________________________________________________________ createRemoteResponse
+def createRemoteResponse(scriptGlobalVars):
+    return RemoteScriptResponse(scriptGlobalVars)
+
+#___________________________________________________________________________________________________ getIsRunningInMaya
+def getIsRunningInMaya():
+    return NimbleEnvironment.inMaya()
 
 #===================================================================================================
 #                                                                                     M O D U L E

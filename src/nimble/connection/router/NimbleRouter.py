@@ -1,5 +1,5 @@
 # NimbleRouter.py
-# (C)2012 http://www.ThreeAddOne.com
+# (C)2012-2013 http://www.ThreeAddOne.com
 # Scott Ernst
 
 import asyncore
@@ -9,6 +9,7 @@ from nimble.data.NimbleData import NimbleData
 from nimble.data.NimbleResponseData import NimbleResponseData
 from nimble.data.enum.DataErrorEnum import DataErrorEnum
 from nimble.data.enum.DataKindEnum import DataKindEnum
+from nimble.utils.SocketUtils import SocketUtils
 
 #___________________________________________________________________________________________________ NimbleRouter
 class NimbleRouter(asyncore.dispatcher_with_send):
@@ -18,15 +19,7 @@ class NimbleRouter(asyncore.dispatcher_with_send):
 
 #___________________________________________________________________________________________________ handle_read
     def handle_read(self):
-        message = u''
-        while True:
-            try:
-                message += self.recv(8192)
-            except Exception, err:
-                break
-
-        if not message:
-            return
+        message = SocketUtils.receiveInChunks(self)
 
         if not message:
             return
@@ -41,17 +34,14 @@ class NimbleRouter(asyncore.dispatcher_with_send):
                     kind=DataKindEnum.GENERAL,
                     error=DataErrorEnum.PARSE_FAILURE,
                     response=NimbleResponseData.FAILED_RESPONSE,
-                    payload={'error':str(err)}
-                ),
-                logLevel
-            )
+                    payload={'error':str(err)} ),
+                logLevel )
             return
 
         if data.kind == DataKindEnum.PING:
             reply = NimbleResponseData(
                 kind=DataKindEnum.PING,
-                response=NimbleResponseData.SUCCESS_RESPONSE
-            )
+                response=NimbleResponseData.SUCCESS_RESPONSE)
         else:
             reply = self._routeMessage(data)
 
@@ -59,8 +49,7 @@ class NimbleRouter(asyncore.dispatcher_with_send):
             reply = NimbleResponseData(
                 kind=DataKindEnum.GENERAL,
                 error=DataErrorEnum.UNRECOGNIZED_REQUEST,
-                response=NimbleResponseData.FAILED_RESPONSE
-            )
+                response=NimbleResponseData.FAILED_RESPONSE )
 
         self._sendResponse(reply, logLevel)
 
@@ -69,7 +58,18 @@ class NimbleRouter(asyncore.dispatcher_with_send):
 
 #___________________________________________________________________________________________________ _logData
     def _logData(self, data, logLevel):
-        if logLevel > 1:
+        if logLevel == -1:
+            return
+
+        # Assume successful for data unless the data object specifies otherwise, which only exists
+        # in certain cases
+        success = True
+        try:
+            success = data.success
+        except Exception, err:
+            pass
+
+        if logLevel > 1 or not success:
             data.echo(verbose=True, pretty=True)
         elif logLevel > 0:
             data.echo(pretty=True)
@@ -77,11 +77,7 @@ class NimbleRouter(asyncore.dispatcher_with_send):
 #___________________________________________________________________________________________________ _sendResponse
     def _sendResponse(self, response, logLevel):
         self._logData(response, logLevel)
-        r = response.serialize() + '\n'
-        index = 0
-        while index < len(r):
-            self.send(r[index:index+200])
-            index += 200
+        SocketUtils.sendInChunks(self, response.serialize(), chunkSize=200)
         self.close()
 
 #___________________________________________________________________________________________________ _routeMessage
