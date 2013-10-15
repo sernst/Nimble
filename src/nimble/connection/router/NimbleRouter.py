@@ -77,7 +77,10 @@ class NimbleRouter(asyncore.dispatcher_with_send):
 #___________________________________________________________________________________________________ _sendResponse
     def _sendResponse(self, response, logLevel):
         self._logData(response, logLevel)
-        SocketUtils.sendInChunks(self, response.serialize(), chunkSize=200)
+        SocketUtils.sendInChunks(
+            self,
+            response.serialize(),
+            chunkSize=NimbleEnvironment.SOCKET_RESPONSE_CHUNK_SIZE)
         self.close()
 
 #___________________________________________________________________________________________________ _routeMessage

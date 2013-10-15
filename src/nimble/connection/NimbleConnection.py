@@ -220,7 +220,9 @@ class NimbleConnection(object):
                 continue
 
             try:
-                message = SocketUtils.receiveInChunks(self._socket, chunkSize=200)
+                message = SocketUtils.receiveInChunks(
+                    self._socket,
+                    chunkSize=NimbleEnvironment.SOCKET_RESPONSE_CHUNK_SIZE)
 
                 # Break while loop on successful reading of the result
                 if message is not None:

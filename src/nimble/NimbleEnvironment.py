@@ -7,6 +7,8 @@ import os
 import re
 import threading
 
+from pyaid.decorators.ClassGetter import ClassGetter
+
 #___________________________________________________________________________________________________ NimbleEnvironment
 class NimbleEnvironment(object):
     """A class for..."""
@@ -25,6 +27,22 @@ class NimbleEnvironment(object):
 
     _logLevel     = 0
     _mayaUtils    = None
+
+#===================================================================================================
+#                                                                                   G E T / S E T
+
+#___________________________________________________________________________________________________ GS: SOCKET_RESPONSE_CHUNK_SIZE
+    @ClassGetter
+    def SOCKET_RESPONSE_CHUNK_SIZE(cls):
+        return 200 if cls.isWindows else cls.SOCKET_CHUNK_SIZE
+
+#___________________________________________________________________________________________________ GS: isWindows
+    @ClassGetter
+    def isWindows(cls):
+        return sys.platform.startswith('win')
+
+#===================================================================================================
+#                                                                                     P U B L I C
 
 #___________________________________________________________________________________________________ inMaya
     @classmethod
