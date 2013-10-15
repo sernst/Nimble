@@ -127,6 +127,17 @@ def getConnection(inMaya =None, forceCreate =False):
 def createCommandsBatch():
     return NimbleBatchCommandConnection()
 
+#___________________________________________________________________________________________________ getRemoteKwargs
+def getRemoteKwargs(scriptGlobalVars):
+    """ This method is used to gain access to the kwargs dictionary sent with python script
+        execution request. Under any other circumstances it just returns an empty dictionary.
+    """
+
+    out = scriptGlobalVars.get(NimbleEnvironment.REMOTE_KWARGS_KEY, None)
+    if out is None:
+        return dict()
+    return out
+
 #___________________________________________________________________________________________________ createRemoteResponse
 def createRemoteResponse(scriptGlobalVars):
     return RemoteScriptResponse(scriptGlobalVars)

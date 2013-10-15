@@ -29,7 +29,10 @@ class MayaRouter(NimbleRouter):
         if data.kind == DataKindEnum.MEL_SCRIPT:
             result = mu.executeInMainThreadWithResult(runMelExec, data.payload['script'])
         elif data.kind == DataKindEnum.PYTHON_SCRIPT:
-            result = mu.executeInMainThreadWithResult(runPythonExec, data.payload['script'])
+            result = mu.executeInMainThreadWithResult(
+                runPythonExec,
+                data.payload['script'],
+                data.payload['kwargs'])
         elif data.kind == DataKindEnum.MAYA_COMMAND:
             result = mu.executeInMainThreadWithResult(self._executeMayaCommand, data.payload)
         elif data.kind == DataKindEnum.MAYA_COMMAND_BATCH:
@@ -176,4 +179,4 @@ class MayaRouter(NimbleRouter):
                 error=str(err),
                 response=NimbleResponseData.FAILED_RESPONSE)
 
-        return runPythonExec(script)
+        return runPythonExec(script, payload['kwargs'])

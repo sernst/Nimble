@@ -16,7 +16,8 @@ class NimbleEnvironment(object):
 
     SOCKET_CHUNK_SIZE      = 8192
     TERMINATION_IDENTIFIER = '#@!NIMBLE_MSG_ENDS!@#'
-    REMOTE_RESULT_KEY      = '__nimbleResponse__'
+    REMOTE_RESULT_KEY      = '__nimbleRemoteResponse__'
+    REMOTE_KWARGS_KEY      = '__nimbleRemoteKwargs__'
 
     _inMaya       = None
     _mayaPort     = 7800

@@ -71,16 +71,16 @@ class NimbleConnection(object):
             payload={'script':script} ))
 
 #___________________________________________________________________________________________________ runPythonScript
-    def runPythonScript(self, script):
+    def runPythonScript(self, script, **kwargs):
         return self._send(NimbleData(
             kind=DataKindEnum.PYTHON_SCRIPT,
-            payload={'script':script} ))
+            payload={'script':script, 'kwargs':kwargs} ))
 
 #___________________________________________________________________________________________________ runPythonScriptFile
-    def runPythonScriptFile(self, path):
+    def runPythonScriptFile(self, path, **kwargs):
         return self._send(NimbleData(
             kind=DataKindEnum.PYTHON_SCRIPT_FILE,
-            payload={'path':path} ))
+            payload={'path':path, 'kwargs':kwargs} ))
 
 #___________________________________________________________________________________________________ maya
     def maya(self, command, *args, **kwargs):

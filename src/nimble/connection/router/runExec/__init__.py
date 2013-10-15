@@ -32,7 +32,7 @@ def runMelExec(script):
     return result
 
 #___________________________________________________________________________________________________ runPythonExec
-def runPythonExec(script):
+def runPythonExec(script, kwargs =None):
     try:
         nimble.cmds.undoInfo(openChunk=True)
     except Exception, err:
@@ -42,6 +42,7 @@ def runPythonExec(script):
         module = imp.new_module('runExecTempModule')
 
         from nimble.NimbleEnvironment import NimbleEnvironment
+        setattr(module, NimbleEnvironment.REMOTE_KWARGS_KEY, kwargs if kwargs is not None else dict())
         setattr(module, NimbleEnvironment.REMOTE_RESULT_KEY, dict())
 
         exec script in module.__dict__
