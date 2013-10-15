@@ -31,6 +31,14 @@ class NimbleResponseData(NimbleData):
 #===================================================================================================
 #                                                                                   G E T / S E T
 
+#___________________________________________________________________________________________________ GS: result
+    @property
+    def result(self):
+        try:
+            return self._payload.get('result')
+        except Exception, err:
+            return None
+
 #___________________________________________________________________________________________________ GS: success
     @property
     def success(self):
