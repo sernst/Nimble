@@ -155,6 +155,10 @@ class NimbleConnection(object):
         try:
             target = ('localhost', NimbleEnvironment.getConnectionPort())
             self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+            # Sets socket option to prevent connection being refused by TCP reconnecting
+            # to the same socket after a recent closure.
+            self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             self._socket.connect(target)
         except Exception, err:
             print 'Failed to open Nimble connection.'

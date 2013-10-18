@@ -18,18 +18,20 @@ class SocketUtils(object):
             chunkSize = NimbleEnvironment.SOCKET_CHUNK_SIZE
 
         serialData  += NimbleEnvironment.TERMINATION_IDENTIFIER
-        serialLength = len(serialData)
-        offset       = 0
-        while offset < serialLength:
-            start  = offset
-            offset = min(serialLength, start + chunkSize)
-            socket.send(serialData[start:offset])
+        socket.sendall(serialData)
+        #serialLength = len(serialData)
+        #offset       = 0
+        #while offset < serialLength:
+        #    start  = offset
+        #    offset = min(serialLength, start + chunkSize)
+        #    socket.send(serialData[start:offset])
 
 #___________________________________________________________________________________________________ receiveInChunks
     @classmethod
     def receiveInChunks(cls, socket, chunkSize =None, echo =False):
         if chunkSize is None:
             chunkSize = NimbleEnvironment.SOCKET_CHUNK_SIZE
+        chunkSize *= 2
 
         message = u''
         while True:
