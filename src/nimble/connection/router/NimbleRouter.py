@@ -85,7 +85,10 @@ class NimbleRouter(asyncore.dispatcher_with_send):
 
 #___________________________________________________________________________________________________ _routeMessage
     def _routeMessage(self, data):
-        return None
+        return NimbleResponseData(
+            kind=DataKindEnum.GENERAL,
+            error=DataErrorEnum.UNRECOGNIZED_REQUEST,
+            response=NimbleResponseData.FAILED_RESPONSE )
 
 #___________________________________________________________________________________________________ _parseData
     def _parseData(self, message, logLevel):
