@@ -11,13 +11,14 @@ try:
 except Exception, err:
     _runningInMaya = False
 
+from pyaid.dict.DictUtils import DictUtils
+
 from nimble.connection.router.NimbleRouter import NimbleRouter
 from nimble.connection.router.runExec import runMelExec
 from nimble.connection.router.runExec import runPythonExec
 from nimble.data.NimbleResponseData import NimbleResponseData
 from nimble.data.enum.DataErrorEnum import DataErrorEnum
 from nimble.data.enum.DataKindEnum import DataKindEnum
-from nimble.utils.DictUtils import DictUtils
 
 #___________________________________________________________________________________________________ MayaRouter
 class MayaRouter(NimbleRouter):
