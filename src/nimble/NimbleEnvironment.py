@@ -71,7 +71,8 @@ class NimbleEnvironment(object):
 #___________________________________________________________________________________________________ log
     @classmethod
     def log(cls, message):
-        if cls.inMaya() and not threading.currentThread().name.lower() == 'mainthread':
+        isInMaya = cls.inMaya() and cls._mayaUtils is not None
+        if isInMaya and not threading.currentThread().name.lower() == 'mainthread':
             cls._mayaUtils.executeInMainThreadWithResult(cls._logMessage, message)
         else:
             cls._logMessage(message)

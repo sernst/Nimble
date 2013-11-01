@@ -4,8 +4,12 @@
 
 import inspect
 
-import maya.cmds as mc
-import maya.utils as mu
+try:
+    import maya.cmds as mc
+    import maya.utils as mu
+    _runningInMaya = True
+except Exception, err:
+    _runningInMaya = False
 
 from nimble.connection.router.NimbleRouter import NimbleRouter
 from nimble.connection.router.runExec import runMelExec
@@ -23,7 +27,7 @@ class MayaRouter(NimbleRouter):
 #                                                                               P R O T E C T E D
 
 #___________________________________________________________________________________________________ _routeMessage
-    def _routeMessage(self, data):
+    def _routeMessageImpl(self, data):
 
         result = None
         if data.kind == DataKindEnum.MEL_SCRIPT:
@@ -34,13 +38,21 @@ class MayaRouter(NimbleRouter):
                 data.payload['script'],
                 data.payload['kwargs'])
         elif data.kind == DataKindEnum.MAYA_COMMAND:
-            result = mu.executeInMainThreadWithResult(self._executeMayaCommand, data.payload)
+            result = mu.executeInMainThreadWithResult(
+                self._executeMayaCommand,
+                data.payload)
         elif data.kind == DataKindEnum.MAYA_COMMAND_BATCH:
-            result = mu.executeInMainThreadWithResult(self._executeMayaCommandBatch, data.payload)
+            result = mu.executeInMainThreadWithResult(
+                self._executeMayaCommandBatch,
+                data.payload)
         elif data.kind == DataKindEnum.COMMAND:
-            result = mu.executeInMainThreadWithResult(self._executeCommand, data.payload)
+            result = mu.executeInMainThreadWithResult(
+                self._executeCommand,
+                data.payload)
         elif data.kind == DataKindEnum.PYTHON_SCRIPT_FILE:
-            result = mu.executeInMainThreadWithResult(self._runPythonFile, data.payload)
+            result = mu.executeInMainThreadWithResult(
+                self._runPythonFile,
+                data.payload)
 
         if result:
             if isinstance(result, NimbleResponseData):
@@ -83,8 +95,9 @@ class MayaRouter(NimbleRouter):
                 if method:
                     m = getattr(Target, method)
                     if m is None:
-                        raise Exception, '%s not found on %s. Unable to execute command.' % \
-                                         (str(method), str(target))
+                        raise Exception, \
+                            '%s not found on %s. Unable to execute command.' % \
+                            (str(method), str(target) )
             except Exception, err:
                 return NimbleResponseData(
                     kind=DataKindEnum.COMMAND,

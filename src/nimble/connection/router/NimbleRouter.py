@@ -3,6 +3,7 @@
 # Scott Ernst
 
 import asyncore
+import asynchat
 
 from nimble.NimbleEnvironment import NimbleEnvironment
 from nimble.data.NimbleData import NimbleData
@@ -12,15 +13,42 @@ from nimble.data.enum.DataKindEnum import DataKindEnum
 from nimble.utils.SocketUtils import SocketUtils
 
 #___________________________________________________________________________________________________ NimbleRouter
-class NimbleRouter(asyncore.dispatcher_with_send):
+class NimbleRouter(asynchat.async_chat):
+
+#===================================================================================================
+#                                                                                       C L A S S
+
+#___________________________________________________________________________________________________
+    def __init__(self, sock, **kwargs):
+        asynchat.async_chat.__init__(self, sock=sock)
+        self.set_terminator(NimbleEnvironment.TERMINATION_IDENTIFIER)
+        self.ibuffer         = []
+        self.obuffer         = u''
+        self._message        = None
+        self.reading_headers = True
+        self.handling        = False
 
 #===================================================================================================
 #                                                                                     P U B L I C
 
-#___________________________________________________________________________________________________ handle_read
-    def handle_read(self):
-        message = SocketUtils.receiveInChunks(self)
+#___________________________________________________________________________________________________ collect_incoming_data
+    def collect_incoming_data(self, data):
+        """Buffer the data"""
+        self.ibuffer.append(data)
 
+#___________________________________________________________________________________________________ found_terminator
+    def found_terminator(self):
+        if self.handling:
+            return
+
+        self.set_terminator(None) # connections sometimes over-send
+        self.handling = True
+        self._message = u''.join(self.ibuffer)
+        self.handle_request()
+
+#___________________________________________________________________________________________________ handle_read
+    def handle_request(self):
+        message = self._message
         if not message:
             return
 
@@ -77,18 +105,30 @@ class NimbleRouter(asyncore.dispatcher_with_send):
 #___________________________________________________________________________________________________ _sendResponse
     def _sendResponse(self, response, logLevel):
         self._logData(response, logLevel)
-        SocketUtils.sendInChunks(
-            self,
-            response.serialize(),
-            chunkSize=NimbleEnvironment.SOCKET_RESPONSE_CHUNK_SIZE)
-        self.close()
+        self.obuffer = response.serialize() + NimbleEnvironment.TERMINATION_IDENTIFIER
+        self.push(self.obuffer)
+        self.close_when_done()
 
 #___________________________________________________________________________________________________ _routeMessage
     def _routeMessage(self, data):
+        if data.kind == DataKindEnum.ECHO:
+            return NimbleResponseData(
+                kind=DataKindEnum.ECHO,
+                response=NimbleResponseData.SUCCESS_RESPONSE,
+                payload={'echo':data.payload['echo']} )
+        else:
+            result = self._routeMessageImpl(data)
+            if result is not None:
+                return result
+
         return NimbleResponseData(
             kind=DataKindEnum.GENERAL,
             error=DataErrorEnum.UNRECOGNIZED_REQUEST,
             response=NimbleResponseData.FAILED_RESPONSE )
+
+#___________________________________________________________________________________________________
+    def _routeMessageImpl(self, data):
+        return None
 
 #___________________________________________________________________________________________________ _parseData
     def _parseData(self, message, logLevel):

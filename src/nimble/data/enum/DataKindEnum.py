@@ -20,6 +20,8 @@ class DataKindEnum(object):
 
     PING                = 'ping'
 
+    ECHO                = 'echo'
+
     PYTHON_SCRIPT       = 'python_script'
 
     PYTHON_SCRIPT_FILE  = 'python_script_file'
