@@ -4,9 +4,10 @@
 
 import json
 
+from pyaid.dict.DictUtils import DictUtils
+
 from nimble.NimbleEnvironment import NimbleEnvironment
 from nimble.data.enum.DataKindEnum import DataKindEnum
-from nimble.utils.DictUtils import DictUtils
 
 #___________________________________________________________________________________________________ NimbleData
 class NimbleData(object):
