@@ -1,5 +1,5 @@
 # MayaCommandLink.py
-# (C)2012 http://www.ThreeAddOne.com
+# (C)2012-2013 http://www.ThreeAddOne.com
 # Scott Ernst
 
 import functools
@@ -23,6 +23,14 @@ class MayaCommandLink(object):
             self._commands = mc
 
 #===================================================================================================
+#                                                                                     P U B L I C
+
+#___________________________________________________________________________________________________ hasAttr
+    def hasAttr(self, attribute):
+        parts = attribute.split('.')
+        return self.attributeQuery(parts[-1], node=parts[0], exists=True)
+
+#===================================================================================================
 #                                                                               I N T R I N S I C
 
 #___________________________________________________________________________________________________ __getattr__
@@ -34,6 +42,3 @@ class MayaCommandLink(object):
             return getattr(self._commands, item)
 
         return functools.partial(self._connection.maya, item)
-
-
-

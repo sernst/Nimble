@@ -1,5 +1,5 @@
 # __init__.py
-# (C)2012-2013 http://www.ThreeAddOne.com
+# (C)2012-2014
 # Scott Ernst
 
 import atexit
@@ -12,6 +12,7 @@ from nimble.connection.script.RemoteScriptResponse import RemoteScriptResponse
 from nimble.connection.support.ImportedCommand import ImportedCommand
 from nimble.connection.thread.NimbleServerThread import NimbleServerThread
 from nimble.error.MayaCommandException import MayaCommandException
+from nimble.mayan.NimbleScriptBase import NimbleScriptBase
 
 #===================================================================================================
 #                                                                               F U N C T I O N S
