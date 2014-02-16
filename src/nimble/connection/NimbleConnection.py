@@ -1,9 +1,10 @@
 # NimbleConnection.py
-# (C)2012-2013 http://www.ThreeAddOne.com
+# (C)2012-2014
 # Scott Ernst
 
 import socket
 
+import nimble
 from nimble.NimbleEnvironment import NimbleEnvironment
 from nimble.connection.support.MayaCommandLink import MayaCommandLink
 from nimble.connection.support.ImportedCommand import ImportedCommand
@@ -197,33 +198,43 @@ class NimbleConnection(object):
         """Doc..."""
         message = u''
         retry   = 3
+        failure = None
 
         while retry > 0:
             try:
                 self.open()
             except Exception, err:
-                print '[ERROR] Nimble communication failure: Unable to open connection'
-                print err
+                failure = [
+                    '[ERROR] Nimble communication failure: Unable to open connection',
+                    err ]
                 retry -= 1
                 if retry == 0:
+                    if not nimble.quietFailure:
+                        print failure[0] + '\n  ', failure[1]
                     return None
                 continue
 
             try:
                 serialData = nimbleData.serialize()
             except Exception, err:
-                print '[ERROR] Nimble communication failure: Unable to serialize data for transmission'
-                print err
+                failure = [
+                    '[ERROR] Nimble communication failure: Unable to serialize data for transmission',
+                    err ]
+                if not nimble.quietFailure:
+                    print failure[0] + '\n  ', failure[1]
                 return None
 
             try:
                 SocketUtils.sendInChunks(self._socket, serialData)
             except Exception, err:
-                print '[ERROR] Nimble communication failure: Unable to send data'
-                print err
+                failure = [
+                    '[ERROR] Nimble communication failure: Unable to send data',
+                    err ]
                 self.close()
                 retry -= 1
                 if retry == 0:
+                    if not nimble.quietFailure:
+                        print failure[0] + '\n  ', failure[1]
                     return None
                 continue
 
@@ -237,22 +248,25 @@ class NimbleConnection(object):
                     break
 
             except Exception, err:
-                print '[ERROR] Nimble communication failure: Unable to read response'
-                print err
+                if not nimble.quietFailure:
+                    print '[ERROR] Nimble communication failure: Unable to read response'
+                    print '  ', err
                 self.close()
                 return None
 
         try:
             self.close()
         except Exception, err:
-            print '[ERROR] Nimble communication failure: Unable to close connection'
-            print err
+            if not nimble.quietFailure:
+                print '[ERROR] Nimble communication failure: Unable to close connection'
+                print '  ', err
 
         try:
             return NimbleData.fromMessage(message)
         except Exception, err:
-            print 'Nimble communication data failure.'
-            print err
+            if not nimble.quietFailure:
+                print 'Nimble communication data failure.'
+                print '  ', err
             return None
 
 #===================================================================================================

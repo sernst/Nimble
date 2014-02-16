@@ -151,6 +151,10 @@ def getIsRunningInMaya():
 #                                                                                     M O D U L E
 
 #___________________________________________________________________________________________________ CommandImport
+# Specifies whether or not communication attempt failures should die silently.
+quietFailure = False
+
+#___________________________________________________________________________________________________ CommandImport
 # Convenience access to the ImportedCommand class.
 CommandImport = ImportedCommand
 
