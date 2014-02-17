@@ -1,5 +1,5 @@
 # MayaEnvUtils.py
-# (C)2013
+# (C)2013-2014
 # Scott Ernst
 
 import os
@@ -55,31 +55,40 @@ class MayaEnvUtils(object):
         FileUtils.walkPath(root, cls._handleFindEnvFiles, out)
         return out
 
+#___________________________________________________________________________________________________ checkEnvFile
+    @classmethod
+    def checkEnvFile(cls, target):
+        """Doc..."""
+        pathSep   = OsUtils.getPerOsValue(u';', u':')
+        additions = cls._getSourcePaths()
+
+        with open(target, 'r') as f:
+            contents = f.read()
+
+        result = cls._PYTHON_PATH_PATTERN.search(contents)
+        if not result:
+            return False
+
+        paths = result.groupdict()['paths'].split(pathSep)
+        index = 0
+        for addition in additions:
+            found = False
+            for p in paths:
+                if p == addition:
+                    found = True
+                    break
+            if not found:
+                return False
+
+        return True
+
 #___________________________________________________________________________________________________ modifyEnvFile
     @classmethod
     def modifyEnvFile(cls, target, install =True, test =False):
         """Doc..."""
-        pathSep = OsUtils.getPerOsValue(u';', u':')
-
-        nimblePath = FileUtils.createPath(
-            FileUtils.getDirectoryOf(nimble.__file__),
-            '..', isDir=True, noTail=True)
-
-        pyaidPath = FileUtils.createPath(
-            FileUtils.getDirectoryOf(pyaid.__file__),
-            '..', isDir=True, noTail=True)
-
-        pyglassPath = FileUtils.createPath(
-            FileUtils.getDirectoryOf(pyglass.__file__),
-            '..', isDir=True, noTail=True)
-
+        pathSep   = OsUtils.getPerOsValue(u';', u':')
         removals  = []
-        additions = [nimblePath]
-        if not StringUtils.matches(pyaidPath, additions):
-            additions.append(pyaidPath)
-
-        if not StringUtils.matches(pyglassPath, additions):
-            additions.append(pyglassPath)
+        additions = cls._getSourcePaths()
 
         with open(target, 'r') as f:
             contents = f.read()
@@ -114,8 +123,8 @@ class MayaEnvUtils(object):
 
                 # Remove unrecognized paths that import nimble, pyaid, or pyglass
                 testPaths = [
-                    FileUtils.createPath(p, u'nimble', isDir=True),
-                    FileUtils.createPath(p, u'pyaid', isDir=True),
+                    FileUtils.createPath(p, u'nimble',  isDir=True),
+                    FileUtils.createPath(p, u'pyaid',   isDir=True),
                     FileUtils.createPath(p, u'pyglass', isDir=True) ]
                 for test in testPaths:
                     if os.path.exists(test):
@@ -136,6 +145,35 @@ class MayaEnvUtils(object):
             f.write(contents)
 
         return result
+
+#===================================================================================================
+#                                                                               P R O T E C T E D
+
+#___________________________________________________________________________________________________ _getSourcePaths
+    @classmethod
+    def _getSourcePaths(cls):
+        pathSep = OsUtils.getPerOsValue(u';', u':')
+
+        nimblePath = FileUtils.createPath(
+            FileUtils.getDirectoryOf(nimble.__file__),
+            '..', isDir=True, noTail=True)
+
+        pyaidPath = FileUtils.createPath(
+            FileUtils.getDirectoryOf(pyaid.__file__),
+            '..', isDir=True, noTail=True)
+
+        pyglassPath = FileUtils.createPath(
+            FileUtils.getDirectoryOf(pyglass.__file__),
+            '..', isDir=True, noTail=True)
+
+        additions = [nimblePath]
+        if not StringUtils.matches(pyaidPath, additions):
+            additions.append(pyaidPath)
+
+        if not StringUtils.matches(pyglassPath, additions):
+            additions.append(pyglassPath)
+
+        return additions
 
 #===================================================================================================
 #                                                                                 H A N D L E R S
