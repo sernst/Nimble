@@ -9,9 +9,9 @@ from collections import namedtuple
 import pyaid
 from pyaid.OsUtils import OsUtils
 from pyaid.file.FileUtils import FileUtils
-from pyaid.string.StringUtils import StringUtils
 
 import nimble
+from nimble.utils.MayaEnvEntry import MayaEnvEntry
 
 import pyglass
 
@@ -26,7 +26,7 @@ class MayaEnvUtils(object):
         u'MAYA_ENV_MODIFIED_RESULT_NT',
         [u'added', u'removed'])
 
-    _PYTHON_PATH_PATTERN = re.compile('PYTHONPATH=(?P<paths>[^\n\r]+)')
+    _PYTHON_PATH_PATTERN = re.compile('PYTHONPATH=(?P<paths>[^\n\r]*)')
 
 #___________________________________________________________________________________________________ locateMayaEnvFiles
     @classmethod
@@ -57,10 +57,10 @@ class MayaEnvUtils(object):
 
 #___________________________________________________________________________________________________ checkEnvFile
     @classmethod
-    def checkEnvFile(cls, target):
+    def checkEnvFile(cls, target, otherPaths =None):
         """Doc..."""
         pathSep   = OsUtils.getPerOsValue(u';', u':')
-        additions = cls._getSourcePaths()
+        additions = cls._getSourcePaths(otherPaths=otherPaths)
 
         with open(target, 'r') as f:
             contents = f.read()
@@ -70,11 +70,11 @@ class MayaEnvUtils(object):
             return False
 
         paths = result.groupdict()['paths'].split(pathSep)
-        index = 0
         for addition in additions:
             found = False
             for p in paths:
-                if p == addition:
+                p = FileUtils.cleanupPath(p, noTail=True)
+                if p == FileUtils.cleanupPath(addition.folderPath, noTail=True):
                     found = True
                     break
             if not found:
@@ -84,58 +84,66 @@ class MayaEnvUtils(object):
 
 #___________________________________________________________________________________________________ modifyEnvFile
     @classmethod
-    def modifyEnvFile(cls, target, install =True, test =False):
+    def modifyEnvFile(cls, target, install =True, test =False, otherPaths =None):
         """Doc..."""
         pathSep   = OsUtils.getPerOsValue(u';', u':')
         removals  = []
-        additions = cls._getSourcePaths()
+        entries   = cls._getSourcePaths(otherPaths=otherPaths)
+        additions = entries + []
 
         with open(target, 'r') as f:
-            contents = f.read()
+            contents = f.read().strip()
 
         result = cls._PYTHON_PATH_PATTERN.search(contents)
         if not result:
-            if install:
-                contents += (u'\n' if contents else u'') + u'PYTHONPATH=' + pathSep.join(additions)
-            else:
-                return cls.MAYA_ENV_MODIFIED_RESULT_NT([], [])
-        else:
-            paths = result.groupdict()['paths'].split(pathSep)
-            index = 0
-            while index < len(paths):
-                if not additions:
-                    break
+            if install and not test:
+                with open(target, 'w') as f:
+                    f.write(
+                        (contents + u'\n' if contents else u'') + u'PYTHONPATH='
+                        + cls._joinPathEntries(additions) )
+            return cls.MAYA_ENV_MODIFIED_RESULT_NT(additions if install else [], removals)
 
-                p = paths[index]
+        paths = result.groupdict()['paths'].strip()
+        paths = paths.split(pathSep) if paths else []
+        if not paths and not install:
+            return cls.MAYA_ENV_MODIFIED_RESULT_NT([], [])
 
-                # If path already exists don't add it again
-                if p in additions:
-                    additions.remove(p)
-                    if not install:
-                        removals.append(p)
-                        paths.remove(p)
-                    else:
-                        index += 1
-                    continue
-                elif not install:
+        index = 0
+        while index < len(paths):
+            # Stop if no more additions remain
+            if not additions:
+                break
+
+            p = FileUtils.cleanupPath(paths[index], noTail=True)
+
+            # If path already exists don't add it again
+            pathMatch = cls._hasPath(p, additions)
+            if pathMatch:
+                additions.remove(pathMatch)
+
+                # If uninstalling add to removals
+                if not install:
+                    removals.append(pathMatch)
+                    paths.remove(p)
+                else:
                     index += 1
-                    continue
-
-                # Remove unrecognized paths that import nimble, pyaid, or pyglass
-                testPaths = [
-                    FileUtils.createPath(p, u'nimble',  isDir=True),
-                    FileUtils.createPath(p, u'pyaid',   isDir=True),
-                    FileUtils.createPath(p, u'pyglass', isDir=True) ]
-                for test in testPaths:
-                    if os.path.exists(test):
-                        paths.remove(p)
-                        continue
-
+                continue
+            elif not install:
                 index += 1
+                continue
 
-            paths += additions
-            contents = contents[:result.start()] + u'PYTHONPATH=' + pathSep.join(paths) \
-                + u'\n' + contents[result.end():]
+            for entry in entries:
+                testPath = FileUtils.createPath(p, entry.rootName, noTail=True)
+                if os.path.exists(testPath):
+                    paths.remove(p)
+
+            index += 1
+
+        for entry in additions:
+            paths.append(entry.folderPath)
+
+        insertion = (u'PYTHONPATH=' + pathSep.join(paths) + u'\n') if paths else u''
+        contents  = contents[:result.start()] + insertion + contents[result.end():]
 
         result = cls.MAYA_ENV_MODIFIED_RESULT_NT(additions if install else [], removals)
         if test:
@@ -149,29 +157,43 @@ class MayaEnvUtils(object):
 #===================================================================================================
 #                                                                               P R O T E C T E D
 
+#___________________________________________________________________________________________________ _hasPath
+    @classmethod
+    def _hasPath(cls, path, entries):
+        for entry in entries:
+            if path == entry.folderPath:
+                return entry
+        return None
+
+#___________________________________________________________________________________________________ _joinPathEntries
+    @classmethod
+    def _joinPathEntries(cls, entries):
+        out = []
+        for entry in entries:
+            out.append(entry.folderPath)
+        return OsUtils.getPerOsValue(u';', u':').join(out)
+
 #___________________________________________________________________________________________________ _getSourcePaths
     @classmethod
-    def _getSourcePaths(cls):
-        pathSep = OsUtils.getPerOsValue(u';', u':')
+    def _getSourcePaths(cls, otherPaths =None):
+        nimbleEntry = MayaEnvEntry.fromRootPath(FileUtils.createPath(
+            FileUtils.getDirectoryOf(nimble.__file__), noTail=True) )
 
-        nimblePath = FileUtils.createPath(
-            FileUtils.getDirectoryOf(nimble.__file__),
-            '..', isDir=True, noTail=True)
+        pyaidEntry = MayaEnvEntry.fromRootPath(FileUtils.createPath(
+            FileUtils.getDirectoryOf(pyaid.__file__), noTail=True) )
 
-        pyaidPath = FileUtils.createPath(
-            FileUtils.getDirectoryOf(pyaid.__file__),
-            '..', isDir=True, noTail=True)
+        pyglassEntry = MayaEnvEntry.fromRootPath(FileUtils.createPath(
+            FileUtils.getDirectoryOf(pyglass.__file__), noTail=True) )
 
-        pyglassPath = FileUtils.createPath(
-            FileUtils.getDirectoryOf(pyglass.__file__),
-            '..', isDir=True, noTail=True)
+        additions = [nimbleEntry, pyaidEntry, pyglassEntry]
 
-        additions = [nimblePath]
-        if not StringUtils.matches(pyaidPath, additions):
-            additions.append(pyaidPath)
+        if not otherPaths:
+            return additions
 
-        if not StringUtils.matches(pyglassPath, additions):
-            additions.append(pyglassPath)
+        for p in otherPaths:
+            additions.append(
+                p if isinstance(p, MayaEnvEntry) else
+                MayaEnvEntry.fromRootPath(p) )
 
         return additions
 
