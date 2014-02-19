@@ -31,6 +31,21 @@ class NimbleScriptBase(object):
         """Doc..."""
         return ArgsUtils.get(name, defaultValue, self.kwargs)
 
+#___________________________________________________________________________________________________ setKwargs
+    def setKwargs(self, **kwargs):
+        """ For use when not running as a remote script. """
+        self.kwargs = kwargs
+
+#___________________________________________________________________________________________________ fetch
+    def fetch(self, key, defaultValue =None):
+        """ Qick access to fetch response values. """
+        return self.response.fetch(key, defaultValue)
+
+#___________________________________________________________________________________________________ put
+    def put(self, key, value):
+        """ Quick access to put response values. """
+        self.response.put(key, value)
+
 #===================================================================================================
 #                                                                               I N T R I N S I C
 

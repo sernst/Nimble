@@ -14,17 +14,7 @@ class SocketUtils(object):
 #___________________________________________________________________________________________________ sendInChunks
     @classmethod
     def sendInChunks(cls, socket, serialData, chunkSize =None):
-        if chunkSize is None:
-            chunkSize = NimbleEnvironment.SOCKET_CHUNK_SIZE
-
-        serialData  += NimbleEnvironment.TERMINATION_IDENTIFIER
-        socket.sendall(serialData)
-        #serialLength = len(serialData)
-        #offset       = 0
-        #while offset < serialLength:
-        #    start  = offset
-        #    offset = min(serialLength, start + chunkSize)
-        #    socket.send(serialData[start:offset])
+        socket.sendall(serialData + NimbleEnvironment.TERMINATION_IDENTIFIER)
 
 #___________________________________________________________________________________________________ receiveInChunks
     @classmethod
@@ -33,22 +23,23 @@ class SocketUtils(object):
             chunkSize = NimbleEnvironment.SOCKET_CHUNK_SIZE
         chunkSize *= 2
 
-        message = u''
+        message = []
         while True:
             try:
-                result   = socket.recv(chunkSize)
-                message += result
-
-                if message.endswith(NimbleEnvironment.TERMINATION_IDENTIFIER):
-                    message = message[:-len(NimbleEnvironment.TERMINATION_IDENTIFIER)]
+                result = socket.recv(chunkSize)
+                if result.endswith(NimbleEnvironment.TERMINATION_IDENTIFIER):
+                    result = result[:-len(NimbleEnvironment.TERMINATION_IDENTIFIER)]
+                    message.append(result)
                     break
 
+                message.append(result)
+
             except Exception, err:
-                if message.endswith(NimbleEnvironment.TERMINATION_IDENTIFIER):
-                    message = message[:-len(NimbleEnvironment.TERMINATION_IDENTIFIER)]
+                if message[-1].endswith(NimbleEnvironment.TERMINATION_IDENTIFIER):
+                    message[-1] = message[-1][:-len(NimbleEnvironment.TERMINATION_IDENTIFIER)]
                     break
 
         if not message:
             return None
 
-        return message
+        return u''.join(message)

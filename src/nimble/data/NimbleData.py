@@ -1,7 +1,8 @@
 # NimbleData.py
-# (C)2012 http://www.ThreeAddOne.com
+# (C)2012-2014
 # Scott Ernst
 
+import zlib
 import json
 
 from pyaid.dict.DictUtils import DictUtils
@@ -61,8 +62,13 @@ class NimbleData(object):
 #___________________________________________________________________________________________________ serialize
     def serialize(self):
         """Doc..."""
-        return json.dumps(self._createMessage()) \
+        out = json.dumps(self._createMessage()) \
             .replace('\r','').replace('\n', NimbleData._NEWLINE_ESCAPE).strip()
+        if NimbleEnvironment.ENABLE_COMPRESSION:
+            out = zlib.compress(out, 6)
+            print out
+            return out
+        return out
 
 #___________________________________________________________________________________________________ fromMessage
     @classmethod
@@ -71,7 +77,9 @@ class NimbleData(object):
             return None
 
         try:
-            data   = json.loads(message.replace(NimbleData._NEWLINE_ESCAPE, '\n').strip())
+            if NimbleEnvironment.ENABLE_COMPRESSION:
+                message = zlib.decompress(message)
+            data = json.loads(message.replace(NimbleData._NEWLINE_ESCAPE, '\n').strip())
         except Exception, err:
             print 'Invalid Nimble Data:'
             print str(message)
@@ -108,8 +116,7 @@ class NimbleData(object):
         return {
             'class':self.__class__.__name__,
             'kind':self.kind,
-            'payload':self.payload
-        }
+            'payload':self.payload }
 
 #===================================================================================================
 #                                                                               I N T R I N S I C

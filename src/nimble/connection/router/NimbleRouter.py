@@ -1,8 +1,7 @@
 # NimbleRouter.py
-# (C)2012-2013 http://www.ThreeAddOne.com
+# (C)2012-2014
 # Scott Ernst
 
-import asyncore
 import asynchat
 
 from nimble.NimbleEnvironment import NimbleEnvironment
@@ -10,7 +9,6 @@ from nimble.data.NimbleData import NimbleData
 from nimble.data.NimbleResponseData import NimbleResponseData
 from nimble.data.enum.DataErrorEnum import DataErrorEnum
 from nimble.data.enum.DataKindEnum import DataKindEnum
-from nimble.utils.SocketUtils import SocketUtils
 
 #___________________________________________________________________________________________________ NimbleRouter
 class NimbleRouter(asynchat.async_chat):
@@ -34,7 +32,8 @@ class NimbleRouter(asynchat.async_chat):
 #___________________________________________________________________________________________________ collect_incoming_data
     def collect_incoming_data(self, data):
         """Buffer the data"""
-        self.ibuffer.append(data)
+        if data:
+            self.ibuffer.append(data)
 
 #___________________________________________________________________________________________________ found_terminator
     def found_terminator(self):

@@ -1,5 +1,5 @@
 # NimbleEnvironment.py
-# (C)2012-2013 http://www.ThreeAddOne.com
+# (C)2012-2014
 # Scott Ernst
 
 import sys
@@ -16,6 +16,7 @@ class NimbleEnvironment(object):
 #===================================================================================================
 #                                                                                       C L A S S
 
+    ENABLE_COMPRESSION     = False
     SOCKET_CHUNK_SIZE      = 8192
     TERMINATION_IDENTIFIER = '#@!NIMBLE_MSG_ENDS!@#'
     REMOTE_RESULT_KEY      = '__nimbleRemoteResponse__'

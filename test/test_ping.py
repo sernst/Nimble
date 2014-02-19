@@ -5,36 +5,50 @@
 """ This ping tests the basic communication functionality of Nimble in a series of tests that
     exercise call and response behaviors of different types. """
 
-from pyaid.string.StringUtils import StringUtils
+from profilehooks import profile
 
-import nimble
+# Whether or not to echo results for display
+runSilent = True
 
-conn = nimble.getConnection()
+#___________________________________________________________________________________________________ pingTest
+@profile
+def pingTest():
 
-#---------------------------------------------------------------------------------------------------
-# PING
-#       An empty call that tests that the Nimble connection is able to complete a request and
-#       response loop and prints the response object when complete.
-result = conn.ping()
-print u'PING:', result.echo(True, True)
+    from pyaid.string.StringUtils import StringUtils
 
-#---------------------------------------------------------------------------------------------------
-# ECHO
-#       A basic call that sends an echo message, which the remote Nimble server returns in the
-#       response. Confirms that data can be set, read, and returned through the Nimble connection.
-result = conn.echo('This is a test')
-print u'ECHO:', result.echo(True, True)
+    import nimble
 
+    conn = nimble.getConnection()
 
-#---------------------------------------------------------------------------------------------------
-# LONG ECHO
-#       A repeat of the echo test, but with a very long echo message that tests the ability for the
-#       Nimble socket protocols to chunk and stream large messages without losing data. The test is
-#       also repeated numerous times to confirm that the nimble socket connection survives through
-#       high-intensity multi-stage communication.
-for i in range(100):
-    largeMessage = StringUtils.getRandomString(64000)
-    result = conn.echo(largeMessage)
-    print u'LARGE ECHO[#%s]:' % i, result.echo(True, True)
+    #-----------------------------------------------------------------------------------------------
+    # PING
+    #       An empty call that tests that the Nimble connection is able to complete a request and
+    #       response loop and prints the response object when complete.
+    result = conn.ping()
+    if not runSilent:
+        print u'PING:', result.echo(True, True)
 
-print u'\nTests Complete'
+    #-----------------------------------------------------------------------------------------------
+    # ECHO
+    #       A basic call that sends an echo message, which the remote Nimble server returns in the
+    #       response. Confirms that data can be set, read, and returned through the Nimble
+    #       connection.
+    result = conn.echo('This is a test')
+    if not runSilent:
+        print u'ECHO:', result.echo(True, True)
+
+    #-----------------------------------------------------------------------------------------------
+    # LONG ECHO
+    #       A repeat of the echo test, but with a very long echo message that tests the ability for
+    #       the Nimble socket protocols to chunk and stream large messages without losing data. The
+    #       test is also repeated numerous times to confirm that the nimble socket connection
+    #       survives through high-intensity multi-stage communication.
+    for i in range(100):
+        largeMessage = StringUtils.getRandomString(64000)
+        result = conn.echo(largeMessage)
+        if not runSilent:
+            print u'LARGE ECHO[#%s]:' % i, result.echo(True, True)
+
+    print u'\nTests Complete'
+
+pingTest()
