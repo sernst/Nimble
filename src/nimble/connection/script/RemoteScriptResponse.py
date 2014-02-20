@@ -12,7 +12,7 @@ class RemoteScriptResponse(object):
 #                                                                                       C L A S S
 
 #___________________________________________________________________________________________________ __init__
-    def __init__(self, scriptGlobalVars):
+    def __init__(self, scriptGlobalVars =None):
         """Creates a new instance of RemoteScriptResponse."""
         self._result = None
         self._scriptGlobalVars = scriptGlobalVars
@@ -23,8 +23,9 @@ class RemoteScriptResponse(object):
 #___________________________________________________________________________________________________ GS: result
     @property
     def result(self):
-        if NimbleEnvironment.REMOTE_RESULT_KEY in self._scriptGlobalVars:
-            return self._scriptGlobalVars.get(NimbleEnvironment.REMOTE_RESULT_KEY)
+        if self._scriptGlobalVars:
+            if NimbleEnvironment.REMOTE_RESULT_KEY in self._scriptGlobalVars:
+                return self._scriptGlobalVars.get(NimbleEnvironment.REMOTE_RESULT_KEY)
 
         if self._result is None:
             self._result = dict()

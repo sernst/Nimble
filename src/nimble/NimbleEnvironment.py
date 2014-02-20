@@ -7,6 +7,7 @@ import os
 import re
 import threading
 
+from pyaid.debug.Logger import Logger
 from pyaid.decorators.ClassGetter import ClassGetter
 
 #___________________________________________________________________________________________________ NimbleEnvironment
@@ -21,6 +22,8 @@ class NimbleEnvironment(object):
     TERMINATION_IDENTIFIER = '#@!NIMBLE_MSG_ENDS!@#'
     REMOTE_RESULT_KEY      = '__nimbleRemoteResponse__'
     REMOTE_KWARGS_KEY      = '__nimbleRemoteKwargs__'
+
+    logger = Logger('nimble', printOut=True)
 
     _inMaya       = None
     _mayaPort     = 7800
@@ -69,6 +72,15 @@ class NimbleEnvironment(object):
 
         return cls._inMaya
 
+#___________________________________________________________________________________________________
+    @classmethod
+    def logError(cls, *args, **kwargs):
+        isInMaya = cls.inMaya() and cls._mayaUtils is not None
+        if isInMaya and not threading.currentThread().name.lower() == 'mainthread':
+            cls._mayaUtils.executeInMainThreadWithResult(cls._logError, *args, **kwargs)
+        else:
+            cls.logger.writeError(*args, **kwargs)
+
 #___________________________________________________________________________________________________ log
     @classmethod
     def log(cls, message):
@@ -104,5 +116,10 @@ class NimbleEnvironment(object):
 
 #___________________________________________________________________________________________________ _logMessage
     @classmethod
-    def _logMessage(cls, message):
-        print message
+    def _logMessage(cls, *args, **kwargs):
+        cls.logger.write(*args, **kwargs)
+
+#___________________________________________________________________________________________________ _logError
+    @classmethod
+    def _logError(cls, *args, **kwargs):
+        cls.logger.writeError(*args, **kwargs)

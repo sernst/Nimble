@@ -4,6 +4,8 @@
 
 import atexit
 
+from pyaid.debug.Logger import Logger
+
 from nimble.NimbleEnvironment import NimbleEnvironment
 from nimble.connection.NimbleConnection import NimbleConnection
 from nimble.connection.NimbleConnectionWrapper import NimbleConnectionWrapper

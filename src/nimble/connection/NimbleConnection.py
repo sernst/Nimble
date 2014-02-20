@@ -87,6 +87,32 @@ class NimbleConnection(object):
             kind=DataKindEnum.PYTHON_SCRIPT_FILE,
             payload={'path':path, 'kwargs':kwargs} ))
 
+#___________________________________________________________________________________________________ runPythonImport
+    def runPythonImport(self, package, methodName =None, className=None, **kwargs):
+        return self._send(NimbleData(
+            kind=DataKindEnum.PYHON_IMPORT,
+            payload={'module':pacakge, 'method':methodName, 'class':className, 'kwargs':kwargs} ))
+
+#___________________________________________________________________________________________________ runPythonClass
+    def runPythonClass(self, targetClass, methodName =None, **kwargs):
+        return self._send(NimbleData(
+            kind=DataKindEnum.PYHON_IMPORT,
+            payload={
+                'module':targetClass.__module__,
+                'method':methodName,
+                'class':targetClass.__name__,
+                'kwargs':kwargs} ))
+
+#___________________________________________________________________________________________________ runPythonModule
+    def runPythonModule(self, module, methodName =None, className =None, **kwargs):
+        return self._send(NimbleData(
+            kind=DataKindEnum.PYHON_IMPORT,
+            payload={
+                'module':module.__name__,
+                'method':methodName,
+                'class':className,
+                'kwargs':kwargs} ))
+
 #___________________________________________________________________________________________________ maya
     def maya(self, command, *args, **kwargs):
         result = self.runMayaCommand(command, *args, **kwargs)

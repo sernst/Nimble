@@ -18,15 +18,9 @@ class NimbleResponseData(NimbleData):
     def __init__(self, **kwargs):
         """Creates a new instance of NimbleResponseData."""
         NimbleData.__init__(self, **kwargs)
-        if 'response' in kwargs:
-            self._response = kwargs['response']
-        else:
-            self._response = NimbleResponseData.SUCCESS_RESPONSE
 
-        if 'error' in kwargs:
-            self._error = kwargs['error']
-        else:
-            self._error = None
+        self._response = kwargs.get('response', NimbleResponseData.SUCCESS_RESPONSE)
+        self._error    = kwargs.get('error', None)
 
 #===================================================================================================
 #                                                                                   G E T / S E T

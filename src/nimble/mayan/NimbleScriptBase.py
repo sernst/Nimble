@@ -5,6 +5,7 @@
 from pyaid.ArgsUtils import ArgsUtils
 
 import nimble
+from nimble.connection.script.RemoteScriptResponse import RemoteScriptResponse
 
 #___________________________________________________________________________________________________ NimbleScriptBase
 class NimbleScriptBase(object):
@@ -14,10 +15,10 @@ class NimbleScriptBase(object):
 #                                                                                       C L A S S
 
 #___________________________________________________________________________________________________ __init__
-    def __init__(self):
+    def __init__(self, **kwargs):
         """Creates a new instance of NimbleScriptBase."""
-        self.kwargs     = nimble.getRemoteKwargs(globals())
-        self.response   = nimble.createRemoteResponse(globals())
+        self.kwargs   = kwargs
+        self.response = None
 
 #===================================================================================================
 #                                                                                     P U B L I C
@@ -25,6 +26,12 @@ class NimbleScriptBase(object):
 #___________________________________________________________________________________________________ run
     def run(self):
         pass
+
+#___________________________________________________________________________________________________ runAsNimbleScript
+    def runAsNimbleScript(self, **kwargs):
+        self.kwargs     = kwargs if kwargs else nimble.getRemoteKwargs(globals())
+        self.response   = nimble.createRemoteResponse(globals())
+        self.run()
 
 #___________________________________________________________________________________________________ getKwarg
     def getKwarg(self, name, defaultValue =None):
@@ -38,7 +45,7 @@ class NimbleScriptBase(object):
 
 #___________________________________________________________________________________________________ fetch
     def fetch(self, key, defaultValue =None):
-        """ Qick access to fetch response values. """
+        """ Quick access to fetch response values. """
         return self.response.fetch(key, defaultValue)
 
 #___________________________________________________________________________________________________ put
@@ -52,7 +59,13 @@ class NimbleScriptBase(object):
 #___________________________________________________________________________________________________ __call__
     def __call__(self, *args, **kwargs):
         """Doc..."""
+        if self.response is None:
+            self.response = RemoteScriptResponse()
+        if self.kwargs is None:
+            self.kwargs = kwargs
         self.run()
+        result = self.response.result
+        return result if result else dict()
 
 #___________________________________________________________________________________________________ __repr__
     def __repr__(self):
