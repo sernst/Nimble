@@ -26,5 +26,5 @@ class DataKindEnum(object):
 
     PYTHON_SCRIPT_FILE  = 'python_script_file'
 
-    PYHON_IMPORT        = 'python_import'
+    PYTHON_IMPORT        = 'python_import'
 

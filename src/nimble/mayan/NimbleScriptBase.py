@@ -15,9 +15,9 @@ class NimbleScriptBase(object):
 #                                                                                       C L A S S
 
 #___________________________________________________________________________________________________ __init__
-    def __init__(self, **kwargs):
+    def __init__(self):
         """Creates a new instance of NimbleScriptBase."""
-        self.kwargs   = kwargs
+        self.kwargs   = None
         self.response = None
 
 #===================================================================================================
@@ -33,25 +33,19 @@ class NimbleScriptBase(object):
         self.response   = nimble.createRemoteResponse(globals())
         self.run()
 
-#___________________________________________________________________________________________________ getKwarg
-    def getKwarg(self, name, defaultValue =None):
+#___________________________________________________________________________________________________ fetch
+    def fetch(self, name, defaultValue =None):
         """Doc..."""
         return ArgsUtils.get(name, defaultValue, self.kwargs)
-
-#___________________________________________________________________________________________________ setKwargs
-    def setKwargs(self, **kwargs):
-        """ For use when not running as a remote script. """
-        self.kwargs = kwargs
-
-#___________________________________________________________________________________________________ fetch
-    def fetch(self, key, defaultValue =None):
-        """ Quick access to fetch response values. """
-        return self.response.fetch(key, defaultValue)
 
 #___________________________________________________________________________________________________ put
     def put(self, key, value):
         """ Quick access to put response values. """
         self.response.put(key, value)
+
+#___________________________________________________________________________________________________ puts
+    def puts(self, **kwargs):
+        self.response.puts(**kwargs)
 
 #===================================================================================================
 #                                                                               I N T R I N S I C

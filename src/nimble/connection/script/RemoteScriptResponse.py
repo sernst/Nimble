@@ -44,8 +44,8 @@ class RemoteScriptResponse(object):
         self.result[key] = value
 
 #___________________________________________________________________________________________________ puts
-    def puts(self, data):
-        for key, value in data.iteritems():
+    def puts(self, **kwargs):
+        for key, value in kwargs.iteritems():
             self.result[key] = value
 
 #===================================================================================================

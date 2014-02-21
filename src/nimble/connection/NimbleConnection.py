@@ -90,13 +90,13 @@ class NimbleConnection(object):
 #___________________________________________________________________________________________________ runPythonImport
     def runPythonImport(self, package, methodName =None, className=None, **kwargs):
         return self._send(NimbleData(
-            kind=DataKindEnum.PYHON_IMPORT,
-            payload={'module':pacakge, 'method':methodName, 'class':className, 'kwargs':kwargs} ))
+            kind=DataKindEnum.PYTHON_IMPORT,
+            payload={'module':package, 'method':methodName, 'class':className, 'kwargs':kwargs} ))
 
 #___________________________________________________________________________________________________ runPythonClass
     def runPythonClass(self, targetClass, methodName =None, **kwargs):
         return self._send(NimbleData(
-            kind=DataKindEnum.PYHON_IMPORT,
+            kind=DataKindEnum.PYTHON_IMPORT,
             payload={
                 'module':targetClass.__module__,
                 'method':methodName,
@@ -106,7 +106,7 @@ class NimbleConnection(object):
 #___________________________________________________________________________________________________ runPythonModule
     def runPythonModule(self, module, methodName =None, className =None, **kwargs):
         return self._send(NimbleData(
-            kind=DataKindEnum.PYHON_IMPORT,
+            kind=DataKindEnum.PYTHON_IMPORT,
             payload={
                 'module':module.__name__,
                 'method':methodName,

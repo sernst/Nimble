@@ -59,7 +59,7 @@ class MayaRouter(NimbleRouter):
             result = mu.executeInMainThreadWithResult(
                 self._runPythonFile,
                 data.payload)
-        elif data.kind == DataKindEnum.PYHON_IMPORT:
+        elif data.kind == DataKindEnum.PYTHON_IMPORT:
             result = mu.executeInMainThreadWithResult(
                 self._runPythonImport,
                 data.payload)
@@ -76,7 +76,7 @@ class MayaRouter(NimbleRouter):
         return NimbleResponseData(
             kind=kind,
             response=NimbleResponseData.SUCCESS_RESPONSE,
-            payload={'result':result} )
+            payload=result if isinstance(result, dict) else {'result':result} )
 
 #___________________________________________________________________________________________________ _executeCommand
     def _executeCommand(self, payload):
@@ -206,9 +206,6 @@ class MayaRouter(NimbleRouter):
                 error=str(err),
                 response=NimbleResponseData.FAILED_RESPONSE)
 
-        print 'PATH:', payload['path']
-        print 'SCRIPT:\n', script
-
         if not script:
             return NimbleResponseData(
                 kind=DataKindEnum.PYTHON_SCRIPT_FILE,
@@ -273,11 +270,11 @@ class MayaRouter(NimbleRouter):
                 'PAYLOAD: ' + DictUtils.prettyPrint(payload),
                 'TARGET: ' + str(target)], err)
             return NimbleResponseData(
-                kind=DataKindEnum.PYHON_IMPORT,
+                kind=DataKindEnum.PYTHON_IMPORT,
                 error=msg + ': ' + str(err),
                 response=NimbleResponseData.FAILED_RESPONSE)
 
         return NimbleResponseData(
-            kind=DataKindEnum.PYHON_IMPORT,
+            kind=DataKindEnum.PYTHON_IMPORT,
             error='ERROR: No import found\n    ' + DictUtils.prettyPrint(payload),
             response=NimbleResponseData.FAILED_RESPONSE)
