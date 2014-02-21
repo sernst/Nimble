@@ -28,6 +28,86 @@ from nimble.mayan.NimbleScriptBase import NimbleScriptBase
 #___________________________________________________________________________________________________ MayaRouter
 class MayaRouter(NimbleRouter):
     """A class for..."""
+#___________________________________________________________________________________________________ createReply
+    @classmethod
+    def createReply(cls, kind, result):
+        return NimbleResponseData(
+            kind=kind,
+            response=NimbleResponseData.SUCCESS_RESPONSE,
+            payload=result if isinstance(result, dict) else {'result':result} )
+
+#___________________________________________________________________________________________________ runPythonImport
+    @classmethod
+    def runPythonImport(cls, payload):
+        try:
+            kwargs       = payload.get('kwargs', {})
+            targetModule = StringUtils.unicodeToStr(payload['module'])
+            targetMethod = StringUtils.unicodeToStr(payload.get('method'))
+            targetClass  = StringUtils.unicodeToStr(payload.get('class'))
+            target       = targetClass if targetClass is not None else targetMethod
+            if target is None:
+                parts        = targetModule.rsplit('.', 1)
+                targetModule = parts[0]
+                target       = parts[1]
+        except Exception, err:
+            NimbleEnvironment.logError([
+                'ERROR: Failed to parse python import payload',
+                'PAYLOAD: ' + DictUtils.prettyPrint(payload)], err)
+            return NimbleResponseData(
+                kind=DataKindEnum.PYTHON_IMPORT,
+                error=str(err),
+                response=NimbleResponseData.FAILED_RESPONSE)
+
+        # Dynamically import the specified module and reload it to make sure any changes have
+        # been updated
+        try:
+            module = ModuleUtils.importModule(targetModule, globals(), locals(), [target])
+            target = getattr(module, target)
+            reload(module)
+        except Exception, err:
+            NimbleEnvironment.logError([
+                'ERROR: Failed to import python target',
+                'MODULE: ' + str(targetModule),
+                'TARGET: ' + str(target),
+                'PAYLOAD: ' + DictUtils.prettyPrint(payload)], err)
+            return NimbleResponseData(
+                kind=DataKindEnum.PYTHON_IMPORT,
+                error=str(err),
+                response=NimbleResponseData.FAILED_RESPONSE)
+
+        try:
+            if targetClass is not None:
+                tc = target()
+                result = getattr(tc, targetMethod)(**kwargs) \
+                    if targetMethod else \
+                    tc(**kwargs)
+            elif targetMethod is not None:
+                result = target(**kwargs)
+            else:
+                # Find a NimbleScriptBase derived class definition and if it exists, run it to
+                # populate the results
+                for name,value in Reflection.getReflectionDict(target).iteritems():
+                    if not inspect.isclass(value):
+                        continue
+
+                    if NimbleScriptBase in value.__bases__:
+                       result = getattr(target, name)()(**kwargs)
+            return cls.createReply(DataKindEnum.PYTHON_IMPORT, result)
+        except Exception, err:
+            msg = 'ERROR: Unable to execute python import'
+            NimbleEnvironment.logError([
+                msg,
+                'PAYLOAD: ' + DictUtils.prettyPrint(payload),
+                'TARGET: ' + str(target)], err)
+            return NimbleResponseData(
+                kind=DataKindEnum.PYTHON_IMPORT,
+                error=msg + ': ' + str(err),
+                response=NimbleResponseData.FAILED_RESPONSE)
+
+        return NimbleResponseData(
+            kind=DataKindEnum.PYTHON_IMPORT,
+            error='ERROR: No import found\n    ' + DictUtils.prettyPrint(payload),
+            response=NimbleResponseData.FAILED_RESPONSE)
 
 #===================================================================================================
 #                                                                               P R O T E C T E D
@@ -61,22 +141,15 @@ class MayaRouter(NimbleRouter):
                 data.payload)
         elif data.kind == DataKindEnum.PYTHON_IMPORT:
             result = mu.executeInMainThreadWithResult(
-                self._runPythonImport,
+                self.runPythonImport,
                 data.payload)
 
         if result:
             if isinstance(result, NimbleResponseData):
                 return result
-            return self._createReply(data.kind, result)
+            return self.createReply(data.kind, result)
 
         return None
-
-#___________________________________________________________________________________________________ _createReply
-    def _createReply(self, kind, result):
-        return NimbleResponseData(
-            kind=kind,
-            response=NimbleResponseData.SUCCESS_RESPONSE,
-            payload=result if isinstance(result, dict) else {'result':result} )
 
 #___________________________________________________________________________________________________ _executeCommand
     def _executeCommand(self, payload):
@@ -127,7 +200,7 @@ class MayaRouter(NimbleRouter):
             result = targetObject(
                 *payload['args'],
                 **DictUtils.cleanDictKeys(payload['kwargs']) )
-            return self._createReply(DataKindEnum.COMMAND, result)
+            return self.createReply(DataKindEnum.COMMAND, result)
         except Exception, err:
             return NimbleResponseData(
                 kind=DataKindEnum.COMMAND,
@@ -167,7 +240,7 @@ class MayaRouter(NimbleRouter):
                 *payload['args'],
                 **DictUtils.cleanDictKeys(payload['kwargs']) )
             if createReply:
-                return self._createReply(DataKindEnum.MAYA_COMMAND, result)
+                return self.createReply(DataKindEnum.MAYA_COMMAND, result)
             else:
                 return result
         except Exception, err:
@@ -214,67 +287,3 @@ class MayaRouter(NimbleRouter):
 
         return runPythonExec(script, payload['kwargs'])
 
-#___________________________________________________________________________________________________ _runPythonImport
-    def _runPythonImport(self, payload):
-        try:
-            kwargs       = payload.get('kwargs', {})
-            targetModule = StringUtils.unicodeToStr(payload['module'])
-            targetMethod = StringUtils.unicodeToStr(payload.get('method'))
-            targetClass  = StringUtils.unicodeToStr(payload.get('class'))
-            target       = targetClass if targetClass is not None else targetMethod
-            if target is None:
-                parts        = targetModule.rsplit('.', 1)
-                targetModule = parts[0]
-                target       = parts[1]
-        except Exception, err:
-            NimbleEnvironment.logError([
-                'ERROR: Failed to parse python import payload',
-                'PAYLOAD: ' + DictUtils.prettyPrint(payload)], err)
-            return None
-
-        # Dynamically import the specified module and reload it to make sure any changes have
-        # been updated
-        try:
-            module = ModuleUtils.importModule(targetModule, globals(), locals(), [target])
-            target = getattr(module, target)
-            reload(module)
-        except Exception, err:
-            NimbleEnvironment.logError([
-                'ERROR: Failed to import python target',
-                'MODULE: ' + str(targetModule),
-                'TARGET: ' + str(target),
-                'PAYLOAD: ' + DictUtils.prettyPrint(payload)], err)
-            return None
-
-        try:
-            if targetClass is not None:
-                tc = target()
-                return getattr(tc, targetMethod)(**kwargs) \
-                    if targetMethod else \
-                    tc(**kwargs)
-            elif targetMethod is not None:
-                return target(**kwargs)
-            else:
-                # Find a NimbleScriptBase derived class definition and if it exists, run it to
-                # populate the results
-                for name,value in Reflection.getReflectionDict(target).iteritems():
-                    if not inspect.isclass(value):
-                        continue
-
-                    if NimbleScriptBase in value.__bases__:
-                       return getattr(target, name)()(**kwargs)
-        except Exception, err:
-            msg = 'ERROR: Unable to execute python import'
-            NimbleEnvironment.logError([
-                msg,
-                'PAYLOAD: ' + DictUtils.prettyPrint(payload),
-                'TARGET: ' + str(target)], err)
-            return NimbleResponseData(
-                kind=DataKindEnum.PYTHON_IMPORT,
-                error=msg + ': ' + str(err),
-                response=NimbleResponseData.FAILED_RESPONSE)
-
-        return NimbleResponseData(
-            kind=DataKindEnum.PYTHON_IMPORT,
-            error='ERROR: No import found\n    ' + DictUtils.prettyPrint(payload),
-            response=NimbleResponseData.FAILED_RESPONSE)

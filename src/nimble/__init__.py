@@ -4,8 +4,6 @@
 
 import atexit
 
-from pyaid.debug.Logger import Logger
-
 from nimble.NimbleEnvironment import NimbleEnvironment
 from nimble.connection.NimbleConnection import NimbleConnection
 from nimble.connection.NimbleConnectionWrapper import NimbleConnectionWrapper
@@ -66,6 +64,16 @@ def changeServerLogLevel(logLevel =0):
     """
 
     return NimbleEnvironment.setServerLogLevel(logLevel)
+
+#___________________________________________________________________________________________________ changeDefaultPythonRunMode
+def enablePythonTestMode(value):
+    """ Enables or disables Python testing mode. When True (False is the default) Python scripts
+        will be executed outside of Maya on the remote end of the Nimble connection bridge, which
+        allows for testing scripts without importing them into Maya but lowers performance due to
+        increased communication. When False (the default) Python script calls are run inside the
+        Maya environment, increasing performance but making it difficult to make changes without
+        manually reloading dependent modules or restarting Maya. """
+    NimbleEnvironment.TEST_REMOTE_MODE = value
 
 #___________________________________________________________________________________________________ stopServer
 def stopServer():

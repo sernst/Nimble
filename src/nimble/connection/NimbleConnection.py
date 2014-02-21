@@ -6,6 +6,7 @@ import socket
 
 import nimble
 from nimble.NimbleEnvironment import NimbleEnvironment
+from nimble.connection.router.MayaRouter import MayaRouter
 from nimble.connection.support.MayaCommandLink import MayaCommandLink
 from nimble.connection.support.ImportedCommand import ImportedCommand
 from nimble.data.NimbleData import NimbleData
@@ -88,30 +89,68 @@ class NimbleConnection(object):
             payload={'path':path, 'kwargs':kwargs} ))
 
 #___________________________________________________________________________________________________ runPythonImport
-    def runPythonImport(self, package, methodName =None, className=None, **kwargs):
-        return self._send(NimbleData(
-            kind=DataKindEnum.PYTHON_IMPORT,
-            payload={'module':package, 'method':methodName, 'class':className, 'kwargs':kwargs} ))
+    def runPythonImport(self, modulePackage, methodName =None, className=None, runInMaya =None, **kwargs):
+        """ Executes the specified import through Nimble in the specified run mode.
 
-#___________________________________________________________________________________________________ runPythonClass
-    def runPythonClass(self, targetClass, methodName =None, **kwargs):
-        return self._send(NimbleData(
-            kind=DataKindEnum.PYTHON_IMPORT,
-            payload={
-                'module':targetClass.__module__,
-                'method':methodName,
-                'class':targetClass.__name__,
-                'kwargs':kwargs} ))
+            modulePackage:  (String) An absolute (dot-syntax) formatted import to the module you
+                            wish to be executed. This module will be imported by Maya and must be
+                            on its sys.path.
 
-#___________________________________________________________________________________________________ runPythonModule
-    def runPythonModule(self, module, methodName =None, className =None, **kwargs):
-        return self._send(NimbleData(
-            kind=DataKindEnum.PYTHON_IMPORT,
-            payload={
-                'module':module.__name__,
+            [methodName]:   (String) An optional function name to be executed within the module. If
+                            a class name is specified this method will be called on an instance of
+                            the specified class. If no class name is specified the method will be
+                            called directly on the module.
+
+            [className]:    (String) An optional class name of a class to import within the
+                            specified module. The class will be imported from the module and
+                            instantiated.
+
+            [runInMaya]:    If True the import will be executed within Maya. If False the import
+                            will be executed outside of Maya on the remote end of the Nimble
+                            connection. The default value of None will use the current global
+                            setting, which can be set by the nimble.enablePythonTestMode()
+                            top-level function and defaults to runInMaya = True, i.e. test mode
+                            is disabled.
+
+                Returns a NimbleResponseData object with the results of the script execution. """
+        payload = {
+                'module':modulePackage,
                 'method':methodName,
                 'class':className,
-                'kwargs':kwargs} ))
+                'kwargs':kwargs}
+
+        if NimbleEnvironment.TEST_REMOTE_MODE if runInMaya is None else runInMaya:
+            return self._send(NimbleData(kind=DataKindEnum.PYTHON_IMPORT, payload=payload))
+        else:
+            return MayaRouter.runPythonImport(payload)
+
+#___________________________________________________________________________________________________ runPythonClass
+    def runPythonClass(self, targetClass, methodName =None, runInMaya =None, **kwargs):
+        """ Convenience method that wraps runPythonImport where the targetClass is a Class object
+            that is parsed into a modulePackage and className.
+
+            targetClass:    (Class) A class object that should be executed in Nimble.
+
+            For additional information see NimbleConnection.runPythonImport """
+        return self.runPythonImport(
+            modulePackage=targetClass.__module__,
+            methodName=methodName,
+            className=targetClass.__name__,
+            runInMaya=runInMaya, **kwargs)
+
+#___________________________________________________________________________________________________ runPythonModule
+    def runPythonModule(self, module, methodName =None, className =None, runInMaya =None, **kwargs):
+        """ Convenience method that wraps runPythonImport where the module is an imported module
+            object instead of the string to the modulePackage.
+
+            module:    (Module) A module object that is parsed into a package name.
+
+            For additional information see NimbleConnection.runPythonImport """
+        return self.runPythonImport(
+            modulePackage=module.__name__,
+            methodName=methodName,
+            className=className,
+            runInMaya=runInMaya, **kwargs)
 
 #___________________________________________________________________________________________________ maya
     def maya(self, command, *args, **kwargs):

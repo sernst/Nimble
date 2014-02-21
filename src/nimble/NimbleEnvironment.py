@@ -17,6 +17,7 @@ class NimbleEnvironment(object):
 #===================================================================================================
 #                                                                                       C L A S S
 
+    TEST_REMOTE_MODE       = True
     ENABLE_COMPRESSION     = False
     SOCKET_CHUNK_SIZE      = 8192
     TERMINATION_IDENTIFIER = '#@!NIMBLE_MSG_ENDS!@#'
