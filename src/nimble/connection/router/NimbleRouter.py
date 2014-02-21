@@ -2,6 +2,7 @@
 # (C)2012-2014
 # Scott Ernst
 
+import sys
 import asynchat
 
 from nimble.NimbleEnvironment import NimbleEnvironment
@@ -115,6 +116,12 @@ class NimbleRouter(asynchat.async_chat):
                 kind=DataKindEnum.ECHO,
                 response=NimbleResponseData.SUCCESS_RESPONSE,
                 payload={'echo':data.payload['echo']} )
+        elif data.kind == DataKindEnum.ADD_SYSTEM_PATH:
+            sys.path.append(data.payload['path'])
+            return NimbleResponseData(
+                kind=DataKindEnum.ADD_SYSTEM_PATH,
+                response=NimbleResponseData.SUCCESS_RESPONSE,
+                payload={} )
         else:
             result = self._routeMessageImpl(data)
             if result is not None:

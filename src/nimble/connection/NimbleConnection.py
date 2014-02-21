@@ -70,6 +70,12 @@ class NimbleConnection(object):
         """Doc..."""
         return self._send(NimbleData(kind=DataKindEnum.PING, payload={'msg':message}))
 
+#___________________________________________________________________________________________________ addToMayaPythonPath
+    def addToMayaPythonPath(self, path):
+        return self._send(NimbleData(
+            kind=DataKindEnum.ADD_SYSTEM_PATH,
+            payload={'path':path} ))
+
 #___________________________________________________________________________________________________ runMelScript
     def runMelScript(self, script):
         return self._send(NimbleData(

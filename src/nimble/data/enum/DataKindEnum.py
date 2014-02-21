@@ -1,5 +1,5 @@
 # DataKindEnum.py
-# (C)2012-2013 http://www.ThreeAddOne.com
+# (C)2012-2014
 # Scott Ernst
 
 #___________________________________________________________________________________________________ DataKindEnum
@@ -7,6 +7,8 @@ class DataKindEnum(object):
 
 #===================================================================================================
 #                                                                                       C L A S S
+
+    ADD_SYSTEM_PATH     = 'addSystemPath'
 
     COMMAND             = 'command'
 
