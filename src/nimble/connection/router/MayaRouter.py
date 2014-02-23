@@ -3,6 +3,8 @@
 # Scott Ernst
 
 import inspect
+
+from pyaid.ArgsUtils import ArgsUtils
 from pyaid.ModuleUtils import ModuleUtils
 
 try:
@@ -28,13 +30,26 @@ from nimble.mayan.NimbleScriptBase import NimbleScriptBase
 #___________________________________________________________________________________________________ MayaRouter
 class MayaRouter(NimbleRouter):
     """A class for..."""
+
+#===================================================================================================
+#                                                                                       C L A S S
+
 #___________________________________________________________________________________________________ createReply
     @classmethod
-    def createReply(cls, kind, result):
+    def createReply(cls, kind, result, errorMessage =None):
+        payload = result if isinstance(result, dict) else {'result':result}
+
+        if errorMessage:
+            return NimbleResponseData(
+                kind=kind,
+                response=NimbleResponseData.FAILED_RESPONSE,
+                error=errorMessage,
+                payload=payload)
+
         return NimbleResponseData(
             kind=kind,
             response=NimbleResponseData.SUCCESS_RESPONSE,
-            payload=result if isinstance(result, dict) else {'result':result} )
+            payload=payload )
 
 #___________________________________________________________________________________________________ runPythonImport
     @classmethod
@@ -76,6 +91,7 @@ class MayaRouter(NimbleRouter):
                 response=NimbleResponseData.FAILED_RESPONSE)
 
         try:
+            result = dict()
             if targetClass is not None:
                 tc = target()
                 result = getattr(tc, targetMethod)(**kwargs) \
@@ -91,10 +107,20 @@ class MayaRouter(NimbleRouter):
                         continue
 
                     if NimbleScriptBase in value.__bases__:
-                       result = getattr(target, name)()(**kwargs)
-            return cls.createReply(DataKindEnum.PYTHON_IMPORT, result)
+                        result = getattr(target, name)()(**kwargs)
+                        found  = True
+
+            # If a result dictionary contains an error key format the response as a failure
+            errorMessage = None
+            try:
+                errorMessage = ArgsUtils.extract(
+                    NimbleEnvironment.REMOTE_RESULT_ERROR_KEY, None, result)
+            except Exception, err:
+                pass
+
+            return cls.createReply(DataKindEnum.PYTHON_IMPORT, result, errorMessage=errorMessage)
         except Exception, err:
-            msg = 'ERROR: Unable to execute python import'
+            msg = 'ERROR: Script execution failure'
             NimbleEnvironment.logError([
                 msg,
                 'PAYLOAD: ' + DictUtils.prettyPrint(payload),
@@ -103,11 +129,6 @@ class MayaRouter(NimbleRouter):
                 kind=DataKindEnum.PYTHON_IMPORT,
                 error=msg + ': ' + str(err),
                 response=NimbleResponseData.FAILED_RESPONSE)
-
-        return NimbleResponseData(
-            kind=DataKindEnum.PYTHON_IMPORT,
-            error='ERROR: No import found\n    ' + DictUtils.prettyPrint(payload),
-            response=NimbleResponseData.FAILED_RESPONSE)
 
 #===================================================================================================
 #                                                                               P R O T E C T E D

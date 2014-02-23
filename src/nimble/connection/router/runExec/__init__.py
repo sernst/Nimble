@@ -5,10 +5,12 @@
 import inspect
 import imp
 
+from pyaid.ArgsUtils import ArgsUtils
 from pyaid.debug.Logger import Logger
 from pyaid.reflection.Reflection import Reflection
 
 import nimble
+# AS NEEDED: from nimble.NimbleEnvironment import NimbleEnvironment
 from nimble.mayan.NimbleScriptBase import NimbleScriptBase
 
 #___________________________________________________________________________________________________ runMelExec
@@ -38,6 +40,10 @@ def runMelExec(script):
 
 #___________________________________________________________________________________________________ runPythonExec
 def runPythonExec(script, kwargs =None):
+    from nimble.NimbleEnvironment import NimbleEnvironment
+    from nimble.data.NimbleResponseData import NimbleResponseData
+    from nimble.data.enum.DataKindEnum import DataKindEnum
+
     try:
         nimble.cmds.undoInfo(openChunk=True)
     except Exception, err:
@@ -48,7 +54,6 @@ def runPythonExec(script, kwargs =None):
         module = imp.new_module('runExecTempModule')
 
         # Initialize the script with script inputs
-        from nimble.NimbleEnvironment import NimbleEnvironment
         setattr(module, NimbleEnvironment.REMOTE_KWARGS_KEY, kwargs if kwargs is not None else dict())
         setattr(module, NimbleEnvironment.REMOTE_RESULT_KEY, dict())
 
@@ -70,13 +75,23 @@ def runPythonExec(script, kwargs =None):
     except Exception, err:
         logger = Logger('runPythonExec', printOut=True)
         logger.writeError('ERROR: Failed Remote Script Execution', err)
-
-        from nimble.data.NimbleResponseData import NimbleResponseData
-        from nimble.data.enum.DataKindEnum import DataKindEnum
         result = NimbleResponseData(
             kind=DataKindEnum.PYTHON_SCRIPT,
             response=NimbleResponseData.FAILED_RESPONSE,
             error=str(err) )
+
+    # If a result dictionary contains an error key format the response as a failure
+    try:
+        errorMessage = ArgsUtils.extract(
+            NimbleEnvironment.REMOTE_RESULT_ERROR_KEY, None, result)
+        if errorMessage:
+            return NimbleResponseData(
+                kind=DataKindEnum.PYTHON_SCRIPT,
+                response=NimbleResponseData.FAILED_RESPONSE,
+                error=errorMessage,
+                payload=result)
+    except Exception, err:
+        pass
 
     try:
         nimble.cmds.undoInfo(closeChunk=True)

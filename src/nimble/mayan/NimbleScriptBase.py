@@ -17,8 +17,8 @@ class NimbleScriptBase(object):
 #___________________________________________________________________________________________________ __init__
     def __init__(self):
         """Creates a new instance of NimbleScriptBase."""
-        self.kwargs   = None
-        self.response = None
+        self.kwargs         = None
+        self.response       = None
 
 #===================================================================================================
 #                                                                                     P U B L I C
@@ -46,6 +46,12 @@ class NimbleScriptBase(object):
 #___________________________________________________________________________________________________ puts
     def puts(self, **kwargs):
         self.response.puts(**kwargs)
+
+#___________________________________________________________________________________________________ putErrorResult
+    def putErrorResult(self, message, **kwargs):
+        self.response.putError(message)
+        if kwargs:
+            self.puts(kwargs)
 
 #===================================================================================================
 #                                                                               I N T R I N S I C

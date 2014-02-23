@@ -14,11 +14,17 @@ class RemoteScriptResponse(object):
 #___________________________________________________________________________________________________ __init__
     def __init__(self, scriptGlobalVars =None):
         """Creates a new instance of RemoteScriptResponse."""
-        self._result = None
+        self._result           = None
         self._scriptGlobalVars = scriptGlobalVars
+        self._success          = True
 
 #===================================================================================================
 #                                                                                   G E T / S E T
+
+#___________________________________________________________________________________________________ GS: success
+    @property
+    def success(self):
+        return self._success
 
 #___________________________________________________________________________________________________ GS: result
     @property
@@ -47,6 +53,17 @@ class RemoteScriptResponse(object):
     def puts(self, **kwargs):
         for key, value in kwargs.iteritems():
             self.result[key] = value
+
+#___________________________________________________________________________________________________ putError
+    def putError(self, message):
+        if message is None:
+            self._success = True
+            if NimbleEnvironment.REMOTE_RESULT_ERROR_KEY in self.result:
+                del self.result[NimbleEnvironment.REMOTE_RESULT_ERROR_KEY]
+            return
+
+        self._success = False
+        self.result[NimbleEnvironment.REMOTE_RESULT_ERROR_KEY] = message
 
 #===================================================================================================
 #                                                                               I N T R I N S I C

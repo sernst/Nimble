@@ -17,12 +17,13 @@ class NimbleEnvironment(object):
 #===================================================================================================
 #                                                                                       C L A S S
 
-    TEST_REMOTE_MODE       = True
-    ENABLE_COMPRESSION     = False
-    SOCKET_CHUNK_SIZE      = 8192
-    TERMINATION_IDENTIFIER = '#@!NIMBLE_MSG_ENDS!@#'
-    REMOTE_RESULT_KEY      = '__nimbleRemoteResponse__'
-    REMOTE_KWARGS_KEY      = '__nimbleRemoteKwargs__'
+    TEST_REMOTE_MODE        = True
+    ENABLE_COMPRESSION      = False
+    SOCKET_CHUNK_SIZE       = 8192
+    TERMINATION_IDENTIFIER  = '#@!NIMBLE_MSG_ENDS!@#'
+    REMOTE_RESULT_KEY       = '__nimbleRemoteResponse__'
+    REMOTE_KWARGS_KEY       = '__nimbleRemoteKwargs__'
+    REMOTE_RESULT_ERROR_KEY = '__nimbleRemoteError__'
 
     logger = Logger('nimble', printOut=True)
 
