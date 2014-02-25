@@ -5,11 +5,16 @@
 import sys
 import asynchat
 
+from pyaid.string.ByteChunk import ByteChunk
+from pyaid.string.StringUtils import StringUtils
+from pyaid.time.TimeUtils import TimeUtils
+
 from nimble.NimbleEnvironment import NimbleEnvironment
 from nimble.data.NimbleData import NimbleData
 from nimble.data.NimbleResponseData import NimbleResponseData
 from nimble.data.enum.DataErrorEnum import DataErrorEnum
 from nimble.data.enum.DataKindEnum import DataKindEnum
+from nimble.enum.ConnectionFlags import ConnectionFlags
 
 #___________________________________________________________________________________________________ NimbleRouter
 class NimbleRouter(asynchat.async_chat):
@@ -17,24 +22,35 @@ class NimbleRouter(asynchat.async_chat):
 #===================================================================================================
 #                                                                                       C L A S S
 
-#___________________________________________________________________________________________________
+#___________________________________________________________________________________________________ __init__
     def __init__(self, sock, **kwargs):
         asynchat.async_chat.__init__(self, sock=sock)
-        self.set_terminator(NimbleEnvironment.TERMINATION_IDENTIFIER)
-        self.ibuffer         = []
-        self.obuffer         = u''
-        self._message        = None
-        self.reading_headers = True
-        self.handling        = False
+        self._createTime    = TimeUtils.getNowSeconds()
+        self._data          = None
+        self._message       = None
+        self.handling       = False
+        self._requestFlags  = 0
+        self._responseFlags = 0
+        self._chunk         = ByteChunk(endianess=ByteChunk.BIG_ENDIAN)
+        self._resetRouterState()
+
+#===================================================================================================
+#                                                                                   G E T / S E T
+
+#___________________________________________________________________________________________________ GS: keepAlive
+    @property
+    def keepAlive(self):
+        return self._requestFlags & ConnectionFlags.KEEP_ALIVE \
+            and (TimeUtils.getNowSeconds() - self._createTime < NimbleEnvironment.CONNECTION_LIFETIME)
 
 #===================================================================================================
 #                                                                                     P U B L I C
 
 #___________________________________________________________________________________________________ collect_incoming_data
     def collect_incoming_data(self, data):
-        """Buffer the data"""
+        """Buffer the data until the terminator is found"""
         if data:
-            self.ibuffer.append(data)
+            self._data.append(data)
 
 #___________________________________________________________________________________________________ found_terminator
     def found_terminator(self):
@@ -43,7 +59,10 @@ class NimbleRouter(asynchat.async_chat):
 
         self.set_terminator(None) # connections sometimes over-send
         self.handling = True
-        self._message = u''.join(self.ibuffer)
+        self._chunk.writeString(''.join(self._data))
+        self._chunk.position = 0
+        self._requestFlags    = self._chunk.readUint32()
+        self._message        = StringUtils.strToUnicode(str(self._chunk.read(-1)))
         self.handle_request()
 
 #___________________________________________________________________________________________________ handle_read
@@ -84,6 +103,15 @@ class NimbleRouter(asynchat.async_chat):
 #===================================================================================================
 #                                                                               P R O T E C T E D
 
+#___________________________________________________________________________________________________ _resetRouterState
+    def _resetRouterState(self):
+        self.set_terminator(NimbleEnvironment.TERMINATION_IDENTIFIER)
+        self._data          = []
+        self._message       = None
+        self.handling       = False
+        self._responseFlags = 0
+        self._chunk.clear()
+
 #___________________________________________________________________________________________________ _logData
     def _logData(self, data, logLevel):
         if logLevel == -1:
@@ -103,11 +131,28 @@ class NimbleRouter(asynchat.async_chat):
             data.echo(pretty=True)
 
 #___________________________________________________________________________________________________ _sendResponse
-    def _sendResponse(self, response, logLevel):
-        self._logData(response, logLevel)
-        self.obuffer = response.serialize() + NimbleEnvironment.TERMINATION_IDENTIFIER
-        self.push(self.obuffer)
-        self.close_when_done()
+    def _sendResponse(self, responseData, logLevel):
+        self._logData(responseData, logLevel)
+
+        flags = self._responseFlags
+        if self.keepAlive:
+            flags = flags | ConnectionFlags.KEEP_ALIVE
+
+        self._chunk.clear()
+        self._chunk.writeUint32(flags)
+        self._chunk.writeString(
+            StringUtils.unicodeToStr(responseData.serialize())
+            + NimbleEnvironment.TERMINATION_IDENTIFIER)
+
+        reply     = str(self._chunk.chunk)
+        keepAlive = self.keepAlive
+
+        # Clear state for future use before sending response
+        self._resetRouterState()
+
+        self.push(reply)
+        if not keepAlive:
+            self.close_when_done()
 
 #___________________________________________________________________________________________________ _routeMessage
     def _routeMessage(self, data):
@@ -135,7 +180,7 @@ class NimbleRouter(asynchat.async_chat):
             error=DataErrorEnum.UNRECOGNIZED_REQUEST,
             response=NimbleResponseData.FAILED_RESPONSE )
 
-#___________________________________________________________________________________________________
+#___________________________________________________________________________________________________ _routeMessageImpl
     def _routeMessageImpl(self, data):
         return None
 

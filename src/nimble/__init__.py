@@ -11,6 +11,7 @@ from nimble.connection.batch.NimbleBatchCommandConnection import NimbleBatchComm
 from nimble.connection.script.RemoteScriptResponse import RemoteScriptResponse
 from nimble.connection.support.ImportedCommand import ImportedCommand
 from nimble.connection.thread.NimbleServerThread import NimbleServerThread
+from nimble.enum.ConnectionFlags import ConnectionFlags
 from nimble.error.MayaCommandException import MayaCommandException
 from nimble.mayan.NimbleScriptBase import NimbleScriptBase
 
@@ -156,6 +157,30 @@ def createRemoteResponse(scriptGlobalVars):
 #___________________________________________________________________________________________________ getIsRunningInMaya
 def getIsRunningInMaya():
     return NimbleEnvironment.inMaya()
+
+#___________________________________________________________________________________________________ changeKeepAlive
+def changeKeepAlive(value):
+    """ When True connections to the remote Nimble server will be kept alive between requests
+        for better reliability and performance during high-frequency scripting """
+    if value:
+        addConnectionFlag(ConnectionFlags.KEEP_ALIVE)
+    else:
+        removeConnectionFlag(ConnectionFlags.KEEP_ALIVE)
+
+#___________________________________________________________________________________________________ addConnectionFlag
+def addConnectionFlag(flags):
+    """ Add flag(s) to the default flag list sent used in specifying command requests to the
+        remote Nimble server """
+    NimbleEnvironment.CONNECTION_FLAGS = (NimbleEnvironment.CONNECTION_FLAGS | flags)
+
+#___________________________________________________________________________________________________ addConnectionFlag
+def removeConnectionFlag(flags):
+    """ Removes flag(s) from the default flag list sent used in specifying command requests to the
+        remote Nimble server """
+    if not NimbleEnvironment.CONNECTION_FLAGS & flags:
+        return
+
+    NimbleEnvironment.CONNECTION_FLAGS = (NimbleEnvironment.CONNECTION_FLAGS ^ flags)
 
 #===================================================================================================
 #                                                                                     M O D U L E

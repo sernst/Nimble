@@ -1,5 +1,5 @@
 # NimbleServer.py
-# (C)2012 http://www.ThreeAddOne.com
+# (C)2012-2014
 # Scott Ernst
 
 import asyncore
@@ -26,8 +26,8 @@ class NimbleServer(asyncore.dispatcher):
             self.bind(('localhost', NimbleEnvironment.getServerPort()))
             self.listen(5)
         except Exception, err:
-            print 'FAILED: Nimble server connection'
-            print err
+            NimbleEnvironment.logError(
+                '[ERROR | NIMBLE SERVER] Failed to establish server connection', err)
             raise
 
         if router is None:
@@ -45,3 +45,11 @@ class NimbleServer(asyncore.dispatcher):
         if pair is not None:
             sock, address = pair
             handler = self._router(sock)
+
+#___________________________________________________________________________________________________ handle_close
+    def handle_close(self):
+            self.close()
+
+#___________________________________________________________________________________________________ handle_connect
+    def handle_connect(self):
+        pass

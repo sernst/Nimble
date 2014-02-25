@@ -17,25 +17,57 @@ class NimbleEnvironment(object):
 #===================================================================================================
 #                                                                                       C L A S S
 
-    TEST_REMOTE_MODE        = True
+    # Default flags sent with client requests to nimble server
+    CONNECTION_FLAGS        = 0x00000000
+
+    # When true NimbleRemoteScripts are run in the remote environment by default instead of
+    # within Maya. Makes it possible to debug without reloading Maya's Python interpreter for
+    # each change. Disable when running in production.
+    TEST_REMOTE_MODE        = False
+
+    # Enables gzip compression of the communication to and/or from the nimble server
     ENABLE_COMPRESSION      = False
+
+    # Size of a single chunk of data sent over the socket during communication. Larger messages
+    # are broken into multiple chunks of sizes less than or equal to this length
     SOCKET_CHUNK_SIZE       = 8192
+
+    # Number of times socket calls should be attempted before returning in failure
+    REMOTE_RETRY_COUNT      = 3
+
+    # Termination string used to identify the end of a nimble message
     TERMINATION_IDENTIFIER  = '#@!NIMBLE_MSG_ENDS!@#'
+
+    # Dictionary key in remote script file's globals() that contain the payload to be returned
+    # to the remote Nimble environment once script execution is complete
     REMOTE_RESULT_KEY       = '__nimbleRemoteResponse__'
+
+    # Dictionary key in remote script file's globals() that contain the arguments send by the
+    # remote Nimble environment when the script file action is requested
     REMOTE_KWARGS_KEY       = '__nimbleRemoteKwargs__'
+
+    # Error key within the REMOTE_RESULT dictionary in remote scripts that contains an error
+    # message for the remote execution. When this key is set the NimbleResultData is set to failure
+    # and the error message included in the result
     REMOTE_RESULT_ERROR_KEY = '__nimbleRemoteError__'
 
     logger = Logger('nimble', printOut=True)
 
-    _inMaya       = None
-    _mayaPort     = 7800
-    _externalPort = 7801
+    _inMaya             = None
+    _mayaPort           = 7800
+    _externalPort       = 7801
 
-    _logLevel     = 0
-    _mayaUtils    = None
+    _logLevel           = 0
+    _mayaUtils          = None
+    _connectionLifetime = 10
 
 #===================================================================================================
 #                                                                                   G E T / S E T
+
+#___________________________________________________________________________________________________ GS: CONNECTION_LIFETIME
+    @ClassGetter
+    def CONNECTION_LIFETIME(cls):
+        return cls._connectionLifetime
 
 #___________________________________________________________________________________________________ GS: SOCKET_RESPONSE_CHUNK_SIZE
     @ClassGetter

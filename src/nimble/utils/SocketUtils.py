@@ -11,11 +11,6 @@ class SocketUtils(object):
 #===================================================================================================
 #                                                                                       C L A S S
 
-#___________________________________________________________________________________________________ sendInChunks
-    @classmethod
-    def sendInChunks(cls, socket, serialData, chunkSize =None):
-        socket.sendall(serialData + NimbleEnvironment.TERMINATION_IDENTIFIER)
-
 #___________________________________________________________________________________________________ receiveInChunks
     @classmethod
     def receiveInChunks(cls, socket, chunkSize =None, echo =False):
@@ -42,4 +37,4 @@ class SocketUtils(object):
         if not message:
             return None
 
-        return u''.join(message)
+        return ''.join(message)

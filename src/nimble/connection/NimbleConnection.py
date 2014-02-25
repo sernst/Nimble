@@ -3,6 +3,10 @@
 # Scott Ernst
 
 import socket
+from pyaid.string.StringUtils import StringUtils
+from pyaid.time.TimeUtils import TimeUtils
+
+from pyaid.string.ByteChunk import ByteChunk
 
 import nimble
 from nimble.NimbleEnvironment import NimbleEnvironment
@@ -11,6 +15,7 @@ from nimble.connection.support.MayaCommandLink import MayaCommandLink
 from nimble.connection.support.ImportedCommand import ImportedCommand
 from nimble.data.NimbleData import NimbleData
 from nimble.data.enum.DataKindEnum import DataKindEnum
+from nimble.enum.ConnectionFlags import ConnectionFlags
 from nimble.error.MayaCommandException import MayaCommandException
 from nimble.utils.SocketUtils import SocketUtils
 
@@ -29,13 +34,11 @@ class NimbleConnection(object):
             corresponding NimbleServer instance. NimbleEnvironment is used to determine whether the
             connection should be to a Maya or external application NimbleServer instance. """
 
-        self._active = False
-        self._socket = None
-
-        if not NimbleEnvironment.inMaya():
-            self.open()
-
+        self._active          = False
+        self._socket          = None
         self._mayaCommandLink = None
+        self._activatedTime   = None
+        self._chunk           = ByteChunk(endianess=ByteChunk.BIG_ENDIAN)
 
 #===================================================================================================
 #                                                                                   G E T / S E T
@@ -120,10 +123,10 @@ class NimbleConnection(object):
 
                 Returns a NimbleResponseData object with the results of the script execution. """
         payload = {
-                'module':modulePackage,
-                'method':methodName,
-                'class':className,
-                'kwargs':kwargs}
+            'module':modulePackage,
+            'method':methodName,
+            'class':className,
+            'kwargs':kwargs}
 
         if NimbleEnvironment.TEST_REMOTE_MODE if runInMaya is None else runInMaya:
             return self._send(NimbleData(kind=DataKindEnum.PYTHON_IMPORT, payload=payload))
@@ -197,8 +200,7 @@ class NimbleConnection(object):
         if not result or not result.success:
             raise MayaCommandException(
                 'Failed execution of command: ' + str(command),
-                response=result
-            )
+                response=result)
         return result.payload['result']
 
 #___________________________________________________________________________________________________ runCommand
@@ -226,8 +228,13 @@ class NimbleConnection(object):
 #___________________________________________________________________________________________________ open
     def open(self):
         if self._active:
-            return False
+            nowTime = TimeUtils.getNowSeconds()
+            if nowTime - self._activatedTime > NimbleEnvironment.CONNECTION_LIFETIME:
+                self.close()
+            else:
+                return False
 
+        self._activatedTime = TimeUtils.getNowSeconds()
         try:
             target = ('localhost', NimbleEnvironment.getConnectionPort())
             self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -235,10 +242,11 @@ class NimbleConnection(object):
             # Sets socket option to prevent connection being refused by TCP reconnecting
             # to the same socket after a recent closure.
             self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            self._socket.setblocking(1)
             self._socket.connect(target)
         except Exception, err:
-            print 'Failed to open Nimble connection.'
-            print err
+            NimbleEnvironment.logError(
+                '[ERROR | NIMBLE COMMUNICATION] Failed to open Nimble connection', err)
             return False
 
         if self not in NimbleConnection._CONNECTION_POOL:
@@ -267,21 +275,21 @@ class NimbleConnection(object):
 #___________________________________________________________________________________________________ _send
     def _send(self, nimbleData):
         """Doc..."""
-        message = u''
-        retry   = 3
-        failure = None
+        responseFlags = 0
+        message       = u''
+        retry         = NimbleEnvironment.REMOTE_RETRY_COUNT
 
         while retry > 0:
             try:
                 self.open()
             except Exception, err:
                 failure = [
-                    '[ERROR] Nimble communication failure: Unable to open connection',
+                    '[ERROR | NIMBLE COMMUNICATION] Unable to open connection',
                     err ]
                 retry -= 1
                 if retry == 0:
                     if not nimble.quietFailure:
-                        print failure[0] + '\n  ', failure[1]
+                        NimbleEnvironment.logError(failure[0], failure[1])
                     return None
                 continue
 
@@ -289,30 +297,37 @@ class NimbleConnection(object):
                 serialData = nimbleData.serialize()
             except Exception, err:
                 failure = [
-                    '[ERROR] Nimble communication failure: Unable to serialize data for transmission',
+                    '[ERROR | NIMBLE COMMUNICATION] Unable to serialize data for transmission',
                     err ]
                 if not nimble.quietFailure:
-                    print failure[0] + '\n  ', failure[1]
+                    NimbleEnvironment.logError(failure[0], failure[1])
                 return None
 
             try:
-                SocketUtils.sendInChunks(self._socket, serialData)
+                self._chunk.clear()
+                self._chunk.writeUint32(NimbleEnvironment.CONNECTION_FLAGS)
+                self._chunk.writeString(serialData + NimbleEnvironment.TERMINATION_IDENTIFIER)
+                self._socket.sendall(self._chunk.chunk)
             except Exception, err:
                 failure = [
-                    '[ERROR] Nimble communication failure: Unable to send data',
+                    '[ERROR | NIMBLE COMMUNICATION] Unable to send data',
                     err ]
                 self.close()
                 retry -= 1
                 if retry == 0:
                     if not nimble.quietFailure:
-                        print failure[0] + '\n  ', failure[1]
+                        NimbleEnvironment.logError(failure[0], failure[1])
                     return None
                 continue
 
             try:
-                message = SocketUtils.receiveInChunks(
+                self._chunk.clear()
+                self._chunk.writeString(SocketUtils.receiveInChunks(
                     self._socket,
-                    chunkSize=NimbleEnvironment.SOCKET_RESPONSE_CHUNK_SIZE)
+                    chunkSize=NimbleEnvironment.SOCKET_RESPONSE_CHUNK_SIZE) )
+                self._chunk.position = 0
+                responseFlags  = self._chunk.readUint32()
+                message        = StringUtils.strToUnicode(str(self._chunk.read(-1)))
 
                 # Break while loop on successful reading of the result
                 if message is not None:
@@ -320,24 +335,25 @@ class NimbleConnection(object):
 
             except Exception, err:
                 if not nimble.quietFailure:
-                    print '[ERROR] Nimble communication failure: Unable to read response'
-                    print '  ', err
+                    NimbleEnvironment.logError(
+                        '[ERROR | NIMBLE COMMUNICATION] Unable to read response', err)
                 self.close()
                 return None
 
         try:
-            self.close()
+            if not (responseFlags & ConnectionFlags.KEEP_ALIVE):
+                self.close()
         except Exception, err:
             if not nimble.quietFailure:
-                print '[ERROR] Nimble communication failure: Unable to close connection'
-                print '  ', err
+                NimbleEnvironment.logError(
+                    '[ERROR | NIMBLE COMMUNICATION] Unable to close connection', err)
 
         try:
             return NimbleData.fromMessage(message)
         except Exception, err:
             if not nimble.quietFailure:
-                print 'Nimble communication data failure.'
-                print '  ', err
+                NimbleEnvironment.logError(
+                    '[ERROR | NIMBLE COMMUNICATION] Response data parsing failure', err)
             return None
 
 #===================================================================================================
