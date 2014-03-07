@@ -128,10 +128,10 @@ class NimbleConnection(object):
             'class':className,
             'kwargs':kwargs}
 
-        if NimbleEnvironment.TEST_REMOTE_MODE if runInMaya is None else runInMaya:
-            return self._send(NimbleData(kind=DataKindEnum.PYTHON_IMPORT, payload=payload))
-        else:
+        if (NimbleEnvironment.TEST_REMOTE_MODE if runInMaya is None else runInMaya):
             return MayaRouter.runPythonImport(payload)
+        else:
+            return self._send(NimbleData(kind=DataKindEnum.PYTHON_IMPORT, payload=payload))
 
 #___________________________________________________________________________________________________ runPythonClass
     def runPythonClass(self, targetClass, methodName =None, runInMaya =None, **kwargs):
