@@ -144,7 +144,7 @@ class NimbleRouter(asynchat.async_chat):
             StringUtils.unicodeToStr(responseData.serialize())
             + NimbleEnvironment.TERMINATION_IDENTIFIER)
 
-        reply     = str(self._chunk.chunk)
+        reply     = str(self._chunk.byteArray)
         keepAlive = self.keepAlive
 
         # Clear state for future use before sending response

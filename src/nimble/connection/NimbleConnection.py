@@ -307,7 +307,7 @@ class NimbleConnection(object):
                 self._chunk.clear()
                 self._chunk.writeUint32(NimbleEnvironment.CONNECTION_FLAGS)
                 self._chunk.writeString(serialData + NimbleEnvironment.TERMINATION_IDENTIFIER)
-                self._socket.sendall(self._chunk.chunk)
+                self._socket.sendall(self._chunk.byteArray)
             except Exception, err:
                 failure = [
                     '[ERROR | NIMBLE COMMUNICATION] Unable to send data',
