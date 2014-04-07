@@ -195,7 +195,8 @@ CommandImport = ImportedCommand
 
 #___________________________________________________________________________________________________ log
 # Convenience access to the nimble environment logger.
-log = NimbleEnvironment.log
+log    = NimbleEnvironment.log
+logger = NimbleEnvironment.logger
 
 #___________________________________________________________________________________________________ cmds
 # Convenience access of the environmental Maya commands
