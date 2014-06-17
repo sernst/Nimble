@@ -11,7 +11,6 @@ from pyaid.string.ByteChunk import ByteChunk
 import nimble
 from nimble.NimbleEnvironment import NimbleEnvironment
 from nimble.connection.router.MayaRouter import MayaRouter
-from nimble.connection.support.MayaCommandLink import MayaCommandLink
 from nimble.connection.support.ImportedCommand import ImportedCommand
 from nimble.data.NimbleData import NimbleData
 from nimble.data.enum.DataKindEnum import DataKindEnum
@@ -34,11 +33,10 @@ class NimbleConnection(object):
             corresponding NimbleServer instance. NimbleEnvironment is used to determine whether the
             connection should be to a Maya or external application NimbleServer instance. """
 
-        self._active          = False
-        self._socket          = None
-        self._mayaCommandLink = None
-        self._activatedTime   = None
-        self._chunk           = ByteChunk(endianess=ByteChunk.BIG_ENDIAN)
+        self._active            = False
+        self._socket            = None
+        self._activatedTime     = None
+        self._chunk             = ByteChunk(endianess=ByteChunk.BIG_ENDIAN)
 
 #===================================================================================================
 #                                                                                   G E T / S E T
@@ -52,14 +50,6 @@ class NimbleConnection(object):
             which point they will have to be reopened in order to allow further communication. """
 
         return self._active
-
-#___________________________________________________________________________________________________ GS: mayaCommands
-    @property
-    def mayaCommands(self):
-        """ Access to the local or remove maya command """
-        if not self._mayaCommandLink:
-            self._mayaCommandLink = MayaCommandLink(connection=self)
-        return self._mayaCommandLink
 
 #===================================================================================================
 #                                                                                     P U B L I C
@@ -121,12 +111,16 @@ class NimbleConnection(object):
                             top-level function and defaults to runInMaya = True, i.e. test mode
                             is disabled.
 
-                Returns a NimbleResponseData object with the results of the script execution. """
+            Returns a NimbleResponseData object with the results of the script execution. """
+
         payload = {
             'module':modulePackage,
             'method':methodName,
             'class':className,
             'kwargs':kwargs}
+
+        if NimbleEnvironment.inMaya():
+            return MayaRouter.runPythonImport(payload)
 
         if (not NimbleEnvironment.TEST_REMOTE_MODE) if runInMaya is None else runInMaya:
             return self._send(NimbleData(kind=DataKindEnum.PYTHON_IMPORT, payload=payload))

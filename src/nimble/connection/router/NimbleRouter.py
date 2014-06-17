@@ -126,9 +126,9 @@ class NimbleRouter(asynchat.async_chat):
             pass
 
         if logLevel > 1 or not success:
-            data.echo(verbose=True, pretty=True)
+            NimbleEnvironment.logger.write(data.echo(verbose=True, pretty=True))
         elif logLevel > 0:
-            data.echo(pretty=True)
+            NimbleEnvironment.logger.write(data.echo(pretty=True))
 
 #___________________________________________________________________________________________________ _sendResponse
     def _sendResponse(self, responseData, logLevel):

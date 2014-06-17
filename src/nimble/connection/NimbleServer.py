@@ -48,7 +48,7 @@ class NimbleServer(asyncore.dispatcher):
 
 #___________________________________________________________________________________________________ handle_close
     def handle_close(self):
-            self.close()
+        self.close()
 
 #___________________________________________________________________________________________________ handle_connect
     def handle_connect(self):

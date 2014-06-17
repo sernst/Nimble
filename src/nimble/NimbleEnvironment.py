@@ -50,6 +50,7 @@ class NimbleEnvironment(object):
     # message for the remote execution. When this key is set the NimbleResultData is set to failure
     # and the error message included in the result
     REMOTE_RESULT_ERROR_KEY = '__nimbleRemoteError__'
+    REMOTE_RESULT_WARNING_KEY = '__nimbleRemoteWarning__'
 
     logger = Logger('nimble', printOut=True)
 

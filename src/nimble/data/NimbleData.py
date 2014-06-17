@@ -46,18 +46,18 @@ class NimbleData(object):
 
 #___________________________________________________________________________________________________ echo
     def echo(self, verbose =False, pretty =False):
-        msg    = self._createMessage()
+        msg = self._createMessage()
         header = 'RESPONSE' if hasattr(self, 'response') else 'REQUEST'
+
         if verbose:
             if pretty:
                 s = '\n' + 100*'-' + '\n' + header + ':\n' + (len(header) + 1)*'-' + '\n'
                 for n,v in msg.iteritems():
                     s += '   ' + str(n).upper() + ': ' + str(v) + '\n'
-                NimbleEnvironment.log(s)
-            else:
-                NimbleEnvironment.log(header + ': ' + str(msg))
-        else:
-            NimbleEnvironment.log('<NIMBLE %s | %s>' % (header, self.kind))
+                return s
+            return header + ': ' + str(msg)
+
+        return '<NIMBLE %s | %s>' % (header, self.kind)
 
 #___________________________________________________________________________________________________ serialize
     def serialize(self):

@@ -1,5 +1,5 @@
 # NimbleResponseData.py
-# (C)2012 http://www.ThreeAddOne.com
+# (C)2012-2014
 # Scott Ernst
 
 from nimble.data.NimbleData import NimbleData
@@ -19,8 +19,9 @@ class NimbleResponseData(NimbleData):
         """Creates a new instance of NimbleResponseData."""
         NimbleData.__init__(self, **kwargs)
 
-        self._response = kwargs.get('response', NimbleResponseData.SUCCESS_RESPONSE)
-        self._error    = kwargs.get('error', None)
+        self.response = kwargs.get('response', NimbleResponseData.SUCCESS_RESPONSE)
+        self.error    = kwargs.get('error', None)
+        self.warnings = kwargs.get('warnings', None)
 
 #===================================================================================================
 #                                                                                   G E T / S E T
@@ -36,23 +37,7 @@ class NimbleResponseData(NimbleData):
 #___________________________________________________________________________________________________ GS: success
     @property
     def success(self):
-        return self._response == NimbleResponseData.SUCCESS_RESPONSE
-
-#___________________________________________________________________________________________________ GS: response
-    @property
-    def response(self):
-        return self._response
-    @response.setter
-    def response(self, value):
-        self._response = value
-
-#___________________________________________________________________________________________________ GS: error
-    @property
-    def error(self):
-        return self._error
-    @error.setter
-    def error(self, value):
-        self._error = value
+        return self.response == NimbleResponseData.SUCCESS_RESPONSE
 
 #===================================================================================================
 #                                                                               P R O T E C T E D
@@ -65,6 +50,9 @@ class NimbleResponseData(NimbleData):
 
         if self.error:
             d['error'] = self.error
+
+        if self.warnings:
+            d['warnings'] = self.warnings
 
         return d
 

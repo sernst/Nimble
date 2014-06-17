@@ -182,6 +182,12 @@ def removeConnectionFlag(flags):
 
     NimbleEnvironment.CONNECTION_FLAGS = (NimbleEnvironment.CONNECTION_FLAGS ^ flags)
 
+#___________________________________________________________________________________________________ createScriptLink
+def createScriptLink(rootPackage):
+    """ Creates a custom script link to the specified root package, which must be on the system
+        path on both sides of the nimble bridge. """
+    return NimbleConnectionWrapper(NimbleConnectionWrapper.CUSTOM_SCRIPTS, rootPackage=rootPackage)
+
 #===================================================================================================
 #                                                                                     M O D U L E
 
@@ -200,7 +206,10 @@ logger = NimbleEnvironment.logger
 
 #___________________________________________________________________________________________________ cmds
 # Convenience access of the environmental Maya commands
-cmds = NimbleConnectionWrapper()
+cmds = NimbleConnectionWrapper(NimbleConnectionWrapper.MAYA_COMMANDS)
+
+#___________________________________________________________________________________________________ scripts
+scripts = NimbleConnectionWrapper(NimbleConnectionWrapper.CUSTOM_SCRIPTS)
 
 #___________________________________________________________________________________________________ EVENT HANDLER: closeConnectionPool
 # Cleans up the active socket connection pool on close to prevent communication errors in the

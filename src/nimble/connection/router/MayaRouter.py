@@ -38,16 +38,19 @@ class MayaRouter(NimbleRouter):
     @classmethod
     def createReply(cls, kind, result, errorMessage =None):
         payload = result if isinstance(result, dict) else {'result':result}
+        warnings = ArgsUtils.extract(NimbleEnvironment.REMOTE_RESULT_WARNING_KEY, None, payload)
 
         if errorMessage:
             return NimbleResponseData(
                 kind=kind,
                 response=NimbleResponseData.FAILED_RESPONSE,
+                warnings=warnings,
                 error=errorMessage,
                 payload=payload)
 
         return NimbleResponseData(
             kind=kind,
+            warnings=warnings,
             response=NimbleResponseData.SUCCESS_RESPONSE,
             payload=payload )
 
@@ -77,8 +80,8 @@ class MayaRouter(NimbleRouter):
         # been updated
         try:
             module = ModuleUtils.importModule(targetModule, globals(), locals(), [target])
-            target = getattr(module, target)
             reload(module)
+            target = getattr(module, target)
         except Exception, err:
             NimbleEnvironment.logError([
                 'ERROR: Failed to import python target',
@@ -120,7 +123,7 @@ class MayaRouter(NimbleRouter):
 
             return cls.createReply(DataKindEnum.PYTHON_IMPORT, result, errorMessage=errorMessage)
         except Exception, err:
-            msg = 'ERROR: Script execution failure'
+            msg = 'ERROR: Failed to execute remote script'
             NimbleEnvironment.logError([
                 msg,
                 'PAYLOAD: ' + DictUtils.prettyPrint(payload),

@@ -1,5 +1,5 @@
 # RemoteScriptResponse.py
-# (C)2013
+# (C)2013-2014
 # Scott Ernst
 
 from nimble.NimbleEnvironment import NimbleEnvironment
@@ -14,9 +14,9 @@ class RemoteScriptResponse(object):
 #___________________________________________________________________________________________________ __init__
     def __init__(self, scriptGlobalVars =None):
         """Creates a new instance of RemoteScriptResponse."""
-        self._result           = None
+        self._result = None
+        self._success = True
         self._scriptGlobalVars = scriptGlobalVars
-        self._success          = True
 
 #===================================================================================================
 #                                                                                   G E T / S E T
@@ -40,19 +40,39 @@ class RemoteScriptResponse(object):
 #===================================================================================================
 #                                                                                     P U B L I C
 
+#___________________________________________________________________________________________________ remove
+    def remove(self, key):
+        """ Remove the specified key if it exists. """
+        if key in self.result:
+            del self.result[key]
+
 #___________________________________________________________________________________________________ fetch
     def fetch(self, key, defaultValue =None):
-        """Doc..."""
+        """ Fetches the specified key if it exists and is not None, or returns the defaultValue
+            otherwise. """
         return self.result.get(key, defaultValue)
 
 #___________________________________________________________________________________________________ put
     def put(self, key, value):
-        self.result[key] = value
+        """ Adds the specified key-value pair to the response """
+        if value is None:
+            self.remove(key)
+        else:
+            self.result[key] = value
 
 #___________________________________________________________________________________________________ puts
     def puts(self, **kwargs):
         for key, value in kwargs.iteritems():
-            self.result[key] = value
+            self.put(key, value)
+
+#___________________________________________________________________________________________________ addWarning
+    def addWarning(self, message):
+        if message is None:
+            return
+
+        if NimbleEnvironment.REMOTE_RESULT_WARNING_KEY not in self.result:
+            self.result[NimbleEnvironment.REMOTE_RESULT_WARNING_KEY] = []
+        self.result[NimbleEnvironment.REMOTE_RESULT_WARNING_KEY].append(message)
 
 #___________________________________________________________________________________________________ putError
     def putError(self, message):
