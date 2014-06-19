@@ -188,6 +188,13 @@ def createScriptLink(rootPackage):
         path on both sides of the nimble bridge. """
     return NimbleConnectionWrapper(NimbleConnectionWrapper.CUSTOM_SCRIPTS, rootPackage=rootPackage)
 
+#___________________________________________________________________________________________________ executeMelCommand
+def executeMelCommand(command, nimbleResult =False):
+    if not nimbleResult:
+        return getConnection().mel(command)
+    else:
+        return getConnection().runMelScript(command)
+
 #===================================================================================================
 #                                                                                     M O D U L E
 

@@ -155,6 +155,15 @@ class NimbleConnection(object):
             className=className,
             runInMaya=runInMaya, **kwargs)
 
+#___________________________________________________________________________________________________ mel
+    def mel(self, command):
+        result = self.runMelScript(command)
+        if not result or not result.success:
+            raise MayaCommandException(
+                'Failed execution of Maya MEL command: ' + str(command),
+                response=result)
+        return result.payload['result']
+
 #___________________________________________________________________________________________________ maya
     def maya(self, command, *args, **kwargs):
         result = self.runMayaCommand(command, *args, **kwargs)
@@ -269,6 +278,10 @@ class NimbleConnection(object):
 #___________________________________________________________________________________________________ _send
     def _send(self, nimbleData):
         """Doc..."""
+
+        if NimbleEnvironment.inMaya():
+            return MayaRouter.processRequest(nimbleData)
+
         responseFlags = 0
         message       = u''
         retry         = NimbleEnvironment.REMOTE_RETRY_COUNT

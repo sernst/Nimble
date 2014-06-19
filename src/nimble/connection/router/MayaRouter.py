@@ -133,12 +133,9 @@ class MayaRouter(NimbleRouter):
                 error=msg + ': ' + str(err),
                 response=NimbleResponseData.FAILED_RESPONSE)
 
-#===================================================================================================
-#                                                                               P R O T E C T E D
-
-#___________________________________________________________________________________________________ _routeMessage
-    def _routeMessageImpl(self, data):
-
+#___________________________________________________________________________________________________
+    @classmethod
+    def processRequest(cls, data):
         result = None
         if data.kind == DataKindEnum.MEL_SCRIPT:
             result = mu.executeInMainThreadWithResult(runMelExec, data.payload['script'])
@@ -149,34 +146,42 @@ class MayaRouter(NimbleRouter):
                 data.payload['kwargs'])
         elif data.kind == DataKindEnum.MAYA_COMMAND:
             result = mu.executeInMainThreadWithResult(
-                self._executeMayaCommand,
+                cls._executeMayaCommand,
                 data.payload)
         elif data.kind == DataKindEnum.MAYA_COMMAND_BATCH:
             result = mu.executeInMainThreadWithResult(
-                self._executeMayaCommandBatch,
+                cls._executeMayaCommandBatch,
                 data.payload)
         elif data.kind == DataKindEnum.COMMAND:
             result = mu.executeInMainThreadWithResult(
-                self._executeCommand,
+                cls._executeCommand,
                 data.payload)
         elif data.kind == DataKindEnum.PYTHON_SCRIPT_FILE:
             result = mu.executeInMainThreadWithResult(
-                self._runPythonFile,
+                cls._runPythonFile,
                 data.payload)
         elif data.kind == DataKindEnum.PYTHON_IMPORT:
             result = mu.executeInMainThreadWithResult(
-                self.runPythonImport,
+                cls.runPythonImport,
                 data.payload)
 
         if result:
             if isinstance(result, NimbleResponseData):
                 return result
-            return self.createReply(data.kind, result)
+            return cls.createReply(data.kind, result)
 
         return None
 
+#===================================================================================================
+#                                                                               P R O T E C T E D
+
+#___________________________________________________________________________________________________ _routeMessage
+    def _routeMessageImpl(self, data):
+        return self.processRequest(data)
+
 #___________________________________________________________________________________________________ _executeCommand
-    def _executeCommand(self, payload):
+    @classmethod
+    def _executeCommand(cls, payload):
         cmd = payload['command']
         if cmd is None or (isinstance(cmd, basestring) and not cmd in globals()):
             return NimbleResponseData(
@@ -214,9 +219,9 @@ class MayaRouter(NimbleRouter):
             if method:
                 targetObject = getattr(Target, method)
                 if inspect.ismethod(targetObject) and targetObject.__self__ is None:
-                    targetObject = getattr(self._instantiateClass(Target, cmd), method)
+                    targetObject = getattr(cls._instantiateClass(Target, cmd), method)
             elif inspect.isclass(Target):
-                targetObject = self._instantiateClass(Target, cmd)
+                targetObject = cls._instantiateClass(Target, cmd)
             else:
                 targetObject = Target
 
@@ -224,7 +229,7 @@ class MayaRouter(NimbleRouter):
             result = targetObject(
                 *payload['args'],
                 **DictUtils.cleanDictKeys(payload['kwargs']) )
-            return self.createReply(DataKindEnum.COMMAND, result)
+            return cls.createReply(DataKindEnum.COMMAND, result)
         except Exception, err:
             return NimbleResponseData(
                 kind=DataKindEnum.COMMAND,
@@ -232,11 +237,12 @@ class MayaRouter(NimbleRouter):
                 error=str(err) )
 
 #___________________________________________________________________________________________________ _instantiateClass
-    def _instantiateClass(self, Target, command):
-        k       = 'constructorArgs'
+    @classmethod
+    def _instantiateClass(cls, Target, command):
+        k = 'constructorArgs'
         conArgs = command[k] if k in command else None
 
-        k         = 'constructorKwargs'
+        k = 'constructorKwargs'
         conKwargs = command[k] if k in command else None
 
         if conArgs and conKwargs:
@@ -251,7 +257,8 @@ class MayaRouter(NimbleRouter):
         return targetObject
 
 #___________________________________________________________________________________________________ _executeMayaCommand
-    def _executeMayaCommand(self, payload, createReply =True):
+    @classmethod
+    def _executeMayaCommand(cls, payload, createReply =True):
         cmd = getattr(mc, str(payload['command']), None)
         if cmd is None:
             return NimbleResponseData(
@@ -264,7 +271,7 @@ class MayaRouter(NimbleRouter):
                 *payload['args'],
                 **DictUtils.cleanDictKeys(payload['kwargs']) )
             if createReply:
-                return self.createReply(DataKindEnum.MAYA_COMMAND, result)
+                return cls.createReply(DataKindEnum.MAYA_COMMAND, result)
             else:
                 return result
         except Exception, err:
@@ -274,10 +281,11 @@ class MayaRouter(NimbleRouter):
                 response=NimbleResponseData.FAILED_RESPONSE )
 
 #___________________________________________________________________________________________________ _executeMayaCommandBatch
-    def _executeMayaCommandBatch(self, payload):
+    @classmethod
+    def _executeMayaCommandBatch(cls, payload):
         out = []
         for item in payload['commands']:
-            result = self._executeMayaCommand(item, createReply=False)
+            result = cls._executeMayaCommand(item, createReply=False)
             if not isinstance(result, NimbleResponseData):
                 out.append(result)
             elif not result.success:
@@ -288,7 +296,8 @@ class MayaRouter(NimbleRouter):
         return out
 
 #___________________________________________________________________________________________________ _runPythonFile
-    def _runPythonFile(self, payload):
+    @classmethod
+    def _runPythonFile(cls, payload):
         try:
             path = payload['path']
             if path.endswith('.py'):
