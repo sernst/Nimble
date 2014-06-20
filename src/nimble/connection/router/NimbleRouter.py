@@ -3,6 +3,7 @@
 # Scott Ernst
 
 import sys
+import time
 import asynchat
 
 from pyaid.string.ByteChunk import ByteChunk
@@ -151,6 +152,8 @@ class NimbleRouter(asynchat.async_chat):
         self._resetRouterState()
 
         self.push(reply)
+
+        time.sleep(0.0001)
         if not keepAlive:
             self.close_when_done()
 

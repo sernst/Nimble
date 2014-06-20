@@ -2,6 +2,7 @@
 # (C)2012-2014
 # Scott Ernst
 
+import time
 import socket
 from pyaid.string.StringUtils import StringUtils
 from pyaid.time.TimeUtils import TimeUtils
@@ -282,6 +283,12 @@ class NimbleConnection(object):
         if NimbleEnvironment.inMaya():
             return MayaRouter.processRequest(nimbleData)
 
+        result = self._sendRemote(nimbleData)
+        time.sleep(0.0001)
+        return result
+
+#___________________________________________________________________________________________________ _sendRemote
+    def _sendRemote(self, nimbleData):
         responseFlags = 0
         message       = u''
         retry         = NimbleEnvironment.REMOTE_RETRY_COUNT
