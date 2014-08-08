@@ -61,13 +61,17 @@ class BoundingBox3D(object):
         self.zmax = bbox[5]
 
 #___________________________________________________________________________________________________ getRandomPointInside
-    def getRandomPointInside(self):
-        """ Returns a tuple representing a 3D point that resides within the bounding box. """
+    def getRandomPointInside(self, padding =0.0):
+        """ Returns a tuple representing a 3D point that resides within the bounding box.
+
+            padding:
+                The amount of bordering space to leave around the edge of the mesh when getting
+                a point inside. """
 
         return (
-            self.xmin + self.deltaX*random.random(),
-            self.ymin + self.deltaY*random.random(),
-            self.zmin + self.deltaZ*random.random() )
+            (self.xmin + padding) + max(0.0, self.deltaX - 2.0*padding)*random.random(),
+            (self.ymin + padding) + max(0.0, self.deltaY - 2.0*padding)*random.random(),
+            (self.zmin + padding) + max(0.0, self.deltaZ - 2.0*padding)*random.random() )
 
 #===================================================================================================
 #                                                                               I N T R I N S I C

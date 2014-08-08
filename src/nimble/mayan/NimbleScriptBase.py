@@ -6,6 +6,7 @@ from pyaid.ArgsUtils import ArgsUtils
 from pyaid.debug.Logger import Logger
 
 import nimble
+from nimble.NimbleEnvironment import NimbleEnvironment
 from nimble.connection.script.RemoteScriptResponse import RemoteScriptResponse
 
 #___________________________________________________________________________________________________ NimbleScriptBase
@@ -109,7 +110,9 @@ class NimbleScriptBase(object):
         try:
             self.run()
         except Exception, err:
-            logMessage = Logger.createErrorMessage(u'Nimble remote script run failure', err)
+            message = u'Nimble remote script run failure'
+            NimbleEnvironment.logError(message, err)
+            logMessage = Logger.createErrorMessage(message, err)
             self.putErrorResult(
                 Logger.logMessageToString(logMessage=logMessage, includePrefix=False))
         result = self.response.result

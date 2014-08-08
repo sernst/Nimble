@@ -107,7 +107,7 @@ class NimbleEnvironment(object):
 
         return cls._inMaya
 
-#___________________________________________________________________________________________________
+#___________________________________________________________________________________________________ logError
     @classmethod
     def logError(cls, *args, **kwargs):
         isInMaya = cls.inMaya() and cls._mayaUtils is not None
