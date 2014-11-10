@@ -2,9 +2,9 @@
 # (C)2014
 # Scott Ernst
 
-""" This example shows how to use the advanced import scripting in Nimble.
+""" This example shows how to use the advanced import scripting in Nimble. """
 
-"""
+from __future__ import print_function, absolute_import, unicode_literals, division
 
 import sys
 
@@ -26,8 +26,8 @@ conn = nimble.getConnection()
 # the scripts directly
 result = conn.addToMayaPythonPath(scriptPath)
 if not result.success:
-    print 'Unable to modify Maya Python path. Are you sure Maya is running a Nimble server?'
-    print result
+    print('Unable to modify Maya Python path. Are you sure Maya is running a Nimble server?')
+    print(result)
     sys.exit(1)
 
 # Now run the CreateSpheres Nimble script creating a ring of 3 spheres. The CreateSpheres module,
@@ -38,7 +38,7 @@ if not result.success:
 # to properly execute that class.
 result = conn.runPythonModule(CreateSpheres, count=4)
 if not result.success:
-    print 'Oh no, something went wrong!', result
+    print('Oh no, something went wrong!', result)
     sys.exit(1)
 
 # This command does the same thing as the previous call (except for the count and y changes) but
@@ -47,10 +47,10 @@ if not result.success:
 result = conn.runPythonClass(CreateSpheres.CreateSpheres, count=6, y=2)
 
 if not result.success:
-    print 'Oh no, something went wrong!', result
+    print('Oh no, something went wrong!', result)
     sys.exit(1)
 else:
-    print result.payload['ringName'] + ':', result.payload['sphereNames']
+    print(result.payload['ringName'] + ':', result.payload['sphereNames'])
 
 # Another example of how to call this command, by specifying the module import path directly. The
 # benefit of this form is that you don't need to import the module or class within this script, but
@@ -59,10 +59,10 @@ else:
 result = conn.runPythonImport('helloPythonImportExample.scripts.CreateSpheres', count=8, y=4)
 
 if not result.success:
-    print 'Oh no, something went wrong!', result
+    print('Oh no, something went wrong!', result)
     sys.exit(1)
 else:
-    print result.payload['ringName'] + ':', result.payload['sphereNames']
+    print(result.payload['ringName'] + ':', result.payload['sphereNames'])
 
 # We can run these same commands outside of Maya, which is useful when you are developing and debugging
 # a script because nothing is imported on the Maya end meaning you don't have to restart or reload
@@ -74,10 +74,10 @@ else:
 result = conn.runPythonModule(CreateSpheres, runInMaya=False, count=10, y=6)
 
 if not result.success:
-    print 'Oh, no, something went wrong!', result
+    print('Oh, no, something went wrong!', result)
     sys.exit(1)
 else:
-    print result.payload['ringName'] + ':', result.payload['sphereNames']
+    print(result.payload['ringName'] + ':', result.payload['sphereNames'])
 
 # You can also make all of these commands run outside of Maya by default by enabling PythonTestMode,
 # which defaults the runInMaya argument for each command to False.
@@ -88,21 +88,19 @@ nimble.enablePythonTestMode(True)
 result = conn.runPythonModule(CreateSpheres, count=12, y=8)
 
 if not result.success:
-    print 'Oh, no, something went wrong!', result
+    print('Oh, no, something went wrong!', result)
     sys.exit(1)
 else:
-    print result.payload['ringName'] + ':', result.payload['sphereNames']
+    print(result.payload['ringName'] + ':', result.payload['sphereNames'])
 
 # Of course, you can override this default behavior for any command by specifying the runInMaya
 # argument explicitly.
 result = conn.runPythonModule(CreateSpheres, runInMaya=True, count=15, y=10)
 
 if not result.success:
-    print 'Oh, no, something went wrong!', result
+    print('Oh, no, something went wrong!', result)
     sys.exit(1)
 else:
-    print result.payload['ringName'] + ':', result.payload['sphereNames']
+    print(result.payload['ringName'] + ':', result.payload['sphereNames'])
 
-
-
-print 'Example Complete'
+print('Example Complete')

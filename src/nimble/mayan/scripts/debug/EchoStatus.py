@@ -2,6 +2,8 @@
 # (C)2014
 # Scott Ernst
 
+from __future__ import print_function, absolute_import, unicode_literals, division
+
 from nimble import cmds
 from nimble import NimbleScriptBase
 
@@ -24,10 +26,10 @@ class EchoStatus(NimbleScriptBase):
     def run(self):
         """Doc..."""
         version = cmds.about(version=True)
-        print 'VERSION:', version
+        print('VERSION:', version)
 
         buildDate = cmds.about(date=True)
-        print 'BUILD DATE:', buildDate
+        print('BUILD DATE:', buildDate)
 
         self.addWarning('Test warning!')
         self.puts(version=version, date=buildDate)

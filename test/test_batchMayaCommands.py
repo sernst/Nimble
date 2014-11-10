@@ -1,3 +1,5 @@
+from __future__ import print_function, absolute_import, unicode_literals, division
+
 import nimble
 import random
 from nimble import cmds
@@ -33,12 +35,12 @@ while count < 100:
 
     try:
         bcmds.sendCommandBatch()
-    except MayaCommandException, err:
-        print 'ERROR: Test failed'
-        print err
+    except MayaCommandException as err:
+        print('ERROR: Test failed')
+        print(err)
         raise
 
     count += 1
 
-print 'Test complete'
+print('Test complete')
 

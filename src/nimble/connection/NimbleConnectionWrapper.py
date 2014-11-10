@@ -2,6 +2,8 @@
 # (C)2013-2014
 # Scott Ernst
 
+from __future__ import print_function, absolute_import, unicode_literals, division
+
 from nimble.connection.NimbleConnection import NimbleConnection
 from nimble.NimbleEnvironment import NimbleEnvironment
 from nimble.connection.support.CustomCommandLink import CustomCommandLink
@@ -35,8 +37,8 @@ class NimbleConnectionWrapper(object):
         NimbleEnvironment.inMaya(override=inMaya)
         try:
             return NimbleConnection.getConnection(forceCreate=forceCreate)
-        except Exception, err:
-            raise Exception
+        except Exception:
+            raise
 
 #===================================================================================================
 #                                                                               P R O T E C T E D
@@ -82,10 +84,6 @@ class NimbleConnectionWrapper(object):
 #___________________________________________________________________________________________________ __repr__
     def __repr__(self):
         return self.__str__()
-
-#___________________________________________________________________________________________________ __unicode__
-    def __unicode__(self):
-        return unicode(self.__str__())
 
 #___________________________________________________________________________________________________ __str__
     def __str__(self):

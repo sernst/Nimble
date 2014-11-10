@@ -17,13 +17,13 @@ from nimble.mayan.NimbleScriptBase import NimbleScriptBase
 def runMelExec(script):
     try:
         nimble.cmds.undoInfo(openChunk=True)
-    except Exception, err:
+    except Exception as err:
         return False
 
     try:
         import maya.mel as mm
         result = mm.eval(script)
-    except Exception, err:
+    except Exception as err:
         from nimble.data.NimbleResponseData import NimbleResponseData
         from nimble.data.enum.DataKindEnum import DataKindEnum
         result = NimbleResponseData(
@@ -33,7 +33,7 @@ def runMelExec(script):
 
     try:
         nimble.cmds.undoInfo(closeChunk=True)
-    except Exception, err:
+    except Exception as err:
         return False
 
     return result
@@ -46,7 +46,7 @@ def runPythonExec(script, kwargs =None):
 
     try:
         nimble.cmds.undoInfo(openChunk=True)
-    except Exception, err:
+    except Exception as err:
         return False
 
     try:
@@ -72,7 +72,7 @@ def runPythonExec(script, kwargs =None):
 
         # Retrieve the results object that contains all results set by the execution of the script
         result = getattr(module, NimbleEnvironment.REMOTE_RESULT_KEY)
-    except Exception, err:
+    except Exception as err:
         logger = Logger('runPythonExec', printOut=True)
         logger.writeError('ERROR: Failed Remote Script Execution', err)
         result = NimbleResponseData(
@@ -90,12 +90,12 @@ def runPythonExec(script, kwargs =None):
                 response=NimbleResponseData.FAILED_RESPONSE,
                 error=errorMessage,
                 payload=result)
-    except Exception, err:
+    except Exception as err:
         pass
 
     try:
         nimble.cmds.undoInfo(closeChunk=True)
-    except Exception, err:
+    except Exception as err:
         return False
 
     return result

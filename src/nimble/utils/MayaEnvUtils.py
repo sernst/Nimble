@@ -2,6 +2,8 @@
 # (C)2013-2014
 # Scott Ernst
 
+from __future__ import print_function, absolute_import, unicode_literals, division
+
 import os
 import re
 from collections import namedtuple
@@ -9,11 +11,11 @@ from collections import namedtuple
 import pyaid
 from pyaid.OsUtils import OsUtils
 from pyaid.file.FileUtils import FileUtils
+import pyglass
 
 import nimble
 from nimble.utils.MayaEnvEntry import MayaEnvEntry
 
-import pyglass
 
 #___________________________________________________________________________________________________ MayaEnvUtils
 class MayaEnvUtils(object):

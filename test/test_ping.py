@@ -5,6 +5,8 @@
 """ This ping tests the basic communication functionality of Nimble in a series of tests that
     exercise call and response behaviors of different types. """
 
+from __future__ import print_function, absolute_import, unicode_literals, division
+
 from profilehooks import profile
 
 # Whether or not to echo results for display
@@ -31,7 +33,7 @@ def pingTest():
     for i in range(iterations):
         result = conn.ping()
         if not runSilent:
-            print u'PING:', result.echo(True, True)
+            print(u'PING:', result.echo(True, True))
 
     #-----------------------------------------------------------------------------------------------
     # ECHO
@@ -42,7 +44,7 @@ def pingTest():
     for i in range(iterations):
         result = conn.echo(smallMessage)
         if not runSilent:
-            print u'ECHO:', result.echo(True, True)
+            print(u'ECHO:', result.echo(True, True))
 
     #-----------------------------------------------------------------------------------------------
     # LONG ECHO
@@ -54,8 +56,8 @@ def pingTest():
     for i in range(iterations):
         result = conn.echo(largeMessage)
         if not runSilent:
-            print u'LARGE ECHO[#%s]:' % i, result.echo(True, True)
+            print(u'LARGE ECHO[#%s]:' % i, result.echo(True, True))
 
-    print u'\nTests Complete'
+    print(u'\nTests Complete')
 
 pingTest()

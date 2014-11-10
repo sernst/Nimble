@@ -2,6 +2,9 @@
 # (C)2014
 # Scott Ernst
 
+from __future__ import print_function, absolute_import, unicode_literals, division
+from pyaid.dict.DictUtils import DictUtils
+
 from nimble import cmds
 from nimble import NimbleScriptBase
 
@@ -65,7 +68,7 @@ class ExtractMultiple(NimbleScriptBase):
         #       and then separating the mesh into the separated pieces.
         results = dict()
         selects = []
-        for obj,faces in targets.iteritems():
+        for obj,faces in DictUtils.iter(targets):
             if not faces:
                 continue
 

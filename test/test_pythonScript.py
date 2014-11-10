@@ -1,3 +1,5 @@
+from __future__ import print_function, absolute_import, unicode_literals, division
+
 import os
 from pyaid.file.FileUtils import FileUtils
 
@@ -25,21 +27,21 @@ response.put('offset', offset)
 """
 
 #---------------------------------------------------------------------------------------------------
-print 'RUNNING SCRIPT:'
+print('RUNNING SCRIPT:')
 conn = nimble.getConnection()
 result = conn.runPythonScript(script, offset=20)
 
-print '\tRESULT:', result, type(result)
-print '\tPAYLOAD:', result.payload
+print('\tRESULT:', result, type(result))
+print('\tPAYLOAD:', result.payload)
 
 #---------------------------------------------------------------------------------------------------
-print 'RUNNING FILE:'
+print('RUNNING FILE:')
 result = conn.runPythonScriptFile(
     FileUtils.createPath(
         os.path.abspath(os.path.dirname(__file__)), 'pythonTestScript.py', isFile=True),
     offset=5)
 
-print '\tRESULT:', result, type(result)
-print '\tPAYLOAD:', result.payload
+print('\tRESULT:', result, type(result))
+print('\tPAYLOAD:', result.payload)
 
-print 'Operation Complete'
+print('Operation Complete')

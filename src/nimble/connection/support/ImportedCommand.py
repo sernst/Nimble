@@ -2,6 +2,8 @@
 # (C)2012 http://www.ThreeAddOne.com
 # Scott Ernst
 
+from __future__ import print_function, absolute_import, unicode_literals, division
+
 #___________________________________________________________________________________________________ ImportedCommand
 class ImportedCommand(object):
     """A class for..."""
@@ -95,13 +97,8 @@ class ImportedCommand(object):
     def __repr__(self):
         return self.__str__()
 
-#___________________________________________________________________________________________________ __unicode__
-    def __unicode__(self):
-        return unicode(self.__str__())
-
 #___________________________________________________________________________________________________ __str__
     def __str__(self):
         return '<%s - %s>' % (
             self.__class__.__name__,
-            str(self._target) + (('.' + str(self._method)) if self._method else '')
-        )
+            str(self._target) + (('.' + str(self._method)) if self._method else ''))

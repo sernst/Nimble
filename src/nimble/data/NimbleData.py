@@ -2,13 +2,17 @@
 # (C)2012-2014
 # Scott Ernst
 
+from __future__ import print_function, absolute_import, unicode_literals, division
+
 import zlib
 import json
 
 from pyaid.dict.DictUtils import DictUtils
+from pyaid.string.StringUtils import StringUtils
 
 from nimble.NimbleEnvironment import NimbleEnvironment
 from nimble.data.enum.DataKindEnum import DataKindEnum
+
 
 #___________________________________________________________________________________________________ NimbleData
 class NimbleData(object):
@@ -20,7 +24,7 @@ class NimbleData(object):
     _NEWLINE_ESCAPE = '##NEWLINE##'
 
 #___________________________________________________________________________________________________ __init__
-    def __init__(self, kind =None, payload =None, **kwargs):
+    def __init__(self, kind =None, payload =None):
         """Creates a new instance of NimbleData."""
         self._kind      = kind if kind else DataKindEnum.GENERAL
         self._payload   = payload if payload else dict()
@@ -52,7 +56,7 @@ class NimbleData(object):
         if verbose:
             if pretty:
                 s = '\n' + 100*'-' + '\n' + header + ':\n' + (len(header) + 1)*'-' + '\n'
-                for n,v in msg.iteritems():
+                for n,v in DictUtils.iter(msg):
                     s += '   ' + str(n).upper() + ': ' + str(v) + '\n'
                 return s
             return header + ': ' + str(msg)
@@ -66,7 +70,7 @@ class NimbleData(object):
             .replace('\r','').replace('\n', NimbleData._NEWLINE_ESCAPE).strip()
         if NimbleEnvironment.ENABLE_COMPRESSION:
             out = zlib.compress(out, 6)
-            print out
+            print(out)
             return out
         return out
 
@@ -80,10 +84,10 @@ class NimbleData(object):
             if NimbleEnvironment.ENABLE_COMPRESSION:
                 message = zlib.decompress(message)
             data = json.loads(message.replace(NimbleData._NEWLINE_ESCAPE, '\n').strip())
-        except Exception, err:
-            print 'Invalid Nimble Data:'
-            print str(message)
-            print err
+        except Exception as err:
+            print('Invalid Nimble Data:')
+            print(str(message))
+            print(err)
             return None
 
         data      = DictUtils.cleanDictKeys(data)
@@ -97,13 +101,13 @@ class NimbleData(object):
             res     = __import__(module, globals(), locals(), [className])
             Source  = getattr(res, className)
             return Source(**data)
-        except Exception, err:
-            print 'Invalid Nimble data:'
-            print 'ERROR: ', err
-            print 'MESSAGE:', message
-            print 'DATA:', data
-            print 'CLASS:', className
-            print 'MODULE:', module
+        except Exception as err:
+            print('Invalid Nimble data:')
+            print('ERROR: ', err)
+            print('MESSAGE:', message)
+            print('DATA:', data)
+            print('CLASS:', className)
+            print('MODULE:', module)
 
         return None
 
@@ -127,7 +131,7 @@ class NimbleData(object):
 
 #___________________________________________________________________________________________________ __unicode__
     def __unicode__(self):
-        return unicode(self.__str__())
+        return StringUtils.toStr2(self.__str__())
 
 #___________________________________________________________________________________________________ __str__
     def __str__(self):

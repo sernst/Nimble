@@ -2,6 +2,8 @@
 # (C)2012-2014
 # Scott Ernst
 
+from __future__ import print_function, absolute_import, unicode_literals, division
+
 from nimble.data.NimbleData import NimbleData
 
 #___________________________________________________________________________________________________ NimbleResponseData
@@ -31,7 +33,7 @@ class NimbleResponseData(NimbleData):
     def result(self):
         try:
             return self._payload.get('result')
-        except Exception, err:
+        except Exception:
             return None
 
 #___________________________________________________________________________________________________ GS: success

@@ -2,6 +2,8 @@
 # (C)2012-2013 http://www.ThreeAddOne.com
 # Scott Ernst
 
+from __future__ import print_function, absolute_import, unicode_literals, division
+
 #___________________________________________________________________________________________________ MayaCommandException
 class MayaCommandException(Exception):
     """A class for..."""

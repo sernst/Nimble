@@ -2,6 +2,8 @@
 # (C)2012-2014
 # Scott Ernst
 
+from __future__ import print_function, absolute_import, unicode_literals, division
+
 import sys
 import time
 import asynchat
@@ -24,7 +26,7 @@ class NimbleRouter(asynchat.async_chat):
 #                                                                                       C L A S S
 
 #___________________________________________________________________________________________________ __init__
-    def __init__(self, sock, **kwargs):
+    def __init__(self, sock):
         asynchat.async_chat.__init__(self, sock=sock)
         self._createTime    = TimeUtils.getNowSeconds()
         self._data          = None
@@ -60,6 +62,7 @@ class NimbleRouter(asynchat.async_chat):
 
         self.set_terminator(None) # connections sometimes over-send
         self.handling = True
+        # noinspection PyTypeChecker
         self._chunk.writeString(''.join(self._data))
         self._chunk.position = 0
         self._requestFlags    = self._chunk.readUint32()
@@ -76,7 +79,7 @@ class NimbleRouter(asynchat.async_chat):
 
         try:
             data = self._parseData(message, logLevel)
-        except Exception, err:
+        except Exception as err:
             self._sendResponse(
                 NimbleResponseData(
                     kind=DataKindEnum.GENERAL,
@@ -114,6 +117,7 @@ class NimbleRouter(asynchat.async_chat):
         self._chunk.clear()
 
 #___________________________________________________________________________________________________ _logData
+    # noinspection PyMethodMayBeStatic
     def _logData(self, data, logLevel):
         if logLevel == -1:
             return
@@ -123,7 +127,7 @@ class NimbleRouter(asynchat.async_chat):
         success = True
         try:
             success = data.success
-        except Exception, err:
+        except Exception:
             pass
 
         if logLevel > 1 or not success:

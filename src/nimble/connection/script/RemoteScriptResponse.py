@@ -2,6 +2,9 @@
 # (C)2013-2014
 # Scott Ernst
 
+from __future__ import print_function, absolute_import, unicode_literals, division
+from pyaid.dict.DictUtils import DictUtils
+
 from nimble.NimbleEnvironment import NimbleEnvironment
 
 #___________________________________________________________________________________________________ RemoteScriptResponse
@@ -62,7 +65,7 @@ class RemoteScriptResponse(object):
 
 #___________________________________________________________________________________________________ puts
     def puts(self, **kwargs):
-        for key, value in kwargs.iteritems():
+        for key, value in DictUtils.iter(kwargs):
             self.put(key, value)
 
 #___________________________________________________________________________________________________ addWarning
@@ -91,10 +94,6 @@ class RemoteScriptResponse(object):
 #___________________________________________________________________________________________________ __repr__
     def __repr__(self):
         return self.__str__()
-
-#___________________________________________________________________________________________________ __unicode__
-    def __unicode__(self):
-        return unicode(self.__str__())
 
 #___________________________________________________________________________________________________ __str__
     def __str__(self):

@@ -2,11 +2,13 @@
 # (C)2012-2014
 # Scott Ernst
 
+from __future__ import print_function, absolute_import, unicode_literals, division
+
 import time
 import socket
+
 from pyaid.string.StringUtils import StringUtils
 from pyaid.time.TimeUtils import TimeUtils
-
 from pyaid.string.ByteChunk import ByteChunk
 
 import nimble
@@ -19,6 +21,7 @@ from nimble.enum.ConnectionFlags import ConnectionFlags
 from nimble.error.MayaCommandException import MayaCommandException
 from nimble.utils.SocketUtils import SocketUtils
 
+
 #___________________________________________________________________________________________________ NimbleConnection
 class NimbleConnection(object):
     """Establishes a socket connection with a NimbleServer instance for communication."""
@@ -29,7 +32,7 @@ class NimbleConnection(object):
     _CONNECTION_POOL = []
 
 #___________________________________________________________________________________________________ __init__
-    def __init__(self, **kwargs):
+    def __init__(self):
         """ Creates a new instance of NimbleConnection and opens the communication socket to the
             corresponding NimbleServer instance. NimbleEnvironment is used to determine whether the
             connection should be to a Maya or external application NimbleServer instance. """
@@ -248,7 +251,7 @@ class NimbleConnection(object):
             self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             self._socket.setblocking(1)
             self._socket.connect(target)
-        except Exception, err:
+        except Exception as err:
             NimbleEnvironment.logError(
                 '[ERROR | NIMBLE COMMUNICATION] Failed to open Nimble connection', err)
             return False
@@ -261,9 +264,9 @@ class NimbleConnection(object):
 
 #___________________________________________________________________________________________________ getConnection
     @classmethod
-    def getConnection(cls, forceCreate =False, **kwargs):
+    def getConnection(cls, forceCreate =False):
         if forceCreate or not NimbleConnection._CONNECTION_POOL:
-            return NimbleConnection(**kwargs)
+            return NimbleConnection()
 
         return NimbleConnection._CONNECTION_POOL[-1]
 
@@ -296,7 +299,7 @@ class NimbleConnection(object):
         while retry > 0:
             try:
                 self.open()
-            except Exception, err:
+            except Exception as err:
                 failure = [
                     '[ERROR | NIMBLE COMMUNICATION] Unable to open connection',
                     err ]
@@ -309,7 +312,7 @@ class NimbleConnection(object):
 
             try:
                 serialData = nimbleData.serialize()
-            except Exception, err:
+            except Exception as err:
                 failure = [
                     '[ERROR | NIMBLE COMMUNICATION] Unable to serialize data for transmission',
                     err ]
@@ -322,7 +325,7 @@ class NimbleConnection(object):
                 self._chunk.writeUint32(NimbleEnvironment.CONNECTION_FLAGS)
                 self._chunk.writeString(serialData + NimbleEnvironment.TERMINATION_IDENTIFIER)
                 self._socket.sendall(self._chunk.byteArray)
-            except Exception, err:
+            except Exception as err:
                 failure = [
                     '[ERROR | NIMBLE COMMUNICATION] Unable to send data',
                     err ]
@@ -347,7 +350,7 @@ class NimbleConnection(object):
                 if message is not None:
                     break
 
-            except Exception, err:
+            except Exception as err:
                 if not nimble.quietFailure:
                     NimbleEnvironment.logError(
                         '[ERROR | NIMBLE COMMUNICATION] Unable to read response', err)
@@ -357,14 +360,14 @@ class NimbleConnection(object):
         try:
             if not (responseFlags & ConnectionFlags.KEEP_ALIVE):
                 self.close()
-        except Exception, err:
+        except Exception as err:
             if not nimble.quietFailure:
                 NimbleEnvironment.logError(
                     '[ERROR | NIMBLE COMMUNICATION] Unable to close connection', err)
 
         try:
             return NimbleData.fromMessage(message)
-        except Exception, err:
+        except Exception as err:
             if not nimble.quietFailure:
                 NimbleEnvironment.logError(
                     '[ERROR | NIMBLE COMMUNICATION] Response data parsing failure', err)
@@ -377,7 +380,7 @@ class NimbleConnection(object):
     def __del__(self):
         try:
             self._socket.close()
-        except Exception, err:
+        except Exception:
             pass
 
 #___________________________________________________________________________________________________ __repr__
@@ -386,7 +389,7 @@ class NimbleConnection(object):
 
 #___________________________________________________________________________________________________ __unicode__
     def __unicode__(self):
-        return unicode(self.__str__())
+        return StringUtils.toUnicode(self.__str__())
 
 #___________________________________________________________________________________________________ __str__
     def __str__(self):

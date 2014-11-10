@@ -2,6 +2,8 @@
 # (C)2012-2014
 # Scott Ernst
 
+from __future__ import print_function, absolute_import, unicode_literals, division
+
 import sys
 import os
 import re
@@ -98,10 +100,11 @@ class NimbleEnvironment(object):
             pattern = re.compile('[\\/]+(M|m)aya20[0-9]*[\\/]+Python')
         if pattern.search(sys.prefix):
             try:
+                # noinspection PyUnresolvedReferences
                 from maya import utils as mu
                 cls._mayaUtils = mu
                 cls._inMaya = True
-            except Exception, err:
+            except Exception as err:
                 cls._inMaya = False
             return cls._inMaya
 

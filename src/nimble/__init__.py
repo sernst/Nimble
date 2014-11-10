@@ -2,6 +2,8 @@
 # (C)2012-2014
 # Scott Ernst
 
+from __future__ import print_function, absolute_import, unicode_literals, division
+
 import atexit
 
 from nimble.NimbleEnvironment import NimbleEnvironment
@@ -101,14 +103,14 @@ def echoServerStatus():
     """
 
     if NimbleServerThread.isActivating():
-        print 'Nimble server is loading'
+        print('Nimble server is loading')
         return 1
 
     if NimbleServerThread.isRunning():
-        print 'Nimble server is running.'
+        print('Nimble server is running.')
         return 2
 
-    print 'Nimble server is inactive.'
+    print('Nimble server is inactive.')
     return 0
 
 #___________________________________________________________________________________________________ getConnection

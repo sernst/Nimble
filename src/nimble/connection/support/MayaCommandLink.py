@@ -2,9 +2,17 @@
 # (C)2012-2013 http://www.ThreeAddOne.com
 # Scott Ernst
 
+from __future__ import print_function, absolute_import, unicode_literals, division
+
 import functools
 
 from nimble.NimbleEnvironment import NimbleEnvironment
+
+try:
+    # noinspection PyUnresolvedReferences
+    import maya.cmds as mc
+except Exception:
+    maya = None
 
 #___________________________________________________________________________________________________ MayaCommandLink
 class MayaCommandLink(object):
@@ -19,7 +27,6 @@ class MayaCommandLink(object):
         self._commands   = None
 
         if NimbleEnvironment.inMaya():
-            import maya.cmds as mc
             self._commands = mc
 
 #===================================================================================================

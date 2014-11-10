@@ -2,6 +2,8 @@
 # (C)2013
 # Scott Ernst
 
+from __future__ import print_function, absolute_import, unicode_literals, division
+
 from nimble.NimbleEnvironment import NimbleEnvironment
 
 #___________________________________________________________________________________________________ SocketUtils
@@ -29,7 +31,7 @@ class SocketUtils(object):
 
                 message.append(result)
 
-            except Exception, err:
+            except Exception as err:
                 if message[-1].endswith(NimbleEnvironment.TERMINATION_IDENTIFIER):
                     message[-1] = message[-1][:-len(NimbleEnvironment.TERMINATION_IDENTIFIER)]
                     break

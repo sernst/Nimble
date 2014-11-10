@@ -2,7 +2,8 @@
 # (C)2012 http://www.ThreeAddOne.com
 # Scott Ernst
 
-import nimble
+from __future__ import print_function, absolute_import, unicode_literals, division
+
 from nimble import cmds
 
 #___________________________________________________________________________________________________ HelloCommandTest
@@ -11,7 +12,7 @@ class HelloCommandTest(object):
 
 #___________________________________________________________________________________________________ __init__
     def __init__(self, width =1, name =None):
-        print 'CONSTRUCTED: [width: %s], [name: %s]' % (str(width), str(name))
+        print('CONSTRUCTED: [width: %s], [name: %s]' % (str(width), str(name)))
         self._width = width
         self._name  = name
 
@@ -19,7 +20,7 @@ class HelloCommandTest(object):
 #                                                                                     P U B L I C
 
 #___________________________________________________________________________________________________ instanceCube
-    def instanceCube(self, *args, **kwargs):
+    def instanceCube(self, **kwargs):
         """Doc..."""
         name   = self._name if self._name else 'instanceCube'
         height = kwargs['height'] if 'height' in kwargs else 2
@@ -30,7 +31,7 @@ class HelloCommandTest(object):
 
 #___________________________________________________________________________________________________ classyCube
     @classmethod
-    def classyCube(cls, *args, **kwargs):
+    def classyCube(cls, **kwargs):
         """Doc..."""
         height = kwargs['height'] if 'height' in kwargs else 2
         x      = kwargs['x'] if 'x' in kwargs else 0
@@ -40,7 +41,7 @@ class HelloCommandTest(object):
 
 #___________________________________________________________________________________________________ staticCube
     @staticmethod
-    def staticCube(*args, **kwargs):
+    def staticCube(**kwargs):
         """Doc..."""
         height = kwargs['height'] if 'height' in kwargs else 2
         x      = kwargs['x'] if 'x' in kwargs else 0
@@ -52,7 +53,7 @@ class HelloCommandTest(object):
 #                                                                               I N T R I N S I C
 
 #___________________________________________________________________________________________________ __call__
-    def __call__(self, *args, **kwargs):
+    def __call__(self, **kwargs):
         name   = self._name if self._name else 'calledCube'
         height = kwargs['height'] if 'height' in kwargs else 2
         x      = kwargs['x'] if 'x' in kwargs else 0
@@ -64,7 +65,7 @@ class HelloCommandTest(object):
 #                                                                               F U N C T I O N S
 
 #___________________________________________________________________________________________________ functionCube
-def functionCube(*args, **kwargs):
+def functionCube(**kwargs):
     height = kwargs['height'] if 'height' in kwargs else 2
     x      = kwargs['x'] if 'x' in kwargs else 0
     res     = cmds.polyCube(name='functionCube', height=height)

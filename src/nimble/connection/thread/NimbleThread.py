@@ -2,6 +2,8 @@
 # (C)2012 http://www.ThreeAddOne.com
 # Scott Ernst
 
+from __future__ import print_function, absolute_import, unicode_literals, division
+
 import threading
 
 #___________________________________________________________________________________________________ NimbleThread

@@ -2,17 +2,18 @@
 # (C)2014
 # Scott Ernst
 
+from __future__ import print_function, absolute_import, unicode_literals, division
+
 import math
 
 from pyaid.debug.Logger import Logger
+import elixir
 
 import nimble
 from nimble import cmds
 from nimble import NimbleScriptBase
 from nimble.NimbleEnvironment import NimbleEnvironment
 from nimble.mayan.TransformUtils import TransformUtils
-
-import elixir
 
 #___________________________________________________________________________________________________ RandomBoxes
 class RandomBoxes(NimbleScriptBase):
@@ -72,7 +73,7 @@ class RandomBoxes(NimbleScriptBase):
                         box=box,
                         weight=float(shapeVolume)) )
                     shapeCount += 1
-                except Exception, err:
+                except Exception as err:
                     self._cleanup()
                     NimbleEnvironment.logError(u'ERROR: Shape processing', err)
 
@@ -89,7 +90,7 @@ class RandomBoxes(NimbleScriptBase):
             for shape in shapes:
                 if not self._createMeshPointNode(shape):
                     self._cleanup()
-                    print u'ERROR: Creation failure'
+                    print(u'ERROR: Creation failure')
                     self.putErrorResult(u'ERROR: Unable to create point test node')
 
                 shape['weight'] /= totalVolume
@@ -98,9 +99,9 @@ class RandomBoxes(NimbleScriptBase):
                     self._create(shape)
 
                 self._removeMeshPointNode()
-        except Exception, err:
+        except Exception as err:
             self._cleanup()
-            print Logger.createErrorMessage(u'ERROR: Creation failure', err)
+            print(Logger.createErrorMessage(u'ERROR: Creation failure', err))
             self.putErrorResult(u'ERROR: Unable to create random box')
             return
 
@@ -153,15 +154,15 @@ class RandomBoxes(NimbleScriptBase):
         try:
             node = cmds.createNode('closestPointOnMesh', skipSelect=True)
             self._meshPointNode = node
-        except Exception, err:
-            print Logger.createErrorMessage(u'ERROR: Unable to create mesh point node', err)
+        except Exception as err:
+            print(Logger.createErrorMessage(u'ERROR: Unable to create mesh point node', err))
             self._removeMeshPointNode()
             return False
 
         try:
             cmds.connectAttr(shapeData['name'] + '.message', node + '.inMesh', force=True)
-        except Exception, err:
-            print Logger.createErrorMessage(u'ERROR: Unable to connect mesh point node to shape', err)
+        except Exception as err:
+            print(Logger.createErrorMessage(u'ERROR: Unable to connect mesh point node to shape', err))
             self._removeMeshPointNode()
             return False
 
@@ -174,6 +175,6 @@ class RandomBoxes(NimbleScriptBase):
 
         try:
             cmds.delete(self._meshPointNode)
-        except Exception, err:
+        except Exception:
             pass
         self._meshPointNode = None

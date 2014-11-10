@@ -2,6 +2,8 @@
 # (C)2014
 # Scott Ernst
 
+from __future__ import print_function, absolute_import, unicode_literals, division
+
 from nimble import cmds
 from nimble import NimbleScriptBase
 
@@ -63,7 +65,7 @@ class ShrinkToBounds(NimbleScriptBase):
             if scale is not None:
                 out[item] = scale
 
-        if len(out.keys()) > 0:
+        if len(list(out.keys())) > 0:
             self.put('changes', out)
 
 #===================================================================================================

@@ -2,12 +2,15 @@
 # (C)2014
 # Scott Ernst
 
+from __future__ import print_function, absolute_import, unicode_literals, division
+
 from pyaid.ArgsUtils import ArgsUtils
 from pyaid.debug.Logger import Logger
 
 import nimble
 from nimble.NimbleEnvironment import NimbleEnvironment
 from nimble.connection.script.RemoteScriptResponse import RemoteScriptResponse
+
 
 #___________________________________________________________________________________________________ NimbleScriptBase
 class NimbleScriptBase(object):
@@ -109,7 +112,7 @@ class NimbleScriptBase(object):
 
         try:
             self.run()
-        except Exception, err:
+        except Exception as err:
             message = u'Nimble remote script run failure'
             NimbleEnvironment.logError(message, err)
             logMessage = Logger.createErrorMessage(message, err)
@@ -121,10 +124,6 @@ class NimbleScriptBase(object):
 #___________________________________________________________________________________________________ __repr__
     def __repr__(self):
         return self.__str__()
-
-#___________________________________________________________________________________________________ __unicode__
-    def __unicode__(self):
-        return unicode(self.__str__())
 
 #___________________________________________________________________________________________________ __str__
     def __str__(self):

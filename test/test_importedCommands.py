@@ -2,6 +2,8 @@
 # (C)2012 http://www.ThreeAddOne.com
 # Scott Ernst
 
+from __future__ import print_function, absolute_import, unicode_literals, division
+
 import nimble
 from nimble import CommandImport
 from nimble.mayan.commands.commandTests import HelloCommandTest
@@ -10,68 +12,59 @@ from nimble.mayan.commands.commandTests import functionCube
 #---------------------------------------------------------------------------------------------------
 # Locally imported tests
 #-----------------------
-print 'Local static:', HelloCommandTest.staticCube(x=20, height=5)
-print 'Local class:', HelloCommandTest.classyCube(x=20, height=5)
-print 'Local called:', HelloCommandTest()(x=20, height=5)
-print 'Local called:', HelloCommandTest(width=2, name='constructorCalledCube')(x=25, height=5)
-print 'Local instance:', HelloCommandTest().instanceCube(x=20, height=5)
-print 'Local instance:', HelloCommandTest(width=2, name='constructorInstanceCube').instanceCube(x=25, height=5)
-print 'Local function:', functionCube(x=20, height=5)
+print('Local static:', HelloCommandTest.staticCube(x=20, height=5))
+print('Local class:', HelloCommandTest.classyCube(x=20, height=5))
+print('Local called:', HelloCommandTest()(x=20, height=5))
+print('Local called:', HelloCommandTest(width=2, name='constructorCalledCube')(x=25, height=5))
+print('Local instance:', HelloCommandTest().instanceCube(x=20, height=5))
+print('Local instance:', HelloCommandTest(width=2, name='constructorInstanceCube').instanceCube(x=25, height=5))
+print('Local function:', functionCube(x=20, height=5))
 
 #---------------------------------------------------------------------------------------------------
 # Remotely imported tests
 #------------------------
 conn = nimble.getConnection()
 
-print 'Static result: ', conn.command(
+print('Static result: ', conn.command(
     CommandImport('HelloCommandTest', 'nimble.mayan.commands.commandTests', 'staticCube'),
     x=-20,
-    height=5
-)
+    height=5 ))
 
-print 'Class result: ', conn.command(
+print('Class result: ', conn.command(
     CommandImport('HelloCommandTest', 'nimble.mayan.commands.commandTests', 'classyCube'),
     x=-20,
-    height=5
-)
+    height=5 ))
 
-print 'Called result: ', conn.command(
+print('Called result: ', conn.command(
     CommandImport('HelloCommandTest', 'nimble.mayan.commands.commandTests'),
     x=-20,
-    height=5
-)
+    height=5 ))
 
-print 'Constructor Called result: ', conn.command(
+print('Constructor Called result: ', conn.command(
     CommandImport(
         'HelloCommandTest',
         'nimble.mayan.commands.commandTests',
-        constructorKwargs={'width':2, 'name':'constructorCalledCube'}
-    ),
+        constructorKwargs={'width':2, 'name':'constructorCalledCube'} ),
     x=-25,
-    height=5
-)
+    height=5 ))
 
-print 'Instance result: ', conn.command(
+print('Instance result: ', conn.command(
     CommandImport('HelloCommandTest', 'nimble.mayan.commands.commandTests', 'instanceCube'),
     x=-20,
-    height=5
-)
+    height=5 ))
 
-print 'Instance result: ', conn.command(
+print('Instance result: ', conn.command(
     CommandImport(
         'HelloCommandTest',
         'nimble.mayan.commands.commandTests',
         'instanceCube',
-        constructorKwargs={'width':2, 'name':'constructorInstanceCube'}
-    ),
+        constructorKwargs={'width':2, 'name':'constructorInstanceCube'} ),
     x=-25,
-    height=5
-)
+    height=5 ))
 
-print 'Function result: ', conn.command(
+print('Function result: ', conn.command(
     CommandImport('functionCube', 'nimble.mayan.commands.commandTests'),
     x=-20,
-    height=5
-)
+    height=5 ))
 
-print 'Tests complete!'
+print('Tests complete!')
