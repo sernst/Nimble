@@ -2,9 +2,12 @@
 # (C)2012-2014
 # Scott Ernst
 
+from __future__ import print_function, absolute_import, unicode_literals, division
+
 import inspect
 import imp
 
+import six
 from pyaid.ArgsUtils import ArgsUtils
 from pyaid.debug.Logger import Logger
 from pyaid.reflection.Reflection import Reflection
@@ -58,7 +61,7 @@ def runPythonExec(script, kwargs =None):
         setattr(module, NimbleEnvironment.REMOTE_RESULT_KEY, dict())
 
         # Executes the script in the new module
-        exec script in module.__dict__
+        six.exec_(script, module.__dict__)
 
         # Find a NimbleScriptBase derived class definition and if it exists, run it to populate the
         # results
