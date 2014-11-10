@@ -8,9 +8,15 @@ from __future__ import print_function, absolute_import, unicode_literals, divisi
 
 import nimble
 from nimble import cmds
+from nimble.error.MayaCommandException import MayaCommandException
 
-cubeNode = cmds.polyCube(width=2, height=2, depth=4)
-print('CREATED:', cubeNode)
+try:
+    cubeNode = cmds.polyCube(width=2, height=2, depth=4)
+    print('CREATED:', cubeNode)
+except MayaCommandException as err:
+    print(err.echo())
+    raise
+
 cubeShape = cmds.listRelatives(cubeNode[0], shapes=True)
 print('SHAPE:', cubeShape)
 

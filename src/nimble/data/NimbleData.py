@@ -24,7 +24,7 @@ class NimbleData(object):
     _NEWLINE_ESCAPE = '##NEWLINE##'
 
 #___________________________________________________________________________________________________ __init__
-    def __init__(self, kind =None, payload =None):
+    def __init__(self, kind =None, payload =None, **kwargs):
         """Creates a new instance of NimbleData."""
         self._kind      = kind if kind else DataKindEnum.GENERAL
         self._payload   = payload if payload else dict()
@@ -85,7 +85,7 @@ class NimbleData(object):
                 message = zlib.decompress(message)
             data = json.loads(message.replace(NimbleData._NEWLINE_ESCAPE, '\n').strip())
         except Exception as err:
-            print('Invalid Nimble Data:')
+            print('Corrupt Nimble Data:')
             print(str(message))
             print(err)
             return None

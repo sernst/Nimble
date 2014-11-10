@@ -27,3 +27,13 @@ class MayaCommandException(Exception):
     @response.setter
     def response(self, value):
         self._responseData = value
+
+#===================================================================================================
+#                                                                                     P U B L I C
+
+#___________________________________________________________________________________________________ echo
+    def echo(self, verbose =True, pretty =True):
+        """echo doc..."""
+        if not self.response:
+            return 'No response data'
+        return self.response.echo(verbose=verbose, pretty=pretty)

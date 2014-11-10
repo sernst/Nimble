@@ -24,7 +24,7 @@ class NimbleServerThread(NimbleThread):
 
 #___________________________________________________________________________________________________ __init__
     def __init__(self, router =None, **kwargs):
-        self.__class__._ACTIVATING = True
+        self._ACTIVATING = True
         NimbleThread.__init__(self, **kwargs)
         self._server = None
         self._router = router
@@ -61,8 +61,8 @@ class NimbleServerThread(NimbleThread):
 #___________________________________________________________________________________________________ _runImpl
     def _runImpl(self):
         self._server = NimbleServer(router=self._router)
-        self.__class__._SERVER_THREAD = self
-        self.__class__._ACTIVATING    = False
+        self._SERVER_THREAD = self
+        self._ACTIVATING    = False
 
         NimbleEnvironment.log(NimbleServerThread._ACTIVE_MESSAGE)
         asyncore.loop()

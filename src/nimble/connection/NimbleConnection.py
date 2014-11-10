@@ -339,12 +339,13 @@ class NimbleConnection(object):
 
             try:
                 self._chunk.clear()
-                self._chunk.writeString(SocketUtils.receiveInChunks(
+                b = SocketUtils.receiveInChunks(
                     self._socket,
-                    chunkSize=NimbleEnvironment.SOCKET_RESPONSE_CHUNK_SIZE) )
+                    chunkSize=NimbleEnvironment.SOCKET_RESPONSE_CHUNK_SIZE)
+                self._chunk.writeString(b)
                 self._chunk.position = 0
                 responseFlags  = self._chunk.readUint32()
-                message        = StringUtils.strToUnicode(str(self._chunk.read(-1)))
+                message        = StringUtils.strToUnicode(self._chunk.read(-1))
 
                 # Break while loop on successful reading of the result
                 if message is not None:

@@ -3,6 +3,7 @@
 # Scott Ernst
 
 from __future__ import print_function, absolute_import, unicode_literals, division
+from pyaid.string.StringUtils import StringUtils
 
 from nimble.NimbleEnvironment import NimbleEnvironment
 
@@ -20,23 +21,29 @@ class SocketUtils(object):
             chunkSize = NimbleEnvironment.SOCKET_CHUNK_SIZE
         chunkSize *= 2
 
+        terminator = StringUtils.unicodeToStr(NimbleEnvironment.TERMINATION_IDENTIFIER)
+
         message = []
         while True:
             try:
                 result = socket.recv(chunkSize)
-                if result.endswith(NimbleEnvironment.TERMINATION_IDENTIFIER):
-                    result = result[:-len(NimbleEnvironment.TERMINATION_IDENTIFIER)]
+                if result.endswith(terminator):
+                    result = result[:-len(terminator)]
                     message.append(result)
                     break
 
                 message.append(result)
 
             except Exception as err:
-                if message[-1].endswith(NimbleEnvironment.TERMINATION_IDENTIFIER):
-                    message[-1] = message[-1][:-len(NimbleEnvironment.TERMINATION_IDENTIFIER)]
+                if not message:
+                    print(err)
+                    raise
+
+                if message[-1].endswith(terminator):
+                    message[-1] = message[-1][:-len(terminator)]
                     break
 
         if not message:
             return None
 
-        return ''.join(message)
+        return StringUtils.unicodeToStr('').join(message)

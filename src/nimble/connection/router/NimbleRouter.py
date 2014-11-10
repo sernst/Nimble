@@ -145,11 +145,9 @@ class NimbleRouter(asynchat.async_chat):
 
         self._chunk.clear()
         self._chunk.writeUint32(flags)
-        self._chunk.writeString(
-            StringUtils.unicodeToStr(responseData.serialize())
-            + NimbleEnvironment.TERMINATION_IDENTIFIER)
-
-        reply     = str(self._chunk.byteArray)
+        self._chunk.writeString(responseData.serialize() + NimbleEnvironment.TERMINATION_IDENTIFIER)
+        print('CHUNK:', self._chunk)
+        reply     = bytes(self._chunk.byteArray)
         keepAlive = self.keepAlive
 
         # Clear state for future use before sending response
@@ -193,8 +191,6 @@ class NimbleRouter(asynchat.async_chat):
 
 #___________________________________________________________________________________________________ _parseData
     def _parseData(self, message, logLevel):
-        cd = NimbleData.fromMessage(message)
-        self._logData(cd, logLevel)
-        return cd
-
-
+        data = NimbleData.fromMessage(message)
+        self._logData(data, logLevel)
+        return data

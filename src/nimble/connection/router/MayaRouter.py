@@ -8,7 +8,6 @@ import sys
 import inspect
 
 from pyaid.ArgsUtils import ArgsUtils
-from pyaid.ModuleUtils import ModuleUtils
 from pyaid.dict.DictUtils import DictUtils
 from pyaid.reflection.Reflection import Reflection
 from pyaid.string.StringUtils import StringUtils
@@ -68,9 +67,9 @@ class MayaRouter(NimbleRouter):
     def runPythonImport(cls, payload):
         try:
             kwargs       = payload.get('kwargs', {})
-            targetModule = StringUtils.unicodeToStr(payload['module'])
-            targetMethod = StringUtils.unicodeToStr(payload.get('method'))
-            targetClass  = StringUtils.unicodeToStr(payload.get('class'))
+            targetModule = StringUtils.toStr2(payload.get('module'))
+            targetMethod = StringUtils.toStr2(payload.get('method'))
+            targetClass  = StringUtils.toStr2(payload.get('class'))
             target       = targetClass if targetClass is not None else targetMethod
             if target is None:
                 parts        = targetModule.rsplit('.', 1)
@@ -88,14 +87,17 @@ class MayaRouter(NimbleRouter):
         # Dynamically import the specified module and reload it to make sure any changes have
         # been updated
         try:
-            module = ModuleUtils.importModule(targetModule, globals(), locals(), [target])
+            module = __import__(
+                StringUtils.toStr2(targetModule),
+                globals(), locals(),
+                [StringUtils.toStr2(target)] if target else [])
             reload(module)
             target = getattr(module, target)
         except Exception as err:
             NimbleEnvironment.logError([
                 'ERROR: Failed to import python target',
-                'MODULE: ' + str(targetModule),
-                'TARGET: ' + str(target),
+                'MODULE: %s' % targetModule,
+                'TARGET: %s' % target,
                 'PAYLOAD: ' + DictUtils.prettyPrint(payload)], err)
             return NimbleResponseData(
                 kind=DataKindEnum.PYTHON_IMPORT,
@@ -114,7 +116,7 @@ class MayaRouter(NimbleRouter):
             else:
                 # Find a NimbleScriptBase derived class definition and if it exists, run it to
                 # populate the results
-                for name,value in Reflection.getReflectionDict(target).iteritems():
+                for name,value in DictUtils.iter(Reflection.getReflectionDict(target)):
                     if not inspect.isclass(value):
                         continue
 

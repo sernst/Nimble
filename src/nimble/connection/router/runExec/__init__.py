@@ -4,10 +4,10 @@
 
 from __future__ import print_function, absolute_import, unicode_literals, division
 
+import sys
 import inspect
 import imp
 
-import six
 from pyaid.ArgsUtils import ArgsUtils
 from pyaid.debug.Logger import Logger
 from pyaid.reflection.Reflection import Reflection
@@ -15,6 +15,33 @@ from pyaid.reflection.Reflection import Reflection
 import nimble
 # AS NEEDED: from nimble.NimbleEnvironment import NimbleEnvironment
 from nimble.mayan.NimbleScriptBase import NimbleScriptBase
+
+# This is taken from six but six can't be installed in Maya easily so it's cut and used here
+if sys.version > '3':
+    def execPy3(_code_, _globs_=None, _locs_=None):
+        if _globs_ is None:
+            frame = sys._getframe(1)
+            _globs_ = frame.f_globals
+            if _locs_ is None:
+                _locs_ = frame.f_locals
+            del frame
+        elif _locs_ is None:
+            _locs_ = _globs_
+        exec("""exec(_code_, _globs_, _locs_)""")
+    exec_ = execPy3
+else:
+    def execPy2(_code_, _globs_=None, _locs_=None):
+        """Execute code in a namespace."""
+        if _globs_ is None:
+            frame = sys._getframe(1)
+            _globs_ = frame.f_globals
+            if _locs_ is None:
+                _locs_ = frame.f_locals
+            del frame
+        elif _locs_ is None:
+            _locs_ = _globs_
+        exec("""exec _code_ in _globs_, _locs_""")
+    exec_ = execPy2
 
 #___________________________________________________________________________________________________ runMelExec
 def runMelExec(script):
@@ -61,7 +88,7 @@ def runPythonExec(script, kwargs =None):
         setattr(module, NimbleEnvironment.REMOTE_RESULT_KEY, dict())
 
         # Executes the script in the new module
-        six.exec_(script, module.__dict__)
+        exec_(script, module.__dict__)
 
         # Find a NimbleScriptBase derived class definition and if it exists, run it to populate the
         # results
