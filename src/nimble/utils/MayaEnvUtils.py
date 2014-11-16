@@ -25,8 +25,8 @@ class MayaEnvUtils(object):
 #                                                                                       C L A S S
 
     MAYA_ENV_MODIFIED_RESULT_NT = namedtuple(
-        u'MAYA_ENV_MODIFIED_RESULT_NT',
-        [u'added', u'removed'])
+        'MAYA_ENV_MODIFIED_RESULT_NT',
+        ['added', 'removed'])
 
     _PYTHON_PATH_PATTERN = re.compile('PYTHONPATH=(?P<paths>[^\n\r]*)')
 
@@ -37,17 +37,17 @@ class MayaEnvUtils(object):
             and return them as a list. If no such env files exist, the method returns an empty
             list. """
 
-        documents = FileUtils.cleanupPath(OsUtils.getDocumentsPath(), isDir=True)
-        if not os.path.exists(documents):
+        home = FileUtils.cleanupPath(OsUtils.getHomePath(), isDir=True)
+        if not os.path.exists(home):
             return []
 
         if OsUtils.isWindows():
-            root = FileUtils.createPath(documents, 'maya', isDir=True)
+            root = FileUtils.createPath(OsUtils.getDocumentsPath(), 'maya', isDir=True)
             if not os.path.exists(root):
                 return []
         elif OsUtils.isMac():
             root = FileUtils.createPath(
-                documents, 'Library', 'Preferences', 'Autodesk', 'maya', isDir=True)
+                home, 'Library', 'Preferences', 'Autodesk', 'maya', isDir=True)
             if not os.path.exists(root):
                 return []
         else:
@@ -61,7 +61,7 @@ class MayaEnvUtils(object):
     @classmethod
     def checkEnvFile(cls, target, otherPaths =None):
         """Doc..."""
-        pathSep   = OsUtils.getPerOsValue(u';', u':')
+        pathSep   = OsUtils.getPerOsValue(';', ':')
         additions = cls._getSourcePaths(otherPaths=otherPaths)
 
         with open(target, 'r') as f:
@@ -88,7 +88,7 @@ class MayaEnvUtils(object):
     @classmethod
     def modifyEnvFile(cls, target, install =True, test =False, otherPaths =None):
         """Doc..."""
-        pathSep   = OsUtils.getPerOsValue(u';', u':')
+        pathSep   = OsUtils.getPerOsValue(';', ':')
         removals  = []
         entries   = cls._getSourcePaths(otherPaths=otherPaths)
         additions = entries + []
@@ -101,7 +101,7 @@ class MayaEnvUtils(object):
             if install and not test:
                 with open(target, 'w') as f:
                     f.write(
-                        (contents + u'\n' if contents else u'') + u'PYTHONPATH='
+                        (contents + '\n' if contents else '') + 'PYTHONPATH='
                         + cls._joinPathEntries(additions) )
             return cls.MAYA_ENV_MODIFIED_RESULT_NT(additions if install else [], removals)
 
@@ -144,7 +144,7 @@ class MayaEnvUtils(object):
         for entry in additions:
             paths.append(entry.folderPath)
 
-        insertion = (u'PYTHONPATH=' + pathSep.join(paths) + u'\n') if paths else u''
+        insertion = ('PYTHONPATH=' + pathSep.join(paths) + '\n') if paths else ''
         contents  = contents[:result.start()] + insertion + contents[result.end():]
 
         result = cls.MAYA_ENV_MODIFIED_RESULT_NT(additions if install else [], removals)
@@ -173,7 +173,7 @@ class MayaEnvUtils(object):
         out = []
         for entry in entries:
             out.append(entry.folderPath)
-        return OsUtils.getPerOsValue(u';', u':').join(out)
+        return OsUtils.getPerOsValue(';', ':').join(out)
 
 #___________________________________________________________________________________________________ _getSourcePaths
     @classmethod
@@ -206,5 +206,5 @@ class MayaEnvUtils(object):
     @classmethod
     def _handleFindEnvFiles(cls, walkData):
         for name in walkData.names:
-            if name == u'Maya.env':
+            if name == 'Maya.env':
                 walkData.data.append(FileUtils.createPath(walkData.folder, name))
