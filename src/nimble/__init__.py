@@ -43,8 +43,7 @@ def startServer(logLevel =0, router =None, inMaya =None):
             automatically by the Nimble environment settings. However, in some cases the
             determination can be incorrect if your external or Maya Python interpreters have been
             modified to fool the environment test. In such cases this may need to be explicitly
-            set.
-    """
+            set. """
 
     NimbleEnvironment.inMaya(override=inMaya)
     NimbleEnvironment.setServerLogLevel(logLevel)
@@ -63,8 +62,7 @@ def changeServerLogLevel(logLevel =0):
                 [#item]0 (default): Only log critical actions.[/#item]
                 [#item]1: Additionally log warnings as well as succinct activity.[/#item]
                 [#item]2: Full verbose logging of all activity.[/#item]
-            [/#list]
-    """
+            [/#list] """
 
     return NimbleEnvironment.setServerLogLevel(logLevel)
 
@@ -81,8 +79,7 @@ def enablePythonTestMode(value):
 #___________________________________________________________________________________________________ stopServer
 def stopServer():
     """ Stops the currently running server if one is active. If no server is active this method
-        will fail silently, no exception will be thrown, making it safe to call at any time.
-    """
+        will fail silently, no exception will be thrown, making it safe to call at any time. """
 
     return NimbleServerThread.closeServer()
 
@@ -99,8 +96,7 @@ def echoServerStatus():
                 [#item]0: Server is inactive.[/#item]
                 [#item]1: Server is loading.[/#item]
                 [#item]2: Server is active and ready for communication.[/#item]
-            [/#list]
-    """
+            [/#list] """
 
     if NimbleServerThread.isActivating():
         print('Nimble server is loading')
@@ -118,19 +114,19 @@ def getConnection(inMaya =None, forceCreate =False):
     """ Retrieves a communication connection object from the connection pool, which is used for
         sending commands to the remote nimble server.
 
-        @@@param inMaya:boolean
+        :param inMaya | boolean
             Whether or not the server is being run in Maya. By default this is determined
             automatically by the Nimble environment settings. However, in some cases the
             determination can be incorrect if your external or Maya Python interpreters have been
             modified to fool the environment test. In such cases this may need to be explicitly
             set.
 
-        @@@param forceCreate:boolean
+        :param forceCreate | boolean
             If True a new connection will be created even if one already exists and is available.
             This should rarely be used but can be useful in multi-threaded situations where sharing
             a single connection could be harmful.
 
-        @@@returns NimbleConnection
+        :return NimbleConnection
             A NimbleConnection instance opened and ready for issuing commands to the remote server.
     """
 

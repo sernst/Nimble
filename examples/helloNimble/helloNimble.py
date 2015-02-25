@@ -34,8 +34,8 @@ from __future__ import print_function, absolute_import, unicode_literals, divisi
 from nimble import cmds
 
 # Create a sphere
-sphere = cmds.sphere()
+sphereName, sphereShape = cmds.sphere()
 
 # Move the created sphere to x=10
-cmds.move(10, 0, 0, sphere[0])
+cmds.move(10, 0, 0, sphereName)
 

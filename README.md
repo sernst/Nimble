@@ -31,7 +31,7 @@ Then, after opening Maya, run the commands:
 
 ```python
 import nimble
-numble.startServer()
+nimble.startServer()
 ```
 
 This starts the nimble service inside your Python environment. Once loaded, the event-based server will wait for external communication.
