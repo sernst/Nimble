@@ -82,7 +82,9 @@ class MayaRouter(NimbleRouter):
                 'PAYLOAD: ' + DictUtils.prettyPrint(payload)], err)
             return NimbleResponseData(
                 kind=DataKindEnum.PYTHON_IMPORT,
-                error=str(err),
+                error=cls._getDetailedError('\n'.join([
+                    'ERROR: Failed to parse python import payload',
+                    'PAYLOAD: ' + DictUtils.prettyPrint(payload)]), err),
                 response=NimbleResponseData.FAILED_RESPONSE)
 
         # Dynamically import the specified module and reload it to make sure any changes have
@@ -280,20 +282,38 @@ class MayaRouter(NimbleRouter):
                 error=DataErrorEnum.UNRECOGNIZED_MAYA_COMMAND,
                 response=NimbleResponseData.FAILED_RESPONSE )
 
+        args = None
+        kwargs = None
         try:
-            result = cmd(
-                *payload['args'],
-                **DictUtils.cleanDictKeys(payload['kwargs']) )
+            kwargs = DictUtils.cleanDictKeys(payload['kwargs'], True)
+            args = payload['args']
+
+            try:
+                result = cmd(*args, **kwargs)
+            except Exception:
+                # Attempts to remove an empty key if one is somehow created
+                if '' in kwargs:
+                    del kwargs['']
+                else:
+                    raise
+                result = cmd(*args, **kwargs)
+
             if createReply:
                 return cls.createReply(DataKindEnum.MAYA_COMMAND, result)
             else:
                 return result
         except Exception as err:
+            print('ERROR:', cmd, args, kwargs)
+            message = '\n'.join([
+                'Failed to execute maya command with payload:',
+                'CMD {}'.format(cmd),
+                'PAYLOAD: {}'.format(DictUtils.prettyPrint(payload)),
+                'ARGS: {}'.format(args),
+                'KWARGS: {}'.format(DictUtils.prettyPrint(kwargs)) ])
+
             return NimbleResponseData(
                 kind=DataKindEnum.MAYA_COMMAND,
-                error=cls._getDetailedError(
-                    'Failed to execute maya command with payload: ' +
-                    DictUtils.prettyPrint(payload), err),
+                error=cls._getDetailedError(message, err),
                 response=NimbleResponseData.FAILED_RESPONSE )
 
 #___________________________________________________________________________________________________ _executeMayaCommandBatch
@@ -340,8 +360,10 @@ class MayaRouter(NimbleRouter):
 #_______________________________________________________________________________
     @classmethod
     def _getDetailedError(cls, message, error):
-        return Logger.logMessageToString(Logger.createLogMessage(
-            logValue=Logger.createErrorMessage(message, error),
-            traceStack=True,
-            shaveStackTrace=0,
-            htmlEscape=False))
+        return '\n'.join([
+            Logger.logMessageToString(Logger.createLogMessage(
+                logValue=Logger.createErrorMessage(message, error),
+                traceStack=True,
+                shaveStackTrace=0,
+                htmlEscape=False)),
+            'VERSION: {}'.format(sys.version) ])
