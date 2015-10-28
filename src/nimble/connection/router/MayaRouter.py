@@ -8,6 +8,7 @@ import sys
 import inspect
 
 from pyaid.ArgsUtils import ArgsUtils
+from pyaid.debug.Logger import Logger
 from pyaid.dict.DictUtils import DictUtils
 from pyaid.reflection.Reflection import Reflection
 from pyaid.string.StringUtils import StringUtils
@@ -101,7 +102,8 @@ class MayaRouter(NimbleRouter):
                 'PAYLOAD: ' + DictUtils.prettyPrint(payload)], err)
             return NimbleResponseData(
                 kind=DataKindEnum.PYTHON_IMPORT,
-                error=str(err),
+                error=cls._getDetailedError(
+                    'Failed to import python module', err),
                 response=NimbleResponseData.FAILED_RESPONSE)
 
         try:
@@ -141,7 +143,7 @@ class MayaRouter(NimbleRouter):
                 'TARGET: ' + str(target)], err)
             return NimbleResponseData(
                 kind=DataKindEnum.PYTHON_IMPORT,
-                error=msg + ': ' + str(err),
+                error=cls._getDetailedError(msg, err),
                 response=NimbleResponseData.FAILED_RESPONSE)
 
 #___________________________________________________________________________________________________
@@ -225,7 +227,8 @@ class MayaRouter(NimbleRouter):
                 return NimbleResponseData(
                     kind=DataKindEnum.COMMAND,
                     response=NimbleResponseData.FAILED_RESPONSE,
-                    error=str(err) )
+                    error=cls._getDetailedError(
+                        'Failed to import remote command module', err) )
 
             if method:
                 targetObject = getattr(Target, method)
@@ -245,7 +248,7 @@ class MayaRouter(NimbleRouter):
             return NimbleResponseData(
                 kind=DataKindEnum.COMMAND,
                 response=NimbleResponseData.FAILED_RESPONSE,
-                error=str(err) )
+                error=cls._getDetailedError('Failed to execute command', err) )
 
 #___________________________________________________________________________________________________ _instantiateClass
     @classmethod
@@ -288,7 +291,9 @@ class MayaRouter(NimbleRouter):
         except Exception as err:
             return NimbleResponseData(
                 kind=DataKindEnum.MAYA_COMMAND,
-                error=str(err),
+                error=cls._getDetailedError(
+                    'Failed to execute maya command with payload: ' +
+                    DictUtils.prettyPrint(payload), err),
                 response=NimbleResponseData.FAILED_RESPONSE )
 
 #___________________________________________________________________________________________________ _executeMayaCommandBatch
@@ -320,7 +325,8 @@ class MayaRouter(NimbleRouter):
         except Exception as err:
             return NimbleResponseData(
                 kind=DataKindEnum.PYTHON_SCRIPT_FILE,
-                error=str(err),
+                error=cls._getDetailedError(
+                    'Failed to run python file', err),
                 response=NimbleResponseData.FAILED_RESPONSE)
 
         if not script:
@@ -331,3 +337,11 @@ class MayaRouter(NimbleRouter):
 
         return runPythonExec(script, payload['kwargs'])
 
+#_______________________________________________________________________________
+    @classmethod
+    def _getDetailedError(cls, message, error):
+        return Logger.logMessageToString(Logger.createLogMessage(
+            logValue=Logger.createErrorMessage(message, error),
+            traceStack=True,
+            shaveStackTrace=0,
+            htmlEscape=False))

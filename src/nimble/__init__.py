@@ -2,9 +2,23 @@
 # (C)2012-2014
 # Scott Ernst
 
-from __future__ import print_function, absolute_import, unicode_literals, division
+from __future__ import \
+    print_function, absolute_import, \
+    unicode_literals, division
 
+import sys
 import atexit
+
+try:
+    # Attempts to import PyAid immediately to make sure the library is
+    # available on the path before trying to go further.
+    import pyaid
+except Exception:
+    print('\n'.join([
+        '[ERROR]: Nimble was unable to source PyAid.'
+        'Please make sure PyAid is included in your Python Paths:']))
+    print(sys.path)
+    raise
 
 from nimble.NimbleEnvironment import NimbleEnvironment
 from nimble.connection.NimbleConnection import NimbleConnection

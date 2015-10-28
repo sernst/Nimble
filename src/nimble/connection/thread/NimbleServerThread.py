@@ -2,7 +2,9 @@
 # (C)2012 http://www.ThreeAddOne.com
 # Scott Ernst
 
-from __future__ import print_function, absolute_import, unicode_literals, division
+from __future__ import \
+    print_function, absolute_import, \
+    unicode_literals, division
 
 import asyncore
 
@@ -53,6 +55,7 @@ class NimbleServerThread(NimbleThread):
             return False
 
         cls._SERVER_THREAD.stopServer()
+        cls._SERVER_THREAD = None
         return True
 
 #===================================================================================================
