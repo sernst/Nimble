@@ -241,7 +241,10 @@ class NimbleConnection(object):
 
         self._activatedTime = TimeUtils.getNowSeconds()
         try:
-            target = ('localhost', NimbleEnvironment.getConnectionPort())
+            target = (
+                NimbleEnvironment.getConnectionHost(),
+                NimbleEnvironment.getConnectionPort()
+            )
             self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
             # Sets socket option to prevent connection being refused by TCP reconnecting

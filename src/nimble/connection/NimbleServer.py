@@ -26,7 +26,10 @@ class NimbleServer(asyncore.dispatcher):
         try:
             self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
             self.set_reuse_addr()
-            self.bind(('localhost', NimbleEnvironment.getServerPort()))
+            self.bind((
+                NimbleEnvironment.getServerHost(),
+                NimbleEnvironment.getServerPort()
+            ))
             self.listen(5)
         except Exception as err:
             NimbleEnvironment.logError(

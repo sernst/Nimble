@@ -24,6 +24,9 @@ class NimbleEnvironment(object):
     # Default flags sent with client requests to nimble server
     CONNECTION_FLAGS        = 0x00000000
 
+    SERVER_HOST = None
+    CONNECTION_HOST = None
+
     # When true NimbleRemoteScripts are run in the remote environment by default instead of
     # within Maya. Makes it possible to debug without reloading Maya's Python interpreter for
     # each change. Disable when running in production.
@@ -143,13 +146,20 @@ class NimbleEnvironment(object):
 
 
     @classmethod
-    def getServerPort(cls, inMaya =None):
+    def getServerPort(cls, inMaya=None):
         return cls._mayaPort if cls.inMaya(override=inMaya) else cls._externalPort
 
+    @classmethod
+    def getServerHost(cls):
+        return cls.SERVER_HOST if cls.SERVER_HOST else 'localhost'
 
     @classmethod
-    def getConnectionPort(cls, inMaya =None):
+    def getConnectionPort(cls, inMaya=None):
         return cls._externalPort if cls.inMaya(override=inMaya) else cls._mayaPort
+
+    @classmethod
+    def getConnectionHost(cls):
+        return cls.CONNECTION_HOST if cls.CONNECTION_HOST else 'localhost'
 
 #===================================================================================================
 #                                                                               P R O T E C T E D
