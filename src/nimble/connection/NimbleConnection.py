@@ -1,15 +1,18 @@
 # NimbleConnection.py
-# (C)2012-2014
+# (C)2012-2017
 # Scott Ernst
 
-from __future__ import print_function, absolute_import, unicode_literals, division
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
+from __future__ import division
 
-import time
 import socket
+import time
 
+from pyaid.string.ByteChunk import ByteChunk
 from pyaid.string.StringUtils import StringUtils
 from pyaid.time.TimeUtils import TimeUtils
-from pyaid.string.ByteChunk import ByteChunk
 
 import nimble
 from nimble.NimbleEnvironment import NimbleEnvironment
@@ -20,7 +23,6 @@ from nimble.data.enum.DataKindEnum import DataKindEnum
 from nimble.enum.ConnectionFlags import ConnectionFlags
 from nimble.error.MayaCommandException import MayaCommandException
 from nimble.utils.SocketUtils import SocketUtils
-from nimble.mayan.scripts.render import RenderScene
 
 
 class NimbleConnection(object):
@@ -55,18 +57,6 @@ class NimbleConnection(object):
         """
 
         return self._active
-
-    def render(self, directory=None, name=None, flags=None):
-        """
-        Renders the current scene and saves the result to an image file
-        """
-
-        return self.runPythonModule(
-            RenderScene,
-            name=name,
-            directory=directory,
-            render_flags=flags
-        )
 
     def echo(self, message):
         return self._send(NimbleData(kind=DataKindEnum.ECHO, payload={'echo':message}))
