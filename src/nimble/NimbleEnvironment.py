@@ -12,7 +12,9 @@ import threading
 from pyaid.debug.Logger import Logger
 from pyaid.decorators.ClassGetter import ClassGetter
 
-#___________________________________________________________________________________________________ NimbleEnvironment
+from nimble import execution
+
+
 class NimbleEnvironment(object):
     """A class for..."""
 
@@ -115,7 +117,7 @@ class NimbleEnvironment(object):
     def logError(cls, *args, **kwargs):
         isInMaya = cls.inMaya() and cls._mayaUtils is not None
         if isInMaya and not threading.currentThread().name.lower() == 'mainthread':
-            cls._mayaUtils.executeInMainThreadWithResult(cls._logError, *args, **kwargs)
+            execution.executeWithResult(cls._logError, *args, **kwargs)
         else:
             cls.logger.writeError(*args, **kwargs)
 
@@ -124,7 +126,7 @@ class NimbleEnvironment(object):
     def log(cls, message):
         isInMaya = cls.inMaya() and cls._mayaUtils is not None
         if isInMaya and not threading.currentThread().name.lower() == 'mainthread':
-            cls._mayaUtils.executeInMainThreadWithResult(cls._logMessage, message)
+            execution.executeWithResult(cls._logMessage, message)
         else:
             cls._logMessage(message)
 

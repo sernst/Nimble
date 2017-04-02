@@ -1,5 +1,5 @@
 # MayaRouter.py
-# (C)2012-2014
+# (C)2012-2017
 # Scott Ernst
 
 from __future__ import print_function, absolute_import, unicode_literals, division
@@ -21,12 +21,11 @@ from nimble.data.NimbleResponseData import NimbleResponseData
 from nimble.data.enum.DataErrorEnum import DataErrorEnum
 from nimble.data.enum.DataKindEnum import DataKindEnum
 from nimble.mayan.NimbleScriptBase import NimbleScriptBase
+from nimble import execution
 
 try:
     # noinspection PyUnresolvedReferences
     import maya.cmds as mc
-    # noinspection PyUnresolvedReferences
-    import maya.utils as mu
     _runningInMaya = True
 except Exception:
     _runningInMaya = False
@@ -153,30 +152,30 @@ class MayaRouter(NimbleRouter):
     def processRequest(cls, data):
         result = None
         if data.kind == DataKindEnum.MEL_SCRIPT:
-            result = mu.executeInMainThreadWithResult(runMelExec, data.payload['script'])
+            result = execution.executeWithResult(runMelExec, data.payload['script'])
         elif data.kind == DataKindEnum.PYTHON_SCRIPT:
-            result = mu.executeInMainThreadWithResult(
+            result = execution.executeWithResult(
                 runPythonExec,
                 data.payload['script'],
                 data.payload['kwargs'])
         elif data.kind == DataKindEnum.MAYA_COMMAND:
-            result = mu.executeInMainThreadWithResult(
+            result = execution.executeWithResult(
                 cls._executeMayaCommand,
                 data.payload)
         elif data.kind == DataKindEnum.MAYA_COMMAND_BATCH:
-            result = mu.executeInMainThreadWithResult(
+            result = execution.executeWithResult(
                 cls._executeMayaCommandBatch,
                 data.payload)
         elif data.kind == DataKindEnum.COMMAND:
-            result = mu.executeInMainThreadWithResult(
+            result = execution.executeWithResult(
                 cls._executeCommand,
                 data.payload)
         elif data.kind == DataKindEnum.PYTHON_SCRIPT_FILE:
-            result = mu.executeInMainThreadWithResult(
+            result = execution.executeWithResult(
                 cls._runPythonFile,
                 data.payload)
         elif data.kind == DataKindEnum.PYTHON_IMPORT:
-            result = mu.executeInMainThreadWithResult(
+            result = execution.executeWithResult(
                 cls.runPythonImport,
                 data.payload)
 
