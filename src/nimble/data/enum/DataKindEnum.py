@@ -4,7 +4,7 @@
 
 from __future__ import print_function, absolute_import, unicode_literals, division
 
-#___________________________________________________________________________________________________ DataKindEnum
+
 class DataKindEnum(object):
 
 #===================================================================================================
@@ -30,5 +30,4 @@ class DataKindEnum(object):
 
     PYTHON_SCRIPT_FILE  = 'python_script_file'
 
-    PYTHON_IMPORT        = 'python_import'
-
+    PYTHON_IMPORT       = 'python_import'

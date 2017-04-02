@@ -6,7 +6,7 @@ from __future__ import print_function, absolute_import, unicode_literals, divisi
 
 from nimble.data.NimbleData import NimbleData
 
-#___________________________________________________________________________________________________ NimbleResponseData
+
 class NimbleResponseData(NimbleData):
     """A class for..."""
 
@@ -16,7 +16,7 @@ class NimbleResponseData(NimbleData):
     SUCCESS_RESPONSE = 'success'
     FAILED_RESPONSE  = 'failed'
 
-#___________________________________________________________________________________________________ __init__
+
     def __init__(self, **kwargs):
         """Creates a new instance of NimbleResponseData."""
         NimbleData.__init__(self, **kwargs)
@@ -28,7 +28,7 @@ class NimbleResponseData(NimbleData):
 #===================================================================================================
 #                                                                                   G E T / S E T
 
-#___________________________________________________________________________________________________ GS: result
+
     @property
     def result(self):
         try:
@@ -36,7 +36,7 @@ class NimbleResponseData(NimbleData):
         except Exception:
             return None
 
-#___________________________________________________________________________________________________ GS: success
+
     @property
     def success(self):
         return self.response == NimbleResponseData.SUCCESS_RESPONSE
@@ -44,7 +44,7 @@ class NimbleResponseData(NimbleData):
 #===================================================================================================
 #                                                                               P R O T E C T E D
 
-#___________________________________________________________________________________________________ _createMessage
+
     def _createMessage(self):
         """Doc..."""
         d = NimbleData._createMessage(self)
@@ -61,6 +61,6 @@ class NimbleResponseData(NimbleData):
 #===================================================================================================
 #                                                                               I N T R I N S I C
 
-#___________________________________________________________________________________________________ __str__
+
     def __str__(self):
         return '<%s::%s>' % (self.__class__.__name__, str(self.kind))

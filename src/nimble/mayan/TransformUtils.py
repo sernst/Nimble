@@ -7,14 +7,14 @@ from __future__ import print_function, absolute_import, unicode_literals, divisi
 from nimble import cmds
 from nimble.utils.data.BoundingBox3D import BoundingBox3D
 
-#___________________________________________________________________________________________________ TransformUtils
+
 class TransformUtils(object):
     """A class for..."""
 
 #===================================================================================================
 #                                                                                       C L A S S
 
-#___________________________________________________________________________________________________ getBoundingBox
+
     @classmethod
     def getBoundingBox(cls, dagPath):
         """ Calculates the world bounding box for the specified dag path and returns a

@@ -4,14 +4,14 @@
 
 from __future__ import print_function, absolute_import, unicode_literals, division
 
-#___________________________________________________________________________________________________ MayaCommandException
+
 class MayaCommandException(Exception):
     """A class for..."""
 
 #===================================================================================================
 #                                                                                       C L A S S
 
-#___________________________________________________________________________________________________ __init__
+
     def __init__(self, *args, **kwargs):
         """Creates a new instance of MayaCommandException."""
         self._responseData = kwargs.get('response') if 'response' in kwargs else None
@@ -20,7 +20,7 @@ class MayaCommandException(Exception):
 #===================================================================================================
 #                                                                                   G E T / S E T
 
-#___________________________________________________________________________________________________ GS: response
+
     @property
     def response(self):
         return self._responseData
@@ -31,7 +31,7 @@ class MayaCommandException(Exception):
 #===================================================================================================
 #                                                                                     P U B L I C
 
-#___________________________________________________________________________________________________ echo
+
     def echo(self, verbose =True, pretty =True):
         """echo doc..."""
         if not self.response:

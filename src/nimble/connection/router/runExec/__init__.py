@@ -43,7 +43,7 @@ else:
         exec("""exec _code_ in _globs_, _locs_""")
     exec_ = execPy2
 
-#___________________________________________________________________________________________________ runMelExec
+
 def runMelExec(script):
     try:
         nimble.cmds.undoInfo(openChunk=True)
@@ -68,7 +68,7 @@ def runMelExec(script):
 
     return result
 
-#___________________________________________________________________________________________________ runPythonExec
+
 def runPythonExec(script, kwargs =None):
     from nimble.NimbleEnvironment import NimbleEnvironment
     from nimble.data.NimbleResponseData import NimbleResponseData

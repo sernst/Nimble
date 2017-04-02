@@ -7,14 +7,14 @@ from pyaid.string.StringUtils import StringUtils
 
 from nimble.NimbleEnvironment import NimbleEnvironment
 
-#___________________________________________________________________________________________________ SocketUtils
+
 class SocketUtils(object):
     """A class for..."""
 
 #===================================================================================================
 #                                                                                       C L A S S
 
-#___________________________________________________________________________________________________ receiveInChunks
+
     @classmethod
     def receiveInChunks(cls, socket, chunkSize =None, echo =False):
         if chunkSize is None:

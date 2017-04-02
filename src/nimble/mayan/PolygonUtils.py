@@ -8,7 +8,7 @@ import re
 
 from nimble import cmds
 
-#___________________________________________________________________________________________________ PolygonUtils
+
 class PolygonUtils(object):
     """A class for..."""
 
@@ -20,28 +20,28 @@ class PolygonUtils(object):
     _VERTEX_INDEX_RE      = re.compile('\[(?P<v>[0-9:]+)]$')
     _VERTEX_FACE_INDEX_RE = re.compile('\[(?P<v>[0-9:]+)]\[(?P<f>[0-9:]+)]$')
 
-#___________________________________________________________________________________________________ edgeToVertices
+
     @classmethod
     def edgeToVertices(cls, transform, edgeIndex):
         return cls._getIndexesFromSelectionList(
             cmds.polyListComponentConversion(
                '%s.e[%s]' % (transform, edgeIndex), fromEdge=True, toVertex=True) )
 
-#___________________________________________________________________________________________________ edgeToFaces
+
     @classmethod
     def edgeToFaces(cls, transform, edgeIndex):
         return cls._getIndexesFromSelectionList(
             cmds.polyListComponentConversion(
                '%s.e[%s]' % (transform, edgeIndex), fromEdge=True, toFace=True) )
 
-#___________________________________________________________________________________________________ vertexToFaces
+
     @classmethod
     def vertexToFaces(cls, transform, vertexIndex):
         return cls._getIndexesFromSelectionList(
            cmds.polyListComponentConversion(
                '%s.vtx[%s]' % (transform, vertexIndex), fv=True, tvf=True) )
 
-#___________________________________________________________________________________________________ faceToVertexIndices
+
     @classmethod
     def faceToVertexIndices(cls, transform, faceIndex):
         """ This method exists to convert a face to a list of correctly (counter-clockwise) ordered
@@ -58,7 +58,7 @@ class PolygonUtils(object):
            vertexIndices.append(int(result.groupdict()['v']))
         return vertexIndices
 
-#___________________________________________________________________________________________________ vertexFaceToUVCoordinate
+
     @classmethod
     def vertexFaceToUVCoordinate(cls, transform, vertexIndex, faceIndex):
         uvIndexes = cls._getIndexesFromSelectionList(
@@ -68,13 +68,13 @@ class PolygonUtils(object):
             return None
         return cmds.getAttr('%s.uv[%s]' % (transform, uvIndexes[0]))[0]
 
-#___________________________________________________________________________________________________ vertexFaceToNormal
+
     @classmethod
     def vertexFaceToNormal(cls, transform, vertexIndex, faceIndex):
         return cmds.polyNormalPerVertex(
            '%s.vtxFace[%s][%s]' % (transform, vertexIndex, faceIndex), query=True, xyz=True)
 
-#___________________________________________________________________________________________________ getPositionOfVertex
+
     @classmethod
     def getPositionOfVertex(cls, transform, vertexIndex):
         return cmds.xform('%s.pnts[%s]' % (transform, vertexIndex),
@@ -85,7 +85,7 @@ class PolygonUtils(object):
 #===================================================================================================
 #                                                                               P R O T E C T E D
 
-#___________________________________________________________________________________________________ _getIndexesFromSelectionList
+
     @classmethod
     def _getIndexesFromSelectionList(cls, selectionList):
         indexes = []

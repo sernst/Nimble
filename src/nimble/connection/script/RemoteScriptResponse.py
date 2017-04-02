@@ -7,14 +7,14 @@ from pyaid.dict.DictUtils import DictUtils
 
 from nimble.NimbleEnvironment import NimbleEnvironment
 
-#___________________________________________________________________________________________________ RemoteScriptResponse
+
 class RemoteScriptResponse(object):
     """A class for..."""
 
 #===================================================================================================
 #                                                                                       C L A S S
 
-#___________________________________________________________________________________________________ __init__
+
     def __init__(self, scriptGlobalVars =None):
         """Creates a new instance of RemoteScriptResponse."""
         self._result = None
@@ -24,12 +24,12 @@ class RemoteScriptResponse(object):
 #===================================================================================================
 #                                                                                   G E T / S E T
 
-#___________________________________________________________________________________________________ GS: success
+
     @property
     def success(self):
         return self._success
 
-#___________________________________________________________________________________________________ GS: result
+
     @property
     def result(self):
         if self._scriptGlobalVars:
@@ -43,19 +43,19 @@ class RemoteScriptResponse(object):
 #===================================================================================================
 #                                                                                     P U B L I C
 
-#___________________________________________________________________________________________________ remove
+
     def remove(self, key):
         """ Remove the specified key if it exists. """
         if key in self.result:
             del self.result[key]
 
-#___________________________________________________________________________________________________ fetch
+
     def fetch(self, key, defaultValue =None):
         """ Fetches the specified key if it exists and is not None, or returns the defaultValue
             otherwise. """
         return self.result.get(key, defaultValue)
 
-#___________________________________________________________________________________________________ put
+
     def put(self, key, value):
         """ Adds the specified key-value pair to the response """
         if value is None:
@@ -63,12 +63,12 @@ class RemoteScriptResponse(object):
         else:
             self.result[key] = value
 
-#___________________________________________________________________________________________________ puts
+
     def puts(self, **kwargs):
         for key, value in DictUtils.iter(kwargs):
             self.put(key, value)
 
-#___________________________________________________________________________________________________ addWarning
+
     def addWarning(self, message):
         if message is None:
             return
@@ -77,7 +77,7 @@ class RemoteScriptResponse(object):
             self.result[NimbleEnvironment.REMOTE_RESULT_WARNING_KEY] = []
         self.result[NimbleEnvironment.REMOTE_RESULT_WARNING_KEY].append(message)
 
-#___________________________________________________________________________________________________ putError
+
     def putError(self, message):
         if message is None:
             self._success = True
@@ -91,10 +91,10 @@ class RemoteScriptResponse(object):
 #===================================================================================================
 #                                                                               I N T R I N S I C
 
-#___________________________________________________________________________________________________ __repr__
+
     def __repr__(self):
         return self.__str__()
 
-#___________________________________________________________________________________________________ __str__
+
     def __str__(self):
         return '<%s>' % self.__class__.__name__

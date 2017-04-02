@@ -12,14 +12,14 @@ from nimble.connection.router.NimbleRouter import NimbleRouter
 
 #AS NEEDED: from nimble.connection.router.MayaRouter import MayaRouter
 
-#___________________________________________________________________________________________________ NimbleServer
+
 class NimbleServer(asyncore.dispatcher):
     """A class for..."""
 
 #===================================================================================================
 #                                                                                       C L A S S
 
-#___________________________________________________________________________________________________ __init__
+
     def __init__(self, router =None):
         asyncore.dispatcher.__init__(self)
 
@@ -42,17 +42,17 @@ class NimbleServer(asyncore.dispatcher):
         else:
             self._router = router
 
-#___________________________________________________________________________________________________ handle_accept
+
     def handle_accept(self):
         pair = self.accept()
         if pair is not None:
             sock, address = pair
             self._router(sock)
 
-#___________________________________________________________________________________________________ handle_close
+
     def handle_close(self):
         self.close()
 
-#___________________________________________________________________________________________________ handle_connect
+
     def handle_connect(self):
         pass

@@ -7,7 +7,7 @@ from __future__ import print_function, absolute_import, unicode_literals, divisi
 from nimble import cmds
 from nimble import NimbleScriptBase
 
-#___________________________________________________________________________________________________ ShrinkToBounds
+
 class ShrinkToBounds(NimbleScriptBase):
     """ Scales each of the selected transform objects in the scene proportionally so that they fit
         within the specified spatial extents along the three spatial axes.
@@ -32,7 +32,7 @@ class ShrinkToBounds(NimbleScriptBase):
 #===================================================================================================
 #                                                                                       C L A S S
 
-#___________________________________________________________________________________________________ __init__
+
     def __init__(self):
         """Creates a new instance of ShrinkToBounds."""
         NimbleScriptBase.__init__(self)
@@ -44,7 +44,7 @@ class ShrinkToBounds(NimbleScriptBase):
 #===================================================================================================
 #                                                                                     P U B L I C
 
-#___________________________________________________________________________________________________ run
+
     def run(self):
         """Doc..."""
         self.x = self.fetch('x', None)
@@ -71,7 +71,7 @@ class ShrinkToBounds(NimbleScriptBase):
 #===================================================================================================
 #                                                                               P R O T E C T E D
 
-#___________________________________________________________________________________________________ _scaleItem
+
     def _scaleItem(self, item):
 
         bbox = cmds.exactWorldBoundingBox(item)

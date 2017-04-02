@@ -6,7 +6,7 @@ from __future__ import print_function, absolute_import, unicode_literals, divisi
 
 import functools
 
-#___________________________________________________________________________________________________ CustomCommandLink
+
 class CustomCommandLink(object):
     """ Wraps the remote nimble scripts in the specified package in a dot-syntax callable format
         that can be used transparently on either side of a nimble bridge. """
@@ -14,7 +14,7 @@ class CustomCommandLink(object):
 #===================================================================================================
 #                                                                                       C L A S S
 
-#___________________________________________________________________________________________________ __init__
+
     def __init__(self, connection, rootPackage =None):
         """Creates a new instance of CustomCommandLink."""
 
@@ -27,7 +27,7 @@ class CustomCommandLink(object):
 #===================================================================================================
 #                                                                               I N T R I N S I C
 
-#___________________________________________________________________________________________________ __call__
+
     def __call__(self, *args, **kwargs):
         if not args:
             return self
@@ -36,11 +36,11 @@ class CustomCommandLink(object):
             connection=self._connection,
             rootPackage=self.rootPackage + u'.' + args[0])
 
-#___________________________________________________________________________________________________ __getitem__
+
     def __getitem__(self, item):
         return self.__call__(item)
 
-#___________________________________________________________________________________________________ __getattr__
+
     def __getattr__(self, item):
         if item.startswith('_'):
             raise AttributeError
@@ -49,10 +49,10 @@ class CustomCommandLink(object):
         out = functools.partial(func, self.rootPackage + u'.' + item, className=item)
         return out
 
-#___________________________________________________________________________________________________ __repr__
+
     def __repr__(self):
         return self.__str__()
 
-#___________________________________________________________________________________________________ __str__
+
     def __str__(self):
         return '<%s>' % self.__class__.__name__

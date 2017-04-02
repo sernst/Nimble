@@ -19,13 +19,13 @@ from nimble.data.enum.DataErrorEnum import DataErrorEnum
 from nimble.data.enum.DataKindEnum import DataKindEnum
 from nimble.enum.ConnectionFlags import ConnectionFlags
 
-#___________________________________________________________________________________________________ NimbleRouter
+
 class NimbleRouter(asynchat.async_chat):
 
 #===================================================================================================
 #                                                                                       C L A S S
 
-#___________________________________________________________________________________________________ __init__
+
     def __init__(self, sock):
         asynchat.async_chat.__init__(self, sock=sock)
         self._createTime    = TimeUtils.getNowSeconds()
@@ -40,7 +40,7 @@ class NimbleRouter(asynchat.async_chat):
 #===================================================================================================
 #                                                                                   G E T / S E T
 
-#___________________________________________________________________________________________________ GS: keepAlive
+
     @property
     def keepAlive(self):
         return self._requestFlags & ConnectionFlags.KEEP_ALIVE \
@@ -49,13 +49,13 @@ class NimbleRouter(asynchat.async_chat):
 #===================================================================================================
 #                                                                                     P U B L I C
 
-#___________________________________________________________________________________________________ collect_incoming_data
+
     def collect_incoming_data(self, data):
         """Buffer the data until the terminator is found"""
         if data:
             self._data.append(data)
 
-#___________________________________________________________________________________________________ found_terminator
+
     def found_terminator(self):
         if self.handling:
             return
@@ -69,7 +69,7 @@ class NimbleRouter(asynchat.async_chat):
         self._message        = StringUtils.strToUnicode(str(self._chunk.read(-1)))
         self.handle_request()
 
-#___________________________________________________________________________________________________ handle_read
+
     def handle_request(self):
         message = self._message
         if not message:
@@ -107,7 +107,7 @@ class NimbleRouter(asynchat.async_chat):
 #===================================================================================================
 #                                                                               P R O T E C T E D
 
-#___________________________________________________________________________________________________ _resetRouterState
+
     def _resetRouterState(self):
         self.set_terminator(NimbleEnvironment.TERMINATION_IDENTIFIER)
         self._data          = []
@@ -116,7 +116,7 @@ class NimbleRouter(asynchat.async_chat):
         self._responseFlags = 0
         self._chunk.clear()
 
-#___________________________________________________________________________________________________ _logData
+
     # noinspection PyMethodMayBeStatic
     def _logData(self, data, logLevel):
         if logLevel == -1:
@@ -135,7 +135,7 @@ class NimbleRouter(asynchat.async_chat):
         elif logLevel > 0:
             NimbleEnvironment.logger.write(data.echo(pretty=True))
 
-#___________________________________________________________________________________________________ _sendResponse
+
     def _sendResponse(self, responseData, logLevel):
         self._logData(responseData, logLevel)
 
@@ -159,7 +159,7 @@ class NimbleRouter(asynchat.async_chat):
         if not keepAlive:
             self.close_when_done()
 
-#___________________________________________________________________________________________________ _routeMessage
+
     def _routeMessage(self, data):
         if data.kind == DataKindEnum.ECHO:
             return NimbleResponseData(
@@ -185,11 +185,11 @@ class NimbleRouter(asynchat.async_chat):
             error=DataErrorEnum.UNRECOGNIZED_REQUEST,
             response=NimbleResponseData.FAILED_RESPONSE )
 
-#___________________________________________________________________________________________________ _routeMessageImpl
+
     def _routeMessageImpl(self, data):
         return None
 
-#___________________________________________________________________________________________________ _parseData
+
     def _parseData(self, message, logLevel):
         data = NimbleData.fromMessage(message)
         self._logData(data, logLevel)

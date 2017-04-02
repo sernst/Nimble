@@ -12,7 +12,7 @@ from nimble.NimbleEnvironment import NimbleEnvironment
 from nimble.connection.script.RemoteScriptResponse import RemoteScriptResponse
 
 
-#___________________________________________________________________________________________________ NimbleScriptBase
+
 class NimbleScriptBase(object):
     """ The base class for remote nimble scripts, which transparently handles running scripts both
         inside and outside (across nimble communication bridge) of Maya. """
@@ -20,7 +20,7 @@ class NimbleScriptBase(object):
 #===================================================================================================
 #                                                                                       C L A S S
 
-#___________________________________________________________________________________________________ __init__
+
     def __init__(self):
         """Creates a new instance of NimbleScriptBase."""
         self.kwargs = None
@@ -30,13 +30,13 @@ class NimbleScriptBase(object):
 #===================================================================================================
 #                                                                                     P U B L I C
 
-#___________________________________________________________________________________________________ run
+
     def run(self):
         """ The execution method that should be implemented in subclasses to carry out the remote
             script. """
         pass
 
-#___________________________________________________________________________________________________ runAsNimbleScript
+
     def runAsNimbleScript(self, **kwargs):
         """ Used to call the remote script as an independent operation outside of a MayaRouter, the
             normal method by which the script is executed. Used primarily for unit testing purposes
@@ -48,7 +48,7 @@ class NimbleScriptBase(object):
         self.response   = nimble.createRemoteResponse(globals())
         self.run()
 
-#___________________________________________________________________________________________________ fetch
+
     def fetch(self, name, defaultValue =None):
         """ Retrieves the value of the script argument specified by the name. If no such argument
             exists (or the argument is None) the default value will be returned.
@@ -57,7 +57,7 @@ class NimbleScriptBase(object):
             [defaultValue =None]: Value returned if the script argument is None or missing. """
         return ArgsUtils.get(name, defaultValue, self.kwargs)
 
-#___________________________________________________________________________________________________ put
+
     def put(self, name, value):
         """ Places the specified name-value pair in the response that will be returned at the
             completion of the script execution. Setting the value more than once will overwrite the
@@ -69,27 +69,27 @@ class NimbleScriptBase(object):
 
         self.response.put(name, value)
 
-#___________________________________________________________________________________________________ puts
+
     def puts(self, **kwargs):
         self.response.puts(**kwargs)
 
-#___________________________________________________________________________________________________ addWarning
+
     def addWarning(self, message):
         self.response.addWarning(message)
 
-#___________________________________________________________________________________________________ putErrorResult
+
     def putErrorResult(self, message, **kwargs):
         self.response.putError(message)
         if kwargs:
             self.puts(kwargs)
 
-#___________________________________________________________________________________________________ saveSelection
+
     def saveSelection(self, override =None, **kwargs):
         if override is None:
             override = nimble.cmds.ls(selection=True, **kwargs)
         self._savedSelection = override
 
-#___________________________________________________________________________________________________ restoreSelection
+
     def restoreSelection(self, override =None):
         if override is None:
             override = self._savedSelection
@@ -102,7 +102,7 @@ class NimbleScriptBase(object):
 #===================================================================================================
 #                                                                               I N T R I N S I C
 
-#___________________________________________________________________________________________________ __call__
+
     def __call__(self, *args, **kwargs):
         """Doc..."""
         if self.response is None:
@@ -121,10 +121,10 @@ class NimbleScriptBase(object):
         result = self.response.result
         return result if result else dict()
 
-#___________________________________________________________________________________________________ __repr__
+
     def __repr__(self):
         return self.__str__()
 
-#___________________________________________________________________________________________________ __str__
+
     def __str__(self):
         return '<%s>' % self.__class__.__name__

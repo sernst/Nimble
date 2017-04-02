@@ -14,7 +14,7 @@ runSilent  = True
 keepAlive  = True
 iterations = 1000
 
-#___________________________________________________________________________________________________ pingTest
+
 @profile
 def pingTest():
 

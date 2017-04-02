@@ -4,7 +4,7 @@
 
 from __future__ import print_function, absolute_import, unicode_literals, division
 
-#___________________________________________________________________________________________________ DataErrorEnum
+
 class DataErrorEnum(object):
 
 #===================================================================================================

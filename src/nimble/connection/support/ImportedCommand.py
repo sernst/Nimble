@@ -4,14 +4,14 @@
 
 from __future__ import print_function, absolute_import, unicode_literals, division
 
-#___________________________________________________________________________________________________ ImportedCommand
+
 class ImportedCommand(object):
     """A class for..."""
 
 #===================================================================================================
 #                                                                                       C L A S S
 
-#___________________________________________________________________________________________________ __init__
+
     def __init__(self, target, module =None, method =None, **kwargs):
         """Creates a new instance of ImportedCommand."""
         self._target = target
@@ -31,7 +31,7 @@ class ImportedCommand(object):
 #===================================================================================================
 #                                                                                   G E T / S E T
 
-#___________________________________________________________________________________________________ GS: target
+
     @property
     def target(self):
         return self._target
@@ -39,7 +39,7 @@ class ImportedCommand(object):
     def target(self, value):
         self._target = value
 
-#___________________________________________________________________________________________________ GS: module
+
     @property
     def module(self):
         return self._module
@@ -47,7 +47,7 @@ class ImportedCommand(object):
     def module(self, value):
         self._module = value
 
-#___________________________________________________________________________________________________ GS: method
+
     @property
     def method(self):
         return self._method
@@ -55,7 +55,7 @@ class ImportedCommand(object):
     def method(self, value):
         self._method = value
 
-#___________________________________________________________________________________________________ GS: constructorArgs
+
     @property
     def constructorArgs(self):
         return self._constructorArgs
@@ -63,7 +63,7 @@ class ImportedCommand(object):
     def constructorArgs(self, value):
         self._constructorArgs = value
 
-#___________________________________________________________________________________________________ GS: constructorKwargs
+
     @property
     def constructorKwargs(self):
         return self._constructorKwargs
@@ -74,7 +74,7 @@ class ImportedCommand(object):
 #===================================================================================================
 #                                                                                     P U B L I C
 
-#___________________________________________________________________________________________________ toDict
+
     def toDict(self):
         """Doc..."""
 
@@ -93,11 +93,11 @@ class ImportedCommand(object):
 #===================================================================================================
 #                                                                               I N T R I N S I C
 
-#___________________________________________________________________________________________________ __repr__
+
     def __repr__(self):
         return self.__str__()
 
-#___________________________________________________________________________________________________ __str__
+
     def __str__(self):
         return '<%s - %s>' % (
             self.__class__.__name__,

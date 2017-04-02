@@ -9,7 +9,7 @@ import math
 from nimble import cmds
 from nimble import NimbleScriptBase
 
-#___________________________________________________________________________________________________ CreateSpheres
+
 class CreateSpheres(NimbleScriptBase):
     """ A Nimble script example for creating rings of spheres in the scene.
 
@@ -26,7 +26,7 @@ class CreateSpheres(NimbleScriptBase):
 #===================================================================================================
 #                                                                                       C L A S S
 
-#___________________________________________________________________________________________________ __init__
+
     def __init__(self):
         """ Creates a new instance of CreateSpheres. As a NimbleScriptBase derived class the
             constructor must not take any arguments, as nothing is passed by Nimble when the
@@ -37,7 +37,7 @@ class CreateSpheres(NimbleScriptBase):
 #===================================================================================================
 #                                                                                     P U B L I C
 
-#___________________________________________________________________________________________________ run
+
     def run(self):
         """ This method is where your nimble script should be implemented. Prior to Nimble calling
             this method the class receives the arguments passed through Nimble needed by the

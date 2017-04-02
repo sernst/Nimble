@@ -69,17 +69,17 @@ class NimbleEnvironment(object):
 #===================================================================================================
 #                                                                                   G E T / S E T
 
-#___________________________________________________________________________________________________ GS: CONNECTION_LIFETIME
+
     @ClassGetter
     def CONNECTION_LIFETIME(cls):
         return cls._connectionLifetime
 
-#___________________________________________________________________________________________________ GS: SOCKET_RESPONSE_CHUNK_SIZE
+
     @ClassGetter
     def SOCKET_RESPONSE_CHUNK_SIZE(cls):
         return 200 if cls.isWindows else cls.SOCKET_CHUNK_SIZE
 
-#___________________________________________________________________________________________________ GS: isWindows
+
     @ClassGetter
     def isWindows(cls):
         return sys.platform.startswith('win')
@@ -87,7 +87,7 @@ class NimbleEnvironment(object):
 #===================================================================================================
 #                                                                                     P U B L I C
 
-#___________________________________________________________________________________________________ inMaya
+
     @classmethod
     def inMaya(cls, override =None):
         if override is not None:
@@ -112,7 +112,7 @@ class NimbleEnvironment(object):
 
         return cls._inMaya
 
-#___________________________________________________________________________________________________ logError
+
     @classmethod
     def logError(cls, *args, **kwargs):
         isInMaya = cls.inMaya() and cls._mayaUtils is not None
@@ -121,7 +121,7 @@ class NimbleEnvironment(object):
         else:
             cls.logger.writeError(*args, **kwargs)
 
-#___________________________________________________________________________________________________ log
+
     @classmethod
     def log(cls, message):
         isInMaya = cls.inMaya() and cls._mayaUtils is not None
@@ -130,23 +130,23 @@ class NimbleEnvironment(object):
         else:
             cls._logMessage(message)
 
-#___________________________________________________________________________________________________ getServerPort
+
     @classmethod
     def getServerLogLevel(cls):
         return cls._logLevel
 
-#___________________________________________________________________________________________________ getServerPort
+
     @classmethod
     def setServerLogLevel(cls, level =0):
         cls._logLevel = level
         return cls._logLevel
 
-#___________________________________________________________________________________________________ getServerPort
+
     @classmethod
     def getServerPort(cls, inMaya =None):
         return cls._mayaPort if cls.inMaya(override=inMaya) else cls._externalPort
 
-#___________________________________________________________________________________________________ getConnectionPort
+
     @classmethod
     def getConnectionPort(cls, inMaya =None):
         return cls._externalPort if cls.inMaya(override=inMaya) else cls._mayaPort
@@ -154,12 +154,12 @@ class NimbleEnvironment(object):
 #===================================================================================================
 #                                                                               P R O T E C T E D
 
-#___________________________________________________________________________________________________ _logMessage
+
     @classmethod
     def _logMessage(cls, *args, **kwargs):
         cls.logger.write(*args, **kwargs)
 
-#___________________________________________________________________________________________________ _logError
+
     @classmethod
     def _logError(cls, *args, **kwargs):
         cls.logger.writeError(*args, **kwargs)

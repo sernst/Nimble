@@ -6,11 +6,11 @@ from __future__ import print_function, absolute_import, unicode_literals, divisi
 
 from nimble import cmds
 
-#___________________________________________________________________________________________________ HelloCommandTest
+
 class HelloCommandTest(object):
     """A class for..."""
 
-#___________________________________________________________________________________________________ __init__
+
     def __init__(self, width =1, name =None):
         print('CONSTRUCTED: [width: %s], [name: %s]' % (str(width), str(name)))
         self._width = width
@@ -19,7 +19,7 @@ class HelloCommandTest(object):
 #===================================================================================================
 #                                                                                     P U B L I C
 
-#___________________________________________________________________________________________________ instanceCube
+
     def instanceCube(self, **kwargs):
         """Doc..."""
         name   = self._name if self._name else 'instanceCube'
@@ -29,7 +29,7 @@ class HelloCommandTest(object):
         cmds.move(x, 10, 0, res[0])
         return res
 
-#___________________________________________________________________________________________________ classyCube
+
     @classmethod
     def classyCube(cls, **kwargs):
         """Doc..."""
@@ -39,7 +39,7 @@ class HelloCommandTest(object):
         cmds.move(x, 20, 0, res[0])
         return res
 
-#___________________________________________________________________________________________________ staticCube
+
     @staticmethod
     def staticCube(**kwargs):
         """Doc..."""
@@ -52,7 +52,7 @@ class HelloCommandTest(object):
 #===================================================================================================
 #                                                                               I N T R I N S I C
 
-#___________________________________________________________________________________________________ __call__
+
     def __call__(self, **kwargs):
         name   = self._name if self._name else 'calledCube'
         height = kwargs['height'] if 'height' in kwargs else 2
@@ -64,7 +64,7 @@ class HelloCommandTest(object):
 #===================================================================================================
 #                                                                               F U N C T I O N S
 
-#___________________________________________________________________________________________________ functionCube
+
 def functionCube(**kwargs):
     height = kwargs['height'] if 'height' in kwargs else 2
     x      = kwargs['x'] if 'x' in kwargs else 0

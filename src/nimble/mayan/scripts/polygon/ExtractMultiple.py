@@ -8,7 +8,7 @@ from pyaid.dict.DictUtils import DictUtils
 from nimble import cmds
 from nimble import NimbleScriptBase
 
-#___________________________________________________________________________________________________ ExtractMultiple
+
 from nimble.mayan.MayaNodeUtils import MayaNodeUtils
 
 
@@ -18,7 +18,7 @@ class ExtractMultiple(NimbleScriptBase):
 #===================================================================================================
 #                                                                                       C L A S S
 
-#___________________________________________________________________________________________________ __init__
+
     def __init__(self):
         """Creates a new instance of ExtractMultiple."""
         NimbleScriptBase.__init__(self)
@@ -26,7 +26,7 @@ class ExtractMultiple(NimbleScriptBase):
 #===================================================================================================
 #                                                                                     P U B L I C
 
-#___________________________________________________________________________________________________ run
+
     def run(self):
         """Doc..."""
 

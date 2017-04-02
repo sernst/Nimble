@@ -17,7 +17,7 @@ import nimble
 from nimble.utils.MayaEnvEntry import MayaEnvEntry
 
 
-#___________________________________________________________________________________________________ MayaEnvUtils
+
 class MayaEnvUtils(object):
     """A class for..."""
 
@@ -30,7 +30,7 @@ class MayaEnvUtils(object):
 
     _PYTHON_PATH_PATTERN = re.compile('PYTHONPATH=(?P<paths>[^\n\r]*)')
 
-#___________________________________________________________________________________________________ locateMayaEnvFiles
+
     @classmethod
     def locateMayaEnvFiles(cls):
         """ Finds the location of all Maya.env files located in the default location on the host
@@ -57,7 +57,7 @@ class MayaEnvUtils(object):
         FileUtils.walkPath(root, cls._handleFindEnvFiles, out)
         return out
 
-#___________________________________________________________________________________________________ checkEnvFile
+
     @classmethod
     def checkEnvFile(cls, target, otherPaths =None):
         """Doc..."""
@@ -84,7 +84,7 @@ class MayaEnvUtils(object):
 
         return True
 
-#___________________________________________________________________________________________________ modifyEnvFile
+
     @classmethod
     def modifyEnvFile(cls, target, install =True, test =False, otherPaths =None):
         """Doc..."""
@@ -159,7 +159,7 @@ class MayaEnvUtils(object):
 #===================================================================================================
 #                                                                               P R O T E C T E D
 
-#___________________________________________________________________________________________________ _hasPath
+
     @classmethod
     def _hasPath(cls, path, entries):
         for entry in entries:
@@ -167,7 +167,7 @@ class MayaEnvUtils(object):
                 return entry
         return None
 
-#___________________________________________________________________________________________________ _joinPathEntries
+
     @classmethod
     def _joinPathEntries(cls, entries):
         out = []
@@ -175,7 +175,7 @@ class MayaEnvUtils(object):
             out.append(entry.folderPath)
         return OsUtils.getPerOsValue(';', ':').join(out)
 
-#___________________________________________________________________________________________________ _getSourcePaths
+
     @classmethod
     def _getSourcePaths(cls, otherPaths =None):
         nimbleEntry = MayaEnvEntry.fromRootPath(FileUtils.createPath(
@@ -202,7 +202,7 @@ class MayaEnvUtils(object):
 #===================================================================================================
 #                                                                                 H A N D L E R S
 
-#___________________________________________________________________________________________________ _handleFindEnvFiles
+
     @classmethod
     def _handleFindEnvFiles(cls, walkData):
         for name in walkData.names:

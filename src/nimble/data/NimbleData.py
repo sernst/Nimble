@@ -14,7 +14,7 @@ from nimble.NimbleEnvironment import NimbleEnvironment
 from nimble.data.enum.DataKindEnum import DataKindEnum
 
 
-#___________________________________________________________________________________________________ NimbleData
+
 class NimbleData(object):
     """A class for..."""
 
@@ -23,7 +23,7 @@ class NimbleData(object):
 
     _NEWLINE_ESCAPE = '##NEWLINE##'
 
-#___________________________________________________________________________________________________ __init__
+
     def __init__(self, kind =None, payload =None, **kwargs):
         """Creates a new instance of NimbleData."""
         self._kind      = kind if kind else DataKindEnum.GENERAL
@@ -32,7 +32,7 @@ class NimbleData(object):
 #===================================================================================================
 #                                                                                   G E T / S E T
 
-#___________________________________________________________________________________________________ GS: kind
+
     @property
     def kind(self):
         return self._kind
@@ -40,7 +40,7 @@ class NimbleData(object):
     def kind(self, value):
         self._kind = value
 
-#___________________________________________________________________________________________________ GS: payload
+
     @property
     def payload(self):
         return self._payload
@@ -48,7 +48,7 @@ class NimbleData(object):
 #===================================================================================================
 #                                                                                     P U B L I C
 
-#___________________________________________________________________________________________________ echo
+
     def echo(self, verbose =False, pretty =False):
         msg = self._createMessage()
         header = 'RESPONSE' if hasattr(self, 'response') else 'REQUEST'
@@ -63,7 +63,7 @@ class NimbleData(object):
 
         return '<NIMBLE %s | %s>' % (header, self.kind)
 
-#___________________________________________________________________________________________________ serialize
+
     def serialize(self):
         """Doc..."""
         out = json.dumps(self._createMessage()) \
@@ -74,7 +74,7 @@ class NimbleData(object):
             return out
         return out
 
-#___________________________________________________________________________________________________ fromMessage
+
     @classmethod
     def fromMessage(cls, message):
         if not message:
@@ -114,7 +114,7 @@ class NimbleData(object):
 #===================================================================================================
 #                                                                               P R O T E C T E D
 
-#___________________________________________________________________________________________________ _createMessage
+
     def _createMessage(self):
         """Doc..."""
         return {
@@ -125,14 +125,14 @@ class NimbleData(object):
 #===================================================================================================
 #                                                                               I N T R I N S I C
 
-#___________________________________________________________________________________________________ __repr__
+
     def __repr__(self):
         return self.__str__()
 
-#___________________________________________________________________________________________________ __unicode__
+
     def __unicode__(self):
         return StringUtils.toStr2(self.__str__())
 
-#___________________________________________________________________________________________________ __str__
+
     def __str__(self):
         return '<%s::%s>' % (self.__class__.__name__, str(self.kind))

@@ -15,14 +15,14 @@ from nimble import NimbleScriptBase
 from nimble.NimbleEnvironment import NimbleEnvironment
 from nimble.mayan.TransformUtils import TransformUtils
 
-#___________________________________________________________________________________________________ RandomBoxes
+
 class RandomBoxes(NimbleScriptBase):
     """A class for..."""
 
 #===================================================================================================
 #                                                                                       C L A S S
 
-#___________________________________________________________________________________________________ __init__
+
     def __init__(self):
         """Creates a new instance of RandomBoxes."""
         NimbleScriptBase.__init__(self)
@@ -37,7 +37,7 @@ class RandomBoxes(NimbleScriptBase):
 #===================================================================================================
 #                                                                                     P U B L I C
 
-#___________________________________________________________________________________________________ run
+
     def run(self):
         """Doc..."""
 
@@ -110,7 +110,7 @@ class RandomBoxes(NimbleScriptBase):
 #===================================================================================================
 #                                                                               P R O T E C T E D
 
-#___________________________________________________________________________________________________ _create
+
     def _create(self, shapeData):
         point = None
         count = 0
@@ -141,13 +141,13 @@ class RandomBoxes(NimbleScriptBase):
         cmds.move(point[0], point[1], point[2], cube[0], absolute=True)
         return True
 
-#___________________________________________________________________________________________________ _cleanup
+
     def _cleanup(self):
         self._removeMeshPointNode()
 
         self.restoreSelection()
 
-#___________________________________________________________________________________________________ _createMeshPointNode
+
     def _createMeshPointNode(self, shapeData):
         self._removeMeshPointNode()
 
@@ -168,7 +168,7 @@ class RandomBoxes(NimbleScriptBase):
 
         return True
 
-#___________________________________________________________________________________________________ _removeMeshPointNode
+
     def _removeMeshPointNode(self):
         if self._meshPointNode is None:
             return

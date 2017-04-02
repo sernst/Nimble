@@ -12,7 +12,7 @@ from nimble.NimbleEnvironment import NimbleEnvironment
 from nimble.connection.NimbleServer import NimbleServer
 from nimble.connection.thread.NimbleThread import NimbleThread
 
-#___________________________________________________________________________________________________ NimbleServerThread
+
 class NimbleServerThread(NimbleThread):
     """A class for..."""
 
@@ -24,7 +24,7 @@ class NimbleServerThread(NimbleThread):
 
     _ACTIVE_MESSAGE = 'Nimble server is now active'
 
-#___________________________________________________________________________________________________ __init__
+
     def __init__(self, router =None, **kwargs):
         self._ACTIVATING = True
         NimbleThread.__init__(self, **kwargs)
@@ -34,21 +34,21 @@ class NimbleServerThread(NimbleThread):
 #===================================================================================================
 #                                                                                     P U B L I C
 
-#___________________________________________________________________________________________________ stopServer
+
     def stopServer(self):
         return self._server.close()
 
-#___________________________________________________________________________________________________ isActivating
+
     @classmethod
     def isActivating(cls):
         return cls._ACTIVATING
 
-#___________________________________________________________________________________________________ isRunning
+
     @classmethod
     def isRunning(cls):
         return cls._SERVER_THREAD is not None
 
-#___________________________________________________________________________________________________ closeServer
+
     @classmethod
     def closeServer(cls):
         if not cls._SERVER_THREAD:
@@ -61,7 +61,7 @@ class NimbleServerThread(NimbleThread):
 #===================================================================================================
 #                                                                               P R O T E C T E D
 
-#___________________________________________________________________________________________________ _runImpl
+
     def _runImpl(self):
         self._server = NimbleServer(router=self._router)
         self._SERVER_THREAD = self

@@ -35,14 +35,14 @@ if sys.version > '3':
     reload = importlib.reload
 
 
-#___________________________________________________________________________________________________ MayaRouter
+
 class MayaRouter(NimbleRouter):
     """A class for..."""
 
 #===================================================================================================
 #                                                                                       C L A S S
 
-#___________________________________________________________________________________________________ createReply
+
     @classmethod
     def createReply(cls, kind, result, errorMessage =None):
         payload = result if isinstance(result, dict) else {'result':result}
@@ -62,7 +62,7 @@ class MayaRouter(NimbleRouter):
             response=NimbleResponseData.SUCCESS_RESPONSE,
             payload=payload )
 
-#___________________________________________________________________________________________________ runPythonImport
+
     @classmethod
     def runPythonImport(cls, payload):
         try:
@@ -147,8 +147,7 @@ class MayaRouter(NimbleRouter):
                 error=cls._getDetailedError(msg, err),
                 response=NimbleResponseData.FAILED_RESPONSE)
 
-#___________________________________________________________________________________________________
-    @classmethod
+
     def processRequest(cls, data):
         result = None
         if data.kind == DataKindEnum.MEL_SCRIPT:
@@ -189,11 +188,11 @@ class MayaRouter(NimbleRouter):
 #===================================================================================================
 #                                                                               P R O T E C T E D
 
-#___________________________________________________________________________________________________ _routeMessage
+
     def _routeMessageImpl(self, data):
         return self.processRequest(data)
 
-#___________________________________________________________________________________________________ _executeCommand
+
     @classmethod
     def _executeCommand(cls, payload):
         cmd = payload['command']
@@ -251,7 +250,7 @@ class MayaRouter(NimbleRouter):
                 response=NimbleResponseData.FAILED_RESPONSE,
                 error=cls._getDetailedError('Failed to execute command', err) )
 
-#___________________________________________________________________________________________________ _instantiateClass
+
     @classmethod
     def _instantiateClass(cls, Target, command):
         k = 'constructorArgs'
@@ -271,7 +270,7 @@ class MayaRouter(NimbleRouter):
 
         return targetObject
 
-#___________________________________________________________________________________________________ _executeMayaCommand
+
     @classmethod
     def _executeMayaCommand(cls, payload, createReply =True):
         cmd = getattr(mc, str(payload['command']), None)
@@ -315,7 +314,7 @@ class MayaRouter(NimbleRouter):
                 error=cls._getDetailedError(message, err),
                 response=NimbleResponseData.FAILED_RESPONSE )
 
-#___________________________________________________________________________________________________ _executeMayaCommandBatch
+
     @classmethod
     def _executeMayaCommandBatch(cls, payload):
         out = []
@@ -330,7 +329,7 @@ class MayaRouter(NimbleRouter):
 
         return out
 
-#___________________________________________________________________________________________________ _runPythonFile
+
     @classmethod
     def _runPythonFile(cls, payload):
         try:

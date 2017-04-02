@@ -9,7 +9,7 @@ from nimble.NimbleEnvironment import NimbleEnvironment
 from nimble.connection.support.CustomCommandLink import CustomCommandLink
 from nimble.connection.support.MayaCommandLink import MayaCommandLink
 
-#___________________________________________________________________________________________________ NimbleConnectionWrapper
+
 class NimbleConnectionWrapper(object):
     """A class for..."""
 
@@ -20,7 +20,7 @@ class NimbleConnectionWrapper(object):
     NIMBLE_SCRIPTS = 'nimbleScripts'
     CUSTOM_SCRIPTS = 'customScripts'
 
-#___________________________________________________________________________________________________ __init__
+
     def __init__(self, wrapperType, **kwargs):
         """Creates a new instance of NimbleConnectionWrapper."""
         self._kwargs = kwargs
@@ -31,7 +31,7 @@ class NimbleConnectionWrapper(object):
 #===================================================================================================
 #                                                                                     P U B L I C
 
-#___________________________________________________________________________________________________ getNimbleConnection
+
     @classmethod
     def getNimbleConnection(cls, inMaya =None, forceCreate =None):
         NimbleEnvironment.inMaya(override=inMaya)
@@ -43,7 +43,7 @@ class NimbleConnectionWrapper(object):
 #===================================================================================================
 #                                                                               P R O T E C T E D
 
-#___________________________________________________________________________________________________ _getLinker
+
     def _getLinker(self):
         if self._linker is not None:
             return self._linker
@@ -61,7 +61,7 @@ class NimbleConnectionWrapper(object):
 #===================================================================================================
 #                                                                               I N T R I N S I C
 
-#___________________________________________________________________________________________________ __call__
+
     def __call__(self, *args, **kwargs):
         linker = self._getLinker()
 
@@ -70,21 +70,21 @@ class NimbleConnectionWrapper(object):
 
         return linker(*args, **kwargs)
 
-#___________________________________________________________________________________________________ __getitem__
+
     def __getitem__(self, item):
         return self.__call__(item)
 
-#___________________________________________________________________________________________________ __getattr__
+
     def __getattr__(self, item):
         if item.startswith('_'):
             raise AttributeError
 
         return getattr(self._getLinker(), item, None)
 
-#___________________________________________________________________________________________________ __repr__
+
     def __repr__(self):
         return self.__str__()
 
-#___________________________________________________________________________________________________ __str__
+
     def __str__(self):
         return '<%s>' % self.__class__.__name__

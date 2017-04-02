@@ -34,7 +34,7 @@ from nimble.mayan.NimbleScriptBase import NimbleScriptBase
 #===================================================================================================
 #                                                                               F U N C T I O N S
 
-#___________________________________________________________________________________________________ startServer
+
 def startServer(logLevel =0, router =None, inMaya =None):
     """ Starts the NimbleServer properly given the current environmental conditions. The server runs
         in a separate thread and remains active until the stopServer() method.
@@ -63,7 +63,7 @@ def startServer(logLevel =0, router =None, inMaya =None):
     NimbleEnvironment.setServerLogLevel(logLevel)
     NimbleServerThread(router=router).start()
 
-#___________________________________________________________________________________________________ changeServerLogLevel
+
 def changeServerLogLevel(logLevel =0):
     """ Changes the active servers logging level, or, if no server is active, changes the
         environment so that when a server is started it will run at the specified level. This is
@@ -80,7 +80,7 @@ def changeServerLogLevel(logLevel =0):
 
     return NimbleEnvironment.setServerLogLevel(logLevel)
 
-#___________________________________________________________________________________________________ changeDefaultPythonRunMode
+
 def enablePythonTestMode(value):
     """ Enables or disables Python testing mode. When True (False is the default) Python scripts
         will be executed outside of Maya on the remote end of the Nimble connection bridge, which
@@ -90,14 +90,14 @@ def enablePythonTestMode(value):
         manually reloading dependent modules or restarting Maya. """
     NimbleEnvironment.TEST_REMOTE_MODE = value
 
-#___________________________________________________________________________________________________ stopServer
+
 def stopServer():
     """ Stops the currently running server if one is active. If no server is active this method
         will fail silently, no exception will be thrown, making it safe to call at any time. """
 
     return NimbleServerThread.closeServer()
 
-#___________________________________________________________________________________________________ echoServerStatus
+
 def echoServerStatus():
     """ Prints the status of the server, either inactive or active as well as returning the server
         activity integer. Note that servers are started up asynchronously, so there is a short
@@ -123,7 +123,7 @@ def echoServerStatus():
     print('Nimble server is inactive.')
     return 0
 
-#___________________________________________________________________________________________________ getConnection
+
 def getConnection(inMaya =None, forceCreate =False):
     """ Retrieves a communication connection object from the connection pool, which is used for
         sending commands to the remote nimble server.
@@ -147,11 +147,11 @@ def getConnection(inMaya =None, forceCreate =False):
     NimbleEnvironment.inMaya(override=inMaya)
     return NimbleConnection.getConnection(forceCreate=forceCreate)
 
-#___________________________________________________________________________________________________ createBatch
+
 def createCommandsBatch():
     return NimbleBatchCommandConnection()
 
-#___________________________________________________________________________________________________ getRemoteKwargs
+
 def getRemoteKwargs(scriptGlobalVars):
     """ This method is used to gain access to the kwargs dictionary sent with python script
         execution request. Under any other circumstances it just returns an empty dictionary.
@@ -162,15 +162,15 @@ def getRemoteKwargs(scriptGlobalVars):
         return dict()
     return out
 
-#___________________________________________________________________________________________________ createRemoteResponse
+
 def createRemoteResponse(scriptGlobalVars):
     return RemoteScriptResponse(scriptGlobalVars)
 
-#___________________________________________________________________________________________________ getIsRunningInMaya
+
 def getIsRunningInMaya():
     return NimbleEnvironment.inMaya()
 
-#___________________________________________________________________________________________________ changeKeepAlive
+
 def changeKeepAlive(value):
     """ When True connections to the remote Nimble server will be kept alive between requests
         for better reliability and performance during high-frequency scripting """
@@ -179,13 +179,13 @@ def changeKeepAlive(value):
     else:
         removeConnectionFlag(ConnectionFlags.KEEP_ALIVE)
 
-#___________________________________________________________________________________________________ addConnectionFlag
+
 def addConnectionFlag(flags):
     """ Add flag(s) to the default flag list sent used in specifying command requests to the
         remote Nimble server """
     NimbleEnvironment.CONNECTION_FLAGS = (NimbleEnvironment.CONNECTION_FLAGS | flags)
 
-#___________________________________________________________________________________________________ addConnectionFlag
+
 def removeConnectionFlag(flags):
     """ Removes flag(s) from the default flag list sent used in specifying command requests to the
         remote Nimble server """
@@ -194,13 +194,13 @@ def removeConnectionFlag(flags):
 
     NimbleEnvironment.CONNECTION_FLAGS = (NimbleEnvironment.CONNECTION_FLAGS ^ flags)
 
-#___________________________________________________________________________________________________ createScriptLink
+
 def createScriptLink(rootPackage):
     """ Creates a custom script link to the specified root package, which must be on the system
         path on both sides of the nimble bridge. """
     return NimbleConnectionWrapper(NimbleConnectionWrapper.CUSTOM_SCRIPTS, rootPackage=rootPackage)
 
-#___________________________________________________________________________________________________ executeMelCommand
+
 def executeMelCommand(command, nimbleResult =False):
     if not nimbleResult:
         return getConnection().mel(command)
@@ -210,27 +210,27 @@ def executeMelCommand(command, nimbleResult =False):
 #===================================================================================================
 #                                                                                     M O D U L E
 
-#___________________________________________________________________________________________________ CommandImport
+
 # Specifies whether or not communication attempt failures should die silently.
 quietFailure = False
 
-#___________________________________________________________________________________________________ CommandImport
+
 # Convenience access to the ImportedCommand class.
 CommandImport = ImportedCommand
 
-#___________________________________________________________________________________________________ log
+
 # Convenience access to the nimble environment logger.
 log    = NimbleEnvironment.log
 logger = NimbleEnvironment.logger
 
-#___________________________________________________________________________________________________ cmds
+
 # Convenience access of the environmental Maya commands
 cmds = NimbleConnectionWrapper(NimbleConnectionWrapper.MAYA_COMMANDS)
 
-#___________________________________________________________________________________________________ scripts
+
 scripts = NimbleConnectionWrapper(NimbleConnectionWrapper.CUSTOM_SCRIPTS)
 
-#___________________________________________________________________________________________________ EVENT HANDLER: closeConnectionPool
+
 # Cleans up the active socket connection pool on close to prevent communication errors in the
 # NimbleServer routers.
 def _handleExit():
