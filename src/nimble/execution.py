@@ -5,7 +5,7 @@ except Exception:
     mu = None
 
 executionFunction = (
-    mu.executeInMainThreadWithResult
+    getattr(mu, 'executeInMainThreadWithResult', None)
     if mu is not None else
     None
 )
