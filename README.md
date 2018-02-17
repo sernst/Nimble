@@ -49,3 +49,35 @@ print 'Translate:', cmds.getAttr(result[0] + '.translate')[0]
 As you can see the only difference between a nimble script and a standard Maya version is the import statement.
 
 It really is that simple! 
+
+## Custom Ports
+
+By default Nimble uses port `7800` and `7801` for communication between Maya and the remote Nimble environment. If these ports are unavailable in your environment, or you wish to run multiple instances at the same time, ports can be customized.
+
+Make sure that you set the custom ports in both Maya:
+
+```python
+# Start a server with custom ports:
+
+import nimble
+
+nimble.startServer(mayaPort=8700, externalPort=8701)
+```
+
+and in your remote Nimble environment:
+
+```python
+# Set custom ports in a remote Nimble script before calling any other nimble commands
+
+import nimble
+from nimble import cmds
+
+nimble.setPorts(maya=8700, external=8701)
+
+result = cmds.polyCube(height=10, depth=25)
+```
+
+
+
+
+
