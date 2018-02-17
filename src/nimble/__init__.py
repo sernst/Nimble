@@ -1,5 +1,5 @@
 # __init__.py
-# (C)2012-2014
+# (C)2012-2018
 # Scott Ernst
 
 from __future__ import \
@@ -31,37 +31,49 @@ from nimble.enum.ConnectionFlags import ConnectionFlags
 from nimble.error.MayaCommandException import MayaCommandException
 from nimble.mayan.NimbleScriptBase import NimbleScriptBase
 
-#===================================================================================================
-#                                                                               F U N C T I O N S
 
+def startServer(
+        logLevel=0,
+        router=None,
+        inMaya=None,
+        mayaPort=None,
+        externalPort=None
+):
+    """
+    Starts the NimbleServer properly given the current environmental
+    conditions. The server runs in a separate thread and remains active until
+    the stopServer() method.
 
-def startServer(logLevel =0, router =None, inMaya =None):
-    """ Starts the NimbleServer properly given the current environmental conditions. The server runs
-        in a separate thread and remains active until the stopServer() method.
-
-        @@@param logLevel:int
-            The integer logLevel to use when starting the server. The allowed values are:
-            [#list]
-                [#item]0 (default): Only log critical actions.[/#item]
-                [#item]1: Additionally log warnings as well as succinct activity.[/#item]
-                [#item]2: Full verbose logging of all activity.[/#item]
-            [/#list]
-
-        @@@param router:NimbleRouter
-            The router to use for the server. The default value of None will use the default
-            router for the given environment. The router is responsible for handling the
-            communication traffic received by the server and correctly responding as a result.
-
-        @@@param inMaya:boolean
-            Whether or not the server is being run in Maya. By default this is determined
-            automatically by the Nimble environment settings. However, in some cases the
-            determination can be incorrect if your external or Maya Python interpreters have been
-            modified to fool the environment test. In such cases this may need to be explicitly
-            set. """
-
+    :param logLevel: int
+        The integer logLevel to use when starting the server. The allowed
+        values are:
+            - 0 (default): Only log critical actions.
+            - 1: Additionally log warnings as well as succinct activity.
+            - 2: Full verbose logging of all activity.
+    :param router: NimbleRouter
+        The router to use for the server. The default value of None will use the default
+        router for the given environment. The router is responsible for handling the
+        communication traffic received by the server and correctly responding as a result.
+    :param inMaya: boolean
+        Whether or not the server is being run in Maya. By default this is
+        determined automatically by the Nimble environment settings. However, in
+        some cases the determination can be incorrect if your external or Maya
+        Python interpreters have been modified to fool the environment test.
+        In such cases this may need to be explicitly set.
+    :param mayaPort: int
+        The port that the Maya sever should listen for communication from the
+        remote nimble environment.
+    :param externalPort: int
+        The port that the remote Nimble environment is listening on for sending
+        responses from the Maya Nimble server.
+    """
+    NimbleEnvironment.set_ports(maya=mayaPort, external=externalPort)
     NimbleEnvironment.inMaya(override=inMaya)
     NimbleEnvironment.setServerLogLevel(logLevel)
     NimbleServerThread(router=router).start()
+
+
+setPorts = NimbleEnvironment.set_ports
 
 
 def changeServerLogLevel(logLevel =0):
@@ -196,9 +208,15 @@ def removeConnectionFlag(flags):
 
 
 def createScriptLink(rootPackage):
-    """ Creates a custom script link to the specified root package, which must be on the system
-        path on both sides of the nimble bridge. """
-    return NimbleConnectionWrapper(NimbleConnectionWrapper.CUSTOM_SCRIPTS, rootPackage=rootPackage)
+    """
+    Creates a custom script link to the specified root package, which
+    must be on the system
+    path on both sides of the nimble bridge.
+    """
+    return NimbleConnectionWrapper(
+        NimbleConnectionWrapper.CUSTOM_SCRIPTS,
+        rootPackage=rootPackage
+    )
 
 
 def executeMelCommand(command, nimbleResult =False):
@@ -207,13 +225,8 @@ def executeMelCommand(command, nimbleResult =False):
     else:
         return getConnection().runMelScript(command)
 
-#===================================================================================================
-#                                                                                     M O D U L E
-
-
 # Specifies whether or not communication attempt failures should die silently.
 quietFailure = False
-
 
 # Convenience access to the ImportedCommand class.
 CommandImport = ImportedCommand

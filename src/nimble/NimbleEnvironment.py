@@ -18,11 +18,8 @@ from nimble import execution
 class NimbleEnvironment(object):
     """A class for..."""
 
-#===================================================================================================
-#                                                                                       C L A S S
-
     # Default flags sent with client requests to nimble server
-    CONNECTION_FLAGS        = 0x00000000
+    CONNECTION_FLAGS = 0x00000000
 
     SERVER_HOST = None
     CONNECTION_HOST = None
@@ -61,17 +58,13 @@ class NimbleEnvironment(object):
 
     logger = Logger('nimble', printOut=True)
 
-    _inMaya             = None
-    _mayaPort           = 7800
-    _externalPort       = 7801
+    _inMaya = None
+    _mayaPort = 7800
+    _externalPort = 7801
 
-    _logLevel           = 0
-    _mayaUtils          = None
+    _logLevel = 0
+    _mayaUtils = None
     _connectionLifetime = 10
-
-#===================================================================================================
-#                                                                                   G E T / S E T
-
 
     @ClassGetter
     def CONNECTION_LIFETIME(cls):
@@ -87,9 +80,18 @@ class NimbleEnvironment(object):
     def isWindows(cls):
         return sys.platform.startswith('win')
 
-#===================================================================================================
-#                                                                                     P U B L I C
-
+    @classmethod
+    def set_ports(cls, maya = None, external = None):
+        """
+        Modifies the ports used to communicate between Maya and the
+        remote Nimble environment.
+        """
+        cls._inMaya = maya if maya is not None else cls._inMaya
+        cls._externalPort = (
+            external
+            if external is not None else
+            cls._externalPort
+        )
 
     @classmethod
     def inMaya(cls, override =None):
