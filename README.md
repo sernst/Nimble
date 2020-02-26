@@ -17,14 +17,14 @@ Nimble allows you to:
 Overview
 --------
 
-The only configuration step required of your Maya installation is to add the Nimble library to the PYTHONPATH variable in your Maya.env environment file:
+Nimble requires another package (PyAid)[https://github.com/sernst/PyAid] to be installed as well. Like Nimble, these are not distributed as pip packages because older versions of the Maya Python Interpreter did not readily support custom package installation. Instead the installation/configuration step required is to clone or download these packages and add the two libraries to the PYTHONPATH variable in your Maya.env environment file (as well as any remote Python interpreter that may use them):
 
 ```
 # Windows
-PYTHONPATH=c:\\path\to\Nimble\src;
+PYTHONPATH=c:\\path\to\Nimble\src;c:\\path\to\PyAid\src;
 
 # OSX/Linux 
-PYTHONPATH=/path/to/Nimble/src;
+PYTHONPATH=/path/to/Nimble/src;/path/to/PyAid/src;
 ```
 
 Then, after opening Maya, run the commands:
